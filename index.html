@@ -12,12 +12,22 @@
 	}
 
 	.stage{
-		background-color: skyblue;
+		background-color:#cbfffb;
 	}
 
 	.interface .selection-line{
 		stroke-width:2px;
 		stroke:red;
+	}
+
+	.final_stage{
+		fill:none;
+		stroke-width:15;
+		stroke:#ff6b20;
+	}
+
+	.interface circle{
+		fill:black;
 	}
 
 	svg *{
@@ -63,14 +73,15 @@
 		this.paths = [];
 		this.anchors = [];
 		this.closest_anchor_index = 0;
+		this.selected_anchor_type = null;
 		// Attach DOM Listeners
 		this.container.onmousemove = this.mousemove;
 		this.container.onmousedown = this.mousedown;
 		this.container.onmouseup = this.mouseup;
 		this.container.onmousewheel = this.mousewheel;
-		this.container.addEventListener("keydown", this.keydown);
-		this.container.addEventListener("keyup", this.keyup);
-		this.container.addEventListener("keypress", this.keypress);
+		window.addEventListener("keydown", this.keydown);
+		window.addEventListener("keyup", this.keyup);
+		window.addEventListener("keypress", this.keypress);
 	};
 
 	// Render
@@ -86,6 +97,36 @@
 		}
 	};
 
+	CURVEMIXER.prototype.renderPaths = function() {
+		console.log('Building paths');
+
+		var final_path = this.stage.querySelector('.final_stage');
+
+		data = [];
+		for(var i=0; i<this.anchors.length; i++){
+			if(i==0) data.push('M');
+			if(!!this.anchors[i].type) data.push(this.anchors[i].type);
+			data.push(this.anchors[i].coordinates.x+','+this.anchors[i].coordinates.y);
+		}
+
+		final_path.setAttributeNS(null,'d',data.join(' '));
+
+/*
+		var path_index = 0;
+		var anchor_index = 0;
+		for(; path_index<this.paths.length; path_index++){
+			var doop = new XML('circle');
+			for(var i=0; i<this.paths[path_index].anchor_count; i++){
+				var doop = new XML('circle');
+				doop.attr('cx',this.anchors[i].coordinates.x);
+				doop.attr('cy',this.anchors[i].coordinates.y);
+				doop.attr('r',3);
+				this.interface.appendChild(doop.element);
+			}
+		}
+*/
+	};
+
 	// Event functions
 	CURVEMIXER.prototype.mousemove = function(event){
 //		console.log('move',event);
@@ -95,7 +136,7 @@
 		mixer.closest_anchor_distance = 9999;
 		mixer.closest_anchor_index = 0;
 
-		console.group('distance');
+//		console.group('distance');
 		for(var i=0; i<mixer.anchors.length; i++){
 			var anchor = mixer.anchors[i];
 
@@ -104,13 +145,12 @@
 			if(new_distance < mixer.closest_anchor_distance ){
 				mixer.closest_anchor_distance = new_distance;
 				mixer.closest_anchor_index = i;
-				console.log('shorter',distance(anchor.coordinates.x, anchor.coordinates.y, event.x, event.y));
+//				console.log('shorter',distance(anchor.coordinates.x, anchor.coordinates.y, event.x, event.y));
 			}else{
-				console.log('longer');
+//				console.log('longer');
 			}
-
 		}
-		console.groupEnd();
+//		console.groupEnd();
 
 		result = ['M'];
 		result.push(event.x + ',' + event.y);
@@ -123,7 +163,6 @@
 
 	CURVEMIXER.prototype.mousedown = function(event){
 		console.log('down',event);
-//		this.RenderInterface();
 	};
 
 	CURVEMIXER.prototype.mouseup = function(event){
@@ -133,27 +172,39 @@
 		console.log(new_anchor);
 		mixer.anchors.push(new_anchor);
 		mixer.renderInterface();
+		mixer.renderPaths();
 	};
 
 	CURVEMIXER.prototype.mousewheel = function(event){
 		event.preventDefault();
-//		console.log('wheel',event);
-//		this.RenderInterface();
+		console.log('wheel',event);
 	};
 
 	CURVEMIXER.prototype.keydown = function(event){
+		event.preventDefault();
 //		console.log('key dn',event.keyCode,event);
-//		this.RenderInterface();
+		switch(event.keyCode){
+			case 90:mixer.selected_anchor_type = 'Z'; break;
+			case 76:mixer.selected_anchor_type = 'L'; break;
+			case 72:mixer.selected_anchor_type = 'H'; break;
+			case 86:mixer.selected_anchor_type = 'V'; break;
+			case 67:mixer.selected_anchor_type = 'C'; break;
+			case 83:mixer.selected_anchor_type = 'S'; break;
+			case 81:mixer.selected_anchor_type = 'Q'; break;
+			case 84:mixer.selected_anchor_type = 'T'; break;
+			case 65:mixer.selected_anchor_type = 'A'; break;
+		}
+		console.log(mixer.selected_anchor_type);
 	};
 
 	CURVEMIXER.prototype.keyup = function(event){
+		event.preventDefault();		
 //		console.log('key up',event.keyCode,event);
-//		this.RenderInterface();
 	};
 
 	CURVEMIXER.prototype.keypress = function(event){
-//		console.log('key press',event.keyCode,event);
-//		this.RenderInterface();
+		event.preventDefault();
+		console.log('key pr',event.keyCode,event);
 	};
 
 	// PATH CLASS
@@ -169,7 +220,8 @@
 	// ANCHOR CLASS
 	ANCHOR = function(type,coordinates){
 		var types = ['spiro-4','levein-4'];
-		this.type = type;
+		this.type = mixer.selected_anchor_type;
+		if(!!mixer.selected_anchor_type) mixer.selected_anchor_type = null;
 		this.coordinates = {
 			x: coordinates.x
 			,y: coordinates.y
