@@ -20,7 +20,10 @@
 <body>
 	<div class="mixablz">
 		<svg class="stage"></svg>
-		<svg class="interface"></svg>
+		<svg class="interface">
+			<path class="selection-line" />
+			<g class="anchors"></g>
+		</svg>
 	</div>
 </body>
 
@@ -30,11 +33,11 @@
 	XML = function(name){
 		var namespace = 'http://www.w3.org/2000/svg';
 		this.element = document.createElementNS(namespace,name);
-	}
+	};
 
 	XML.prototype.attr = function(name,value){
 		this.element.setAttributeNS(null,name,value);
-	}
+	};
 
 	// MASTER CLASS
 	CURVEMIXER = function(element){
@@ -43,7 +46,6 @@
 		this.interface = element.querySelector('.interface');
 		this.stage = element.querySelector('.stage');
 		this.paths = [];
-		this.anchors = [];
 		// Attach DOM Listeners
 		this.container.onmousemove = this.mousemove;
 		this.container.onmousedown = this.mousedown;
@@ -52,38 +54,38 @@
 		this.container.addEventListener("keydown", this.keydown);
 		this.container.addEventListener("keyup", this.keyup);
 		this.container.addEventListener("keypress", this.keypress);
-	}
+	};
 
 	// Render
 	CURVEMIXER.prototype.renderInterface = function() {
 		console.log('Building interface');
 
-		for(var i=0; i<this.anchors.length; i++){
+		for(var i=0; i<this.paths[0].anchors.length; i++){
 			var doop = new XML('circle');
-			doop.attr('cx',this.anchors[i].coordinates.x);
-			doop.attr('cy',this.anchors[i].coordinates.y);
+			doop.attr('cx',this.paths[0].anchors[i].coordinates.x);
+			doop.attr('cy',this.paths[0].anchors[i].coordinates.y);
 			doop.attr('r',3);
 			this.interface.appendChild(doop.element);
 		}
-	}
+	};
 
 	// Event functions
 	CURVEMIXER.prototype.mousemove = function(event){
-		//console.log('move',event);
+//		console.log('move',event);
 		//RenderInterface();
 	};
 
 	CURVEMIXER.prototype.mousedown = function(event){
-//		console.log('down',event);
+		console.log('down',event);
 //		this.RenderInterface();
 	};
 
 	CURVEMIXER.prototype.mouseup = function(event){
-//		console.log('up',event);
+		console.log('up',event);
 //		this.RenderInterface();
 		var new_anchor = new ANCHOR('M',event);
 		console.log(new_anchor);
-		mixer.anchors.push(new_anchor);
+		mixer.paths[0].anchors.push(new_anchor);
 		mixer.renderInterface();
 	};
 
@@ -116,7 +118,7 @@
 
 	PATH.prototype.addClass = function(name){
 		this.classes.push(name);
-	}
+	};
 
 	// ANCHOR CLASS
 	ANCHOR = function(type,coordinates){
@@ -126,16 +128,17 @@
 			x: coordinates.x
 			,y: coordinates.y
 		};
-	}
+	};
 
 	ANCHOR.prototype.setCoordinates = function(coordinates){
 		this.coordinates.x = coordinates.x;
 		this.coordinates.y = coordinates.y;
-	}
+	};
 
 	//////////
 
 	mixer = new CURVEMIXER(document.querySelector('.mixablz'));
+	mixer.paths.push( new PATH() );
 
 </script>
 
