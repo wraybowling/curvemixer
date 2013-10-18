@@ -5,6 +5,7 @@
 	body{
 		margin:0;
 		cursor:crosshair;
+		font-family:Helvetica Neue;
 	}
 
 	svg{
@@ -33,6 +34,11 @@
 	svg *{
 		fill:black;
 	}
+
+	.cheatsheet{
+		position:fixed;
+		padding:10px;
+	}
 </style>
 </head>
 <body>
@@ -44,6 +50,11 @@
 			<path class="selection-line" />
 			<g class="anchors"></g>
 		</svg>
+	</div>
+	<div class="cheatsheet">
+		Commands:
+		<br>[M]ove 1 ~ [L]ine 1 ~ [C]urveto 3 ~ [H]orizontal 1 ~ [V]ertical 1 ~ [S]mooth 2 ~ [A]rc 1r2s1 ~ Clo[Z]e
+		<br>[G]rab
 	</div>
 </body>
 
@@ -70,10 +81,14 @@
 		this.container = element;
 		this.interface = element.querySelector('.interface');
 		this.stage = element.querySelector('.stage');
+		this.mode = null;
 		this.paths = [];
 		this.anchors = [];
 		this.closest_anchor_index = 0;
 		this.selected_anchor_type = null;
+		this.selected_anchor_index = null;
+		this.prevX = 0;
+		this.prevY = 0;
 		// Attach DOM Listeners
 		this.container.onmousemove = this.mousemove;
 		this.container.onmousedown = this.mousedown;
@@ -81,12 +96,16 @@
 		this.container.onmousewheel = this.mousewheel;
 		window.addEventListener("keydown", this.keydown);
 		window.addEventListener("keyup", this.keyup);
-		window.addEventListener("keypress", this.keypress);
 	};
 
 	// Render
 	CURVEMIXER.prototype.renderInterface = function() {
 		console.log('Building interface');
+
+		current_circles = this.interface.querySelectorAll('circle');
+		for(var i=0; i<current_circles.length; i++){
+			current_circles[i].remove();
+		}
 
 		for(var i=0; i<this.anchors.length; i++){
 			var doop = new XML('circle');
@@ -129,6 +148,17 @@
 
 	// Event functions
 	CURVEMIXER.prototype.mousemove = function(event){
+		
+
+		// move selected anchor
+		if(mixer.mode == 'move'){
+			console.log(event);
+			mixer.anchors[mixer.selected_anchor_index].coordinates.x += event.x - mixer.prevX;
+			mixer.anchors[mixer.selected_anchor_index].coordinates.y += event.y - mixer.prevY;
+			mixer.renderInterface();
+			mixer.renderPaths();
+		}
+
 //		console.log('move',event);
 		//RenderInterface();
 
@@ -158,7 +188,10 @@
 		var d = result.join(' ');
 
 		mixer.interface.querySelector('.selection-line').setAttributeNS(null,'d',d);
-		
+
+		// set previous to current
+		mixer.prevX = event.x;
+		mixer.prevY = event.y;
 	};
 
 	CURVEMIXER.prototype.mousedown = function(event){
@@ -193,18 +226,23 @@
 			case 81:mixer.selected_anchor_type = 'Q'; break;
 			case 84:mixer.selected_anchor_type = 'T'; break;
 			case 65:mixer.selected_anchor_type = 'A'; break;
+
+			case 71:
+				mixer.mode = 'move';
+				mixer.selected_anchor_index = mixer.closest_anchor_index;
 		}
-		console.log(mixer.selected_anchor_type);
+		console.log('anchor type',mixer.selected_anchor_type);
+		console.log('mode',mixer.mode);
 	};
 
 	CURVEMIXER.prototype.keyup = function(event){
-		event.preventDefault();		
-//		console.log('key up',event.keyCode,event);
-	};
-
-	CURVEMIXER.prototype.keypress = function(event){
 		event.preventDefault();
-		console.log('key pr',event.keyCode,event);
+		switch(event.keyCode){
+			case 71:
+				mixer.mode = null;
+				mixer.selected_anchor_index = null;
+		}
+//		console.log('key up',event.keyCode,event);
 	};
 
 	// PATH CLASS
