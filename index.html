@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<style>
+	body{ margin:0; }
+
+	svg{
+		position:fixed;
+		background-color: skyblue;
+	}
+</style>
+</head>
+<body>
+	<div class="mixablz">
+		<svg class="stage"></svg>
+		<svg class="interface"></svg>
+	</div>
+</body>
+
+<script>
+	Curvemixer = function(element){
+		// Hello!
+		console.log('You made a Curvemixer!',this);
+		// storage
+		this.stage = element.querySelector('.stage');
+		this.interface = element.querySelector('.interface');
+		this.paths = [];
+		this.anchors = [];
+		// events
+		element.onmousemove = this.mousemove;
+		element.onmousedown = this.mousedown;
+		element.onmouseup = this.mouseup;
+		element.onmousewheel = this.mousewheel;
+		window.addEventListener("keydown", this.keydown);
+		window.addEventListener("keyup", this.keyup);
+		window.addEventListener("keypress", this.keypress);
+	}
+
+	Curvemixer.prototype.path = function() {
+		this.anchors = [];
+	};
+
+	Curvemixer.prototype.anchor = function(type,coordinates) {
+		var types = ['spiro-4','levein-4'];
+		this.type = type;
+		if(this.type == 'levein-4'){
+
+		}
+	};
+
+	Curvemixer.prototype.Interface = function() {
+		this.element.querySelector('#interface');
+	};
+
+	Curvemixer.prototype.mousemove = function(event){
+	//	console.log(event);
+	};
+
+	Curvemixer.prototype.mousedown = function(event){
+		console.log('down',event);
+	};
+
+	Curvemixer.prototype.mouseup = function(event){
+		console.log('up',event);
+	};
+
+	Curvemixer.prototype.mousewheel = function(event){
+		event.preventDefault();
+		console.log('wheel',event);
+	};
+
+	Curvemixer.prototype.keydown = function(event){
+		event.preventDefault();
+		console.log('key dn',event.keyCode,event);
+	};
+
+	Curvemixer.prototype.keyup = function(event){
+		console.log('key up',event.keyCode,event);
+	};
+
+	Curvemixer.prototype.keypress = function(event){
+		console.log('key press',event.keyCode,event);
+	};
+
+	//////////
+
+	mixer = new Curvemixer(document.querySelector('.mixablz'));
+
+
+</script>
+
+</html>
