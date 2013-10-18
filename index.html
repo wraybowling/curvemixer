@@ -2,7 +2,10 @@
 <html>
 <head>
 <style>
-	body{ margin:0; }
+	body{
+		margin:0;
+		cursor:crosshair;
+	}
 
 	svg{
 		position:absolute;
@@ -12,6 +15,11 @@
 		background-color: skyblue;
 	}
 
+	.interface .selection-line{
+		stroke-width:2px;
+		stroke:red;
+	}
+
 	svg *{
 		fill:black;
 	}
@@ -19,7 +27,9 @@
 </head>
 <body>
 	<div class="mixablz">
-		<svg class="stage"></svg>
+		<svg class="stage">
+			<path class="final_stage" />
+		</svg>
 		<svg class="interface">
 			<path class="selection-line" />
 			<g class="anchors"></g>
@@ -28,6 +38,11 @@
 </body>
 
 <script>
+
+	// GLOBALS
+	function distance(Xa,Ya,Xb,Yb){
+		return Math.sqrt(Math.pow((Xb - Xa),2) + Math.pow((Yb - Ya),2));
+	}
 
 	// XML CLASS
 	XML = function(name){
@@ -46,6 +61,8 @@
 		this.interface = element.querySelector('.interface');
 		this.stage = element.querySelector('.stage');
 		this.paths = [];
+		this.anchors = [];
+		this.closest_anchor_index = 0;
 		// Attach DOM Listeners
 		this.container.onmousemove = this.mousemove;
 		this.container.onmousedown = this.mousedown;
@@ -60,10 +77,10 @@
 	CURVEMIXER.prototype.renderInterface = function() {
 		console.log('Building interface');
 
-		for(var i=0; i<this.paths[0].anchors.length; i++){
+		for(var i=0; i<this.anchors.length; i++){
 			var doop = new XML('circle');
-			doop.attr('cx',this.paths[0].anchors[i].coordinates.x);
-			doop.attr('cy',this.paths[0].anchors[i].coordinates.y);
+			doop.attr('cx',this.anchors[i].coordinates.x);
+			doop.attr('cy',this.anchors[i].coordinates.y);
 			doop.attr('r',3);
 			this.interface.appendChild(doop.element);
 		}
@@ -73,6 +90,35 @@
 	CURVEMIXER.prototype.mousemove = function(event){
 //		console.log('move',event);
 		//RenderInterface();
+
+		// determine closest anchor
+		mixer.closest_anchor_distance = 9999;
+		mixer.closest_anchor_index = 0;
+
+		console.group('distance');
+		for(var i=0; i<mixer.anchors.length; i++){
+			var anchor = mixer.anchors[i];
+
+			var new_distance = distance(anchor.coordinates.x, anchor.coordinates.y, event.x, event.y);
+
+			if(new_distance < mixer.closest_anchor_distance ){
+				mixer.closest_anchor_distance = new_distance;
+				mixer.closest_anchor_index = i;
+				console.log('shorter',distance(anchor.coordinates.x, anchor.coordinates.y, event.x, event.y));
+			}else{
+				console.log('longer');
+			}
+
+		}
+		console.groupEnd();
+
+		result = ['M'];
+		result.push(event.x + ',' + event.y);
+		result.push('L' + mixer.anchors[mixer.closest_anchor_index].coordinates.x + ',' + mixer.anchors[mixer.closest_anchor_index].coordinates.y);
+		var d = result.join(' ');
+
+		mixer.interface.querySelector('.selection-line').setAttributeNS(null,'d',d);
+		
 	};
 
 	CURVEMIXER.prototype.mousedown = function(event){
@@ -85,7 +131,7 @@
 //		this.RenderInterface();
 		var new_anchor = new ANCHOR('M',event);
 		console.log(new_anchor);
-		mixer.paths[0].anchors.push(new_anchor);
+		mixer.anchors.push(new_anchor);
 		mixer.renderInterface();
 	};
 
@@ -112,8 +158,8 @@
 
 	// PATH CLASS
 	PATH = function(){
+		this.anchor_count = 0;
 		this.classes = [];
-		this.anchors = [];
 	};
 
 	PATH.prototype.addClass = function(name){
