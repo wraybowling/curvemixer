@@ -5,55 +5,60 @@
 	body{ margin:0; }
 
 	svg{
-		position:fixed;
+		position:absolute;
 		background-color: skyblue;
+	}
+
+	svg *{
+		fill:black;
 	}
 </style>
 </head>
 <body>
 	<div class="mixablz">
 		<svg class="stage"></svg>
-		<svg class="interface"></svg>
+		<svg class="interface" xmlns="http://www.w3.org/2000/svg">
+		</svg>
 	</div>
 </body>
 
 <script>
+
+	// XML CLASS
+	XML = function(name){
+		var namespace = 'http://www.w3.org/2000/svg';
+		return document.createElementNS(namespace,name);
+	}
+
+	XML.prototype.attr = function(name,value){
+		this.setAttributeNS(null,name,value);
+	}
+
+	// MASTER CLASS
 	Curvemixer = function(element){
 		// Hello!
 		console.log('You made a Curvemixer!',this);
+
 		// storage
-		this.stage = element.querySelector('.stage');
+		this.container = element;
 		this.interface = element.querySelector('.interface');
+		this.stage = element.querySelector('.stage');
 		this.paths = [];
 		this.anchors = [];
 		// events
-		element.onmousemove = this.mousemove;
-		element.onmousedown = this.mousedown;
-		element.onmouseup = this.mouseup;
-		element.onmousewheel = this.mousewheel;
-		window.addEventListener("keydown", this.keydown);
-		window.addEventListener("keyup", this.keyup);
-		window.addEventListener("keypress", this.keypress);
+		this.container.onmousemove = this.mousemove;
+		this.container.onmousedown = this.mousedown;
+		this.container.onmouseup = this.mouseup;
+		this.container.onmousewheel = this.mousewheel;
+		this.container.addEventListener("keydown", this.keydown);
+		this.container.addEventListener("keyup", this.keyup);
+		this.container.addEventListener("keypress", this.keypress);
 	}
 
-	Curvemixer.prototype.path = function() {
-		this.anchors = [];
-	};
-
-	Curvemixer.prototype.anchor = function(type,coordinates) {
-		var types = ['spiro-4','levein-4'];
-		this.type = type;
-		if(this.type == 'levein-4'){
-
-		}
-	};
-
-	Curvemixer.prototype.Interface = function() {
-		this.element.querySelector('#interface');
-	};
-
+	// Event functions
 	Curvemixer.prototype.mousemove = function(event){
 	//	console.log(event);
+		console.log(this.interface);
 	};
 
 	Curvemixer.prototype.mousedown = function(event){
@@ -82,10 +87,55 @@
 		console.log('key press',event.keyCode,event);
 	};
 
+	// PATH CLASS
+	PATH = function(){
+		this.anchors = [];
+	}
+
+	PATH.
+
+	Curvemixer.prototype.path = function() {
+		this.anchors = [];
+	};
+
+	Curvemixer.prototype.anchor = function(type,coordinates) {
+		var types = ['spiro-4','levein-4'];
+		this.type = type;
+		if(this.type == 'levein-4'){
+
+		}
+	};
+
+	//Interface
+	Curvemixer.prototype.Interface = function() {
+		console.log('building interface');
+		var container = this.container.querySelector('.interface');
+		var points = [];
+		for(var i=0; i<100; i++){
+			points.push({
+				type: ''
+				,x: Math.random()*100
+				,y: Math.random()*100
+			});
+		}
+		return this;
+	};
+
+	Curvemixer.prototype.Interface.prototype.render = function(){
+		console.log('rendering interface');
+		for(var i=0; i<100; i++){
+			var doop = xml.el('circle');
+			doop.setAttribute('cx',points[i].x+'%');
+			doop.setAttributeNS(null,'cy',points[i].y+'%');
+			doop.setAttributeNS(null,'r',2);
+			container.appendChild(doop);
+		}
+	}
+
+
 	//////////
 
 	mixer = new Curvemixer(document.querySelector('.mixablz'));
-
 
 </script>
 
