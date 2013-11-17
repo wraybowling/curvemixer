@@ -106,7 +106,7 @@ for n = 1:Npoints
     else
       z{n} = offset+pp{1};
     end
-
+%bookmark
     if veclen >= 2 && isnumeric(pp{2}) % lazy evaluation is my friend
       switch numel(pp{2})
         case 1
