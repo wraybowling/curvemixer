@@ -1,0 +1,52 @@
+<html>
+<head>
+<script type="text/javascript" src="spiro.js"></script>
+<script type="text/javascript">
+function draw_segs(ctx, segs) {
+    ctx.moveTo(segs[0].left.xy[0], segs[0].left.xy[1]);
+    for (var i = 0; i < segs.length; i++) {
+        var seg = segs[i];
+        var ths = seg.get_ths();
+        var ks = fit_euler(ths[0], ths[1]).ks;
+	ks.push(0); ks.push(0);
+        seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
+    }
+}
+function draw_nodes(ctx, nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        ctx.beginPath();
+        ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
+        ctx.fill();
+    }
+}
+function print(s) {
+}
+function paint() {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    hook_events(canvas);
+    spline = setup_solver(xp);
+    ctx.beginPath();
+    draw_segs(ctx, spline.segs);
+    ctx.stroke();
+    while (refine_euler(spline) > 1e-6);
+    ctx.strokeStyle = "rgb(128, 0, 0)";
+    ctx.beginPath();
+    draw_segs(ctx, spline.segs);
+    ctx.stroke();
+    draw_nodes(ctx, spline.nodes);
+}
+function init() {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    spiroui = new SpiroUi(canvas);
+    spiroui.paint();
+}
+</script>
+</head>
+<body onload="init()">
+  <canvas id="canvas" width="600" height="500"></canvas>
+<p id="msg">Message</p>
+</body>
+</html>

@@ -101,12 +101,14 @@ for n = 1:Npoints
 
     veclen = numel(pp);
 
+    %if line is only two points
     if numel(pp{1}) == 2
       z{n} = offset+[pp{1} 0];
     else
       z{n} = offset+pp{1};
     end
-%bookmark
+
+    %bookmark
     if veclen >= 2 && isnumeric(pp{2}) % lazy evaluation is my friend
       switch numel(pp{2})
         case 1
