@@ -334,6 +334,8 @@ function integ_spiro(k0, k1, k2, k3) {
 	return result;
 }
 
+var alternating_stroke = true;
+
 function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
 	console.group('seg_to_bez');
 	console.log('ks',ks);
@@ -361,6 +363,13 @@ function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
 			var vl = scale3 * Math.sin(th_even - th_odd);
 			var ur = scale3 * Math.cos(th_even + th_odd);
 			var vr = scale3 * Math.sin(th_even + th_odd);
+			//BOOKMARK
+			if(alternating_stroke){
+				ctx.strokeStyle = "rgb(0, 255, 255)";
+			}else{
+				ctx.strokeStyle = "rgb(210, 0, 121)";
+			}
+			alternating_stroke = !alternating_stroke;
 			ctx.bezierCurveTo(x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
 		} else {
 			console.log('bend > 1 (subdivide)');
