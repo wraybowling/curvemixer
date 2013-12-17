@@ -2,7 +2,7 @@
 <head>
 <script type="text/javascript" src="spiro.js"></script>
 <script type="text/javascript">
-function draw_segs(ctx, segs) {
+/*function draw_segs(ctx, segs) {
     ctx.moveTo(segs[0].left.xy[0], segs[0].left.xy[1]);
     for (var i = 0; i < segs.length; i++) {
         var seg = segs[i];
@@ -19,8 +19,8 @@ function draw_nodes(ctx, nodes) {
         ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
         ctx.fill();
     }
-}
-function print(s) {
+}*/
+/*function print(s) {
 }
 function paint() {
     var canvas = document.getElementById("canvas");
@@ -36,7 +36,7 @@ function paint() {
     draw_segs(ctx, spline.segs);
     ctx.stroke();
     draw_nodes(ctx, spline.nodes);
-}
+}*/
 function init() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");

@@ -335,9 +335,11 @@ function integ_spiro(k0, k1, k2, k3) {
 }
 
 function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
-	console.group('seg_to_bez',ctx, ks, x0, y0, x1, y1);
+	console.group('seg_to_bez');
+	console.log('ks',ks);
+	console.log('coordinates', x0, y0, x1, y1);
 	var bend = Math.abs(ks[0]) + Math.abs(.5 * ks[1]) + Math.abs(.125 * ks[2]) + Math.abs((1./48) * ks[3]);
-
+	console.log('bend',bend);
 	if (bend < 1e-8) {
 		console.log('bend < 0.00000001');
 		ctx.lineTo(x1, y1);
@@ -413,32 +415,42 @@ function fit_euler(th0, th1) {
 }
 
 function fit_euler_ks(th0, th1, chord) {
+	console.group('fit euler ks', th0, th1, chord);
 	var p = fit_euler(th0, th1);
 	var sc = p.chord / chord;
 	p.k0 = (p.ks[0] - .5 * p.ks[1]) * sc;
 	p.k1 = (p.ks[0] + .5 * p.ks[1]) * sc;
+	console.groupEnd();
 	return p;
 }
 
 function get_ths_straight() {
+	console.log('get ths straight');
 	return [0, 0];
 }
 
 function get_ths_left() {
+	console.log('get ths left');
 	return [this.init_th1 + this.right.dth, this.init_th1 + this.right.dth];
 }
 
 function get_ths_right() {
+	console.log('get ths right');
 	return [this.init_th0 - this.left.dth, this.init_th0 - this.left.dth];
 }
 
 function get_ths_g2() {
+	console.log('get ths g2');
 	return [this.init_th0 - this.left.dth, this.init_th1 + this.right.dth];
 }
 
 function Spline(segs, nodes) {
+	console.group('Spline');
+	console.log('segments', segs);
+	console.log('nodes', nodes);
 	this.segs = segs;
 	this.nodes = nodes;
+	console.groupEnd();
 }
 
 Spline.prototype.show_in_shell = function () {
@@ -447,6 +459,7 @@ Spline.prototype.show_in_shell = function () {
 }
 
 function setup_solver(path) {
+	console.group('set up solver');
 	var segs = new Array;
 	var nodes = new Array;
 
@@ -483,28 +496,32 @@ function setup_solver(path) {
 	}
 	for (var i = 0; i < segs.length; i++) {
 		var seg = segs[i];
-	if (seg.init_th0 == undefined) {
-		if (seg.init_th1 == undefined) {
-		seg.init_th0 = 0;
-		seg.init_th1 = 0;
-		seg.get_ths = get_ths_straight;
+		if (seg.init_th0 == undefined) {
+			if (seg.init_th1 == undefined) {
+			seg.init_th0 = 0;
+			seg.init_th1 = 0;
+			seg.get_ths = get_ths_straight;
+			} else {
+			seg.init_th0 = seg.init_th1;
+			seg.get_ths = get_ths_left;
+			}
 		} else {
-		seg.init_th0 = seg.init_th1;
-		seg.get_ths = get_ths_left;
-		}
-	} else {
-		if (seg.init_th1 == undefined) {
-		seg.init_th1 = seg.init_th0;
-		seg.get_ths = get_ths_right;
-		} else {
-		seg.get_ths = get_ths_g2;
+			if (seg.init_th1 == undefined) {
+			seg.init_th1 = seg.init_th0;
+			seg.get_ths = get_ths_right;
+			} else {
+			seg.get_ths = get_ths_g2;
+			}
 		}
 	}
-	}
-	return new Spline(segs, nodes);
+	var result = new Spline(segs, nodes)
+	console.trace();
+	console.groupEnd();
+	return result;
 }
 
 function get_jacobian_g2(node) {
+	console.group('get jacobian g2');
 	var save_dth = node.dth;
 	var delta = 1e-6;
 	node.dth += delta;
@@ -517,12 +534,18 @@ function get_jacobian_g2(node) {
 
 	node.dth = save_dth;
 
-	return [(lparms.k0 - node.left.params.k0) / delta,
+	var result = [(lparms.k0 - node.left.params.k0) / delta,
 		(rparms.k0 - node.right.params.k0 - lparms.k1 + node.left.params.k1) / delta,
 		(-rparms.k1 + node.right.params.k1) / delta];
+	console.log('result',result);
+	console.groupEnd();
+	return result;
 }
 
 function refine_euler(spline, step) {
+	console.group('refine euler');
+	console.log('spline',spline);
+	console.log('step',step);
 	var maxerr = 0;
 	var segs = spline.segs;
 	var nodes = spline.nodes;
@@ -535,32 +558,36 @@ function refine_euler(spline, step) {
 	var mat = [];
 	j = 0;
 	for (var i = 0; i < nodes.length; i++) {
-	var node = nodes[i];
-	if (node.left && node.right) {
-		var kerr = node.right.params.k0 - node.left.params.k1;
-		dks[j] = kerr;
-		if (Math.abs(kerr) > maxerr) maxerr = Math.abs(kerr);
-		mat[j] = {a: get_jacobian_g2(node)};
-		j++;
-	}
+		var node = nodes[i];
+		if (node.left && node.right) {
+			var kerr = node.right.params.k0 - node.left.params.k1;
+			dks[j] = kerr;
+			if (Math.abs(kerr) > maxerr) maxerr = Math.abs(kerr);
+			mat[j] = {a: get_jacobian_g2(node)};
+			j++;
+		}
 	}
 	if (mat.length == 0) return 0;
-	bandec(mat, mat.length, 1);
-	banbks(mat, dks, mat.length, 1);
-	j = 0;
-	for (i = 0; i < nodes.length; i++) {
-	var node = nodes[i];
-	if (node.left && node.right) {
-		node.dth -= step * dks[j];
-		j++;
+		bandec(mat, mat.length, 1);
+		banbks(mat, dks, mat.length, 1);
+		j = 0;
+		for (i = 0; i < nodes.length; i++) {
+		var node = nodes[i];
+		if (node.left && node.right) {
+			node.dth -= step * dks[j];
+			j++;
+		}
 	}
-	}
+	console.log(maxerr);
+	console.groupEnd();
 	return maxerr;
 }
 
 // some test framework to be deleted from production code
 
 function eval_error(k0, k1, k2, k3) {
+	console.group('eval error');
+	console.log('k0, k1, k2, k3',k0, k1, k2, k3);
 	if (k1 == undefined) k1 = 0;
 	if (k2 == undefined) k2 = 0;
 	if (k3 == undefined) k3 = 0;
@@ -578,18 +605,19 @@ function eval_error(k0, k1, k2, k3) {
 	est_err = Math.pow(.08 * Math.abs(k0) + .2 * Math.sqrt(Math.abs(k1)) + .2 * Math.pow(Math.abs(k2), .333333) + .16 * Math.pow(Math.abs(k3), .25), 12);
 	est_err = Math.pow(.006 * k0 * k0 + .03 * Math.abs(k1) + .03 * Math.pow(Math.abs(k2), .666667) + .025 * Math.pow(Math.abs(k3), .5), 6);
 	est_err *= Math.pow(i, -12);
-	print(String(i) + ': ' + String(err) + ', est ' + String(est_err));
+	console.log(String(i) + ': ' + String(err) + ', est ' + String(est_err));
 	}
-	print('err[1] / err[2] = ' + String(errs[1] / errs[2]) +
+	console.log('err[1] / err[2] = ' + String(errs[1] / errs[2]) +
 	  ', err[2] / err[4] = ' + String(errs[2] / errs[4]));
 
 	var my_xy = integ_spiro(k0, k1, k2, k3);
 	err = Math.sqrt((my_xy[0] - xy[0]) * (my_xy[0] - xy[0]) + (my_xy[1] - xy[1]) * (my_xy[1] - xy[1]));
-	print('adapt err = ' + String(err));
+	console.log('adapt err = ' + String(err));
 
 	var my_xy = integ_euler_10(k0, k1);
 	err = Math.sqrt((my_xy[0] - xy[0]) * (my_xy[0] - xy[0]) + (my_xy[1] - xy[1]) * (my_xy[1] - xy[1]));
-	print('euler_10 err = ' + String(err));
+	console.log('euler_10 err = ' + String(err));
+	console.groupEnd();
 }
 
 function test_random_euler(n) {
@@ -652,48 +680,49 @@ function SpiroUi(canvas) {
 }
 
 SpiroUi.prototype.paint = function() {
-	if(DEBUG) debugger;
+	console.group('paint');
 	var ctx = this.canvas.getContext("2d");
 	ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	step = 1;
 	msg = null;
 	for (var outer = 0; outer < 3; outer++) {
-	var spline = setup_solver(this.path);
-	if (outer == 2) break;
-	try {
-		for (var j = 0; j < 30; j++)
-		if (refine_euler(spline, step) < 1e-6) break;
-		if (j < 30) break;
-	} catch (e) {
-		myalert(msg);
-	}
-	step *= .5;
-	}
-	var nodes = spline.nodes;
-	for (var i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
+		var spline = setup_solver(this.path);
+		if (outer == 2) break;
+		try {
+			for (var j = 0; j < 30; j++)
+			if (refine_euler(spline, step) < 1e-6) break;
+			if (j < 30) break;
+		} catch (e) {
+			console.error(msg);
+		}
+			step *= .5;
+		}
+		var nodes = spline.nodes;
+		for (var i = 0; i < nodes.length; i++) {
+			var node = nodes[i];
+			ctx.beginPath();
+			ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
+			ctx.fill();
+		}
+		if (nodes.length) {
+			switch (outer) {
+			case 0: ctx.strokeStyle = "rgb(0, 0, 0)"; break;
+			case 1: ctx.strokeStyle = "rgb(64, 0, 0)"; break;
+			case 2: ctx.strokeStyle = "rgb(255, 0, 0)"; break;
+		}
 		ctx.beginPath();
-		ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
-		ctx.fill();
+		ctx.moveTo(nodes[0].xy[0], nodes[0].xy[1]);
+		var segs = spline.segs;
+		for (var i = 0; i < segs.length; i++) {
+			var seg = segs[i];
+			var ths = seg.get_ths();
+			var ks = fit_euler(ths[0], ths[1]).ks;
+			ks[2] = 0; ks[3] = 0;
+			seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
+		}
+		ctx.stroke();
 	}
-	if (nodes.length) {
-	switch (outer) {
-	case 0: ctx.strokeStyle = "rgb(0, 0, 0)"; break;
-	case 1: ctx.strokeStyle = "rgb(64, 0, 0)"; break;
-	case 2: ctx.strokeStyle = "rgb(255, 0, 0)"; break;
-	}
-	ctx.beginPath();
-	ctx.moveTo(nodes[0].xy[0], nodes[0].xy[1]);
-	var segs = spline.segs;
-	for (var i = 0; i < segs.length; i++) {
-		var seg = segs[i];
-		var ths = seg.get_ths();
-		var ks = fit_euler(ths[0], ths[1]).ks;
-		ks[2] = 0; ks[3] = 0;
-		seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
-	}
-	ctx.stroke();
-	}
+	console.groupEnd();
 }
 
 SpiroUi.prototype.queue_repaint = function () {
@@ -708,7 +737,6 @@ SpiroUi.prototype.queue_repaint = function () {
 
 
 SpiroUi.prototype.down = function(evt) {
-	
 	var canvas = this.canvas;
 	var x = evt.offsetX != undefined ? evt.offsetX : evt.pageX - canvas.offsetLeft;
 	var y = evt.offsetY != undefined ? evt.offsetY : evt.pageY - canvas.offsetTop;
@@ -747,6 +775,8 @@ SpiroUi.prototype.up = function(evt) {
 	evt.preventDefault();
 }
 
+/*
 function myalert(s) {
 	document.getElementById('msg').firstChild.nodeValue = s;
 }
+*/
