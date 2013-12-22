@@ -363,7 +363,18 @@ function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
 			var vl = scale3 * Math.sin(th_even - th_odd);
 			var ur = scale3 * Math.cos(th_even + th_odd);
 			var vr = scale3 * Math.sin(th_even + th_odd);
+			ctx.beginPath();
+			ctx.moveTo(x0, y0);
+			//BOOKMARK
+			//ctx.beginPath(); // wray's : force line to draw as segments
+			if(alternating_stroke){
+				ctx.strokeStyle = "rgb(0, 255, 255)";
+			}else{
+				ctx.strokeStyle = "rgb(210, 0, 121)";
+			}
+			alternating_stroke = !alternating_stroke;
 			ctx.bezierCurveTo(x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
+			ctx.stroke();
 		} else {
 			console.log('bend > 1 (subdivide)');
 			/* subdivide */
@@ -391,7 +402,6 @@ function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
 
 function fit_euler(th0, th1) {
 	console.group('fit euler');
-	//bookmark
 	var k1_old = 0;
 	var error_old = th1 - th0;
 	var k0 = th0 + th1;
@@ -716,6 +726,8 @@ SpiroUi.prototype.paint = function() {
 		//wray removed
 		//ctx.beginPath();
 		//ctx.moveTo(nodes[0].xy[0], nodes[0].xy[1]);
+		alternating_stroke = false;
+		ctx.lineWidth = 3;
 		var segs = spline.segs;
 		for (var i = 0; i < segs.length; i++) {
 			var seg = segs[i];
@@ -723,7 +735,7 @@ SpiroUi.prototype.paint = function() {
 			var ks = fit_euler(ths[0], ths[1]).ks;
 			ks[2] = 0; ks[3] = 0;
 			//wray added
-			ctx.beginPath();
+			/*ctx.beginPath();
 			ctx.moveTo(nodes[i].xy[0], nodes[i].xy[1]);
 			//BOOKMARK
 			//ctx.beginPath(); // wray's : force line to draw as segments
@@ -732,12 +744,12 @@ SpiroUi.prototype.paint = function() {
 			}else{
 				ctx.strokeStyle = "rgb(210, 0, 121)";
 			}
-			alternating_stroke = !alternating_stroke;
+			alternating_stroke = !alternating_stroke;*/
 			seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
-			ctx.stroke();
-			ctx.closePath();
+			//ctx.stroke();
+		//	ctx.closePath();
 		}
-		ctx.stroke();
+		//ctx.stroke();
 	}
 	console.groupEnd();
 }
