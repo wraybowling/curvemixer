@@ -1,2 +1,31 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script src="catmull-rom.js"></script>
+	<style type="text/css">
+	path{
+		fill:none;
+		stroke:black;
+		strokeWidth:3px;
+	}
+	</style>
+</head>
 
-<script src="catmull-rom.js"></script>
+<body>
+
+	<svg>
+		<path id="blah" d="M 0 0 100 100" />
+	</svg>
+
+	<script type="text/javascript">
+	var q = catmullRom2bezier([0,0,100,100,200,100]);
+
+	console.log(q);
+
+	var q_el = document.getElementById('blah');
+
+	q_el.setAttributeNS(null,'d',"M 0 0 " + q.join(' '));
+	</script>
+</body>
+</html>
