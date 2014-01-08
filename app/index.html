@@ -95,6 +95,7 @@
 		this.mode = null;
 		this.paths = [];
 		this.anchors = [];
+		this.closed = false;
 		this.closest_anchor_index = 0;
 		this.selected_anchor_type = null;
 		this.selected_anchor_index = null;
@@ -112,13 +113,14 @@
 	// Render
 	CURVEMIXER.prototype.renderInterface = function() {
 		console.log('Building interface');
+		var i;
 
 		current_circles = this.interface.querySelectorAll('circle');
-		for(var i=0; i<current_circles.length; i++){
+		for(i=0; i<current_circles.length; i++){
 			current_circles[i].remove();
 		}
 
-		for(var i=0; i<this.anchors.length; i++){
+		for(i=0; i<this.anchors.length; i++){
 			var doop = new XML('circle');
 			doop.attr('cx',this.anchors[i].coordinates.x);
 			doop.attr('cy',this.anchors[i].coordinates.y);
@@ -129,14 +131,27 @@
 
 	CURVEMIXER.prototype.renderPaths = function() {
 		console.log('Building paths');
+		var i;
 
 		var final_path = this.stage.querySelector('.final_stage');
 
 		data = [];
-		for(var i=0; i<this.anchors.length; i++){
-			if(i==0) data.push('M');
+		for(i=0; i<this.anchors.length; i++){
+			if(i===0) this.anchors[i].type = 'M';
 			if(!!this.anchors[i].type) data.push(this.anchors[i].type);
-			data.push(this.anchors[i].coordinates.x+','+this.anchors[i].coordinates.y);
+			switch(this.anchors[i].type){
+				case 'H':
+					data.push(this.anchors[i].coordinates.x);
+					break;
+				case 'V':
+					data.push(this.anchors[i].coordinates.y);
+					break;
+				default:
+					data.push(this.anchors[i].coordinates.x+','+this.anchors[i].coordinates.y);
+			}
+		}
+		if(this.closed){
+			data.push('z');
 		}
 
 		final_path.setAttributeNS(null,'d',data.join(' '));
@@ -159,7 +174,7 @@
 
 	// Event functions
 	CURVEMIXER.prototype.mousemove = function(event){
-		
+
 
 		// move selected anchor
 		if(mixer.mode == 'move'){
@@ -228,7 +243,6 @@
 		event.preventDefault();
 //		console.log('key dn',event.keyCode,event);
 		switch(event.keyCode){
-			case 90:mixer.selected_anchor_type = 'Z'; break;
 			case 76:mixer.selected_anchor_type = 'L'; break;
 			case 72:mixer.selected_anchor_type = 'H'; break;
 			case 86:mixer.selected_anchor_type = 'V'; break;
@@ -238,7 +252,12 @@
 			case 84:mixer.selected_anchor_type = 'T'; break;
 			case 65:mixer.selected_anchor_type = 'A'; break;
 
-			case 71:
+			case 90: // Z
+				mixer.closed = !mixer.closed;
+				mixer.renderPaths();
+				break;
+
+			case 71: // G
 				mixer.mode = 'move';
 				mixer.selected_anchor_index = mixer.closest_anchor_index;
 		}
