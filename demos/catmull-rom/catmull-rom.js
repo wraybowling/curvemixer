@@ -1,31 +1,31 @@
 
-function catmullRom2bezier(crp, closed) {
+function catmullRom2bezier(coordinates, closed) {
 	"use strict";
 	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
-	// crp (array)
+	// coordinates (array)
 	// closed (Boolean) if the shape is closed or not
 	var d = [], i, iLen, p;
-	for (i = 0, iLen = crp.length; iLen - 2 * !closed > i; i += 2) {
+	for (i = 0, iLen = coordinates.length; iLen - 2 * !closed > i; i += 2) {
 		p = [
-			{x: +crp[i - 2], y: +crp[i - 1]},
-			{x: +crp[i],     y: +crp[i + 1]},
-			{x: +crp[i + 2], y: +crp[i + 3]},
-			{x: +crp[i + 4], y: +crp[i + 5]}
+			{x: +coordinates[i - 2], y: +coordinates[i - 1]},
+			{x: +coordinates[i],     y: +coordinates[i + 1]},
+			{x: +coordinates[i + 2], y: +coordinates[i + 3]},
+			{x: +coordinates[i + 4], y: +coordinates[i + 5]}
 		];
 		if (closed) {
 			if (!i) {
-				p[0] = {x: +crp[iLen - 2], y: +crp[iLen - 1]};
+				p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
 			} else if (iLen - 4 === i) {
-				p[3] = {x: +crp[0], y: +crp[1]};
+				p[3] = {x: +coordinates[0], y: +coordinates[1]};
 			} else if (iLen - 2 === i) {
-				p[2] = {x: +crp[0], y: +crp[1]};
-				p[3] = {x: +crp[2], y: +crp[3]};
+				p[2] = {x: +coordinates[0], y: +coordinates[1]};
+				p[3] = {x: +coordinates[2], y: +coordinates[3]};
 			}
 		} else {
 			if (iLen - 4 === i) {
 				p[3] = p[2];
 			} else if (!i) {
-				p[0] = {x: +crp[i], y: +crp[i + 1]};
+				p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
 			}
 		}
 		d.push("C");
