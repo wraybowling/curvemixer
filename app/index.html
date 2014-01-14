@@ -1,47 +1,10 @@
 <!doctype html>
 <html>
 <head>
-<title>CurveMixer</title>
-<script src="uservoice.js"></script>
-<style>
-	body{
-		margin:0;
-		cursor:crosshair;
-		font-family:Helvetica Neue;
-	}
-
-	svg{
-		position:absolute;
-	}
-
-	.stage{
-		background-color:#cbfffb;
-	}
-
-	.interface .selection-line{
-		stroke-width:2px;
-		stroke:red;
-	}
-
-	.final_stage{
-		fill:none;
-		stroke-width:15;
-		stroke:#ff6b20;
-	}
-
-	.interface circle{
-		fill:black;
-	}
-
-	svg *{
-		fill:black;
-	}
-
-	.cheatsheet{
-		position:fixed;
-		padding:10px;
-	}
-</style>
+	<meta charset="utf-8">
+	<title>CurveMixer</title>
+	<script src="uservoice.js"></script>
+	<link rel="stylesheet" type="text/css" href="ui.css">
 </head>
 <body>
 	<div class="mixablz">
@@ -175,7 +138,6 @@
 	// Event functions
 	CURVEMIXER.prototype.mousemove = function(event){
 
-
 		// move selected anchor
 		if(mixer.mode == 'move'){
 			console.log(event);
@@ -208,6 +170,7 @@
 		}
 //		console.groupEnd();
 
+		// display line to nearest anchor
 		result = ['M'];
 		result.push(event.x + ',' + event.y);
 		result.push('L' + mixer.anchors[mixer.closest_anchor_index].coordinates.x + ',' + mixer.anchors[mixer.closest_anchor_index].coordinates.y);
@@ -275,21 +238,54 @@
 //		console.log('key up',event.keyCode,event);
 	};
 
-	// PATH CLASS
-	PATH = function(){
-		this.anchor_count = 0;
-		this.classes = [];
+
+	// Group > Object > Chain > Segment (holds type and modulus) > Point (handle or anchor. interchangeable)
+
+
+	// GROUP CLASS
+	GROUP = function(translate, scale, rotate){
+		this.selected = false;
+		this.translate = {x: translate.x, y: translate.y};
+		this.scale = {x: scale.x, y: scale.y};
+		this.rotate = rotate.x;
+	}
+
+	GROUP.prototype.translate = function(translation_delta) {
+		this.translate.x += translation_delta.x;
+		this.translate.y += translation_delta.y;
 	};
 
-	PATH.prototype.addClass = function(name){
-		this.classes.push(name);
+	// OBJECT CLASS
+	OBJECT = function(){
+		this.selected = false;
+		this.chains = [];
+		this.classList = [];
 	};
+
+	OBJECT.prototype.translateOrigin = function(translation_delta){
+		var c,p;
+		for(c=0; c<this.chains.length; c++){
+			for(p=0; p<this.chains[c].points.length; p++){
+				this.chains[c].points[p].x += translation_delta.x;
+				this.chains[c].points[p].y += translation_delta.y;
+			}
+		}
+	}
+
+	OBJECT.prototype.addClass = function(name){
+		this.classList.push(name);
+	};
+
+	// CHAIN CLASS
+	CHAIN = function(){
+		this.segments = [];
+	}
 
 	// ANCHOR CLASS
 	ANCHOR = function(type,coordinates){
-		var types = ['spiro-4','levein-4'];
+		this.selected = false;
 		this.type = mixer.selected_anchor_type;
-//		if(!!mixer.selected_anchor_type) mixer.selected_anchor_type = null;
+
 		this.coordinates = {
 			x: coordinates.x
 			,y: coordinates.y
@@ -302,47 +298,47 @@
 	};
 
 	ANCHOR.prototype.catmullRom2bezier = function(coordinates, closed) {
-	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
-	// coordinates (array)
-	// closed (Boolean) if the shape is closed or not
-	var d = [], i, iLen, p;
-	for (i = 0, iLen = coordinates.length; iLen - 2 * !closed > i; i += 2) {
-		p = [
-			{x: +coordinates[i - 2], y: +coordinates[i - 1]},
-			{x: +coordinates[i],     y: +coordinates[i + 1]},
-			{x: +coordinates[i + 2], y: +coordinates[i + 3]},
-			{x: +coordinates[i + 4], y: +coordinates[i + 5]}
-		];
-		if (closed) {
-			if (!i) {
-				p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
-			} else if (iLen - 4 === i) {
-				p[3] = {x: +coordinates[0], y: +coordinates[1]};
-			} else if (iLen - 2 === i) {
-				p[2] = {x: +coordinates[0], y: +coordinates[1]};
-				p[3] = {x: +coordinates[2], y: +coordinates[3]};
+		// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
+		// coordinates (array)
+		// closed (Boolean) if the shape is closed or not
+		var d = [], i, iLen, p;
+		for (i = 0, iLen = coordinates.length; iLen - 2 * !closed > i; i += 2) {
+			p = [
+				{x: +coordinates[i - 2], y: +coordinates[i - 1]},
+				{x: +coordinates[i],     y: +coordinates[i + 1]},
+				{x: +coordinates[i + 2], y: +coordinates[i + 3]},
+				{x: +coordinates[i + 4], y: +coordinates[i + 5]}
+			];
+			if (closed) {
+				if (!i) {
+					p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
+				} else if (iLen - 4 === i) {
+					p[3] = {x: +coordinates[0], y: +coordinates[1]};
+				} else if (iLen - 2 === i) {
+					p[2] = {x: +coordinates[0], y: +coordinates[1]};
+					p[3] = {x: +coordinates[2], y: +coordinates[3]};
+				}
+			} else {
+				if (iLen - 4 === i) {
+					p[3] = p[2];
+				} else if (!i) {
+					p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
+				}
 			}
-		} else {
-			if (iLen - 4 === i) {
-				p[3] = p[2];
-			} else if (!i) {
-				p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
-			}
+			d.push("C");
+
+			d.push((-p[0].x + 6 * p[1].x + p[2].x) / 6);
+			d.push((-p[0].y + 6 * p[1].y + p[2].y) / 6);
+
+			d.push((p[1].x + 6 * p[2].x - p[3].x) / 6);
+			d.push((p[1].y + 6 * p[2].y - p[3].y) / 6);
+
+			d.push(p[2].x);
+			d.push(p[2].y);
 		}
-		d.push("C");
 
-		d.push((-p[0].x + 6 * p[1].x + p[2].x) / 6);
-		d.push((-p[0].y + 6 * p[1].y + p[2].y) / 6);
-
-		d.push((p[1].x + 6 * p[2].x - p[3].x) / 6);
-		d.push((p[1].y + 6 * p[2].y - p[3].y) / 6);
-
-		d.push(p[2].x);
-		d.push(p[2].y);
+		return d;
 	}
-
-	return d;
-}
 
 	//////////
 
