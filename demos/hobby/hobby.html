@@ -1,0 +1,23 @@
+<style>
+	body{background-color:lightblue; margin:0;}
+	path{stroke-width:2px; stroke:black;}
+</style>
+
+<svg>
+	<path d="M 100 100 200 200"></path>
+</svg>
+
+<script src="math.js"></script>
+<script>Math = mathjs();</script>
+<script src="hobby.js"></script>
+<script>
+	hobby(
+		[
+			{x:100, y:100}
+			,{x:200,y:200}
+			,{x:100,y:300}
+		]
+		,{
+			cycle:true
+		});
+</script>

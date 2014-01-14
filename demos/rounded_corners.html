@@ -1,0 +1,79 @@
+<script src="http://lab/js/jquery.js"></script>
+<style>
+	body{ margin:0; }
+	svg{
+		background-color:#bada55;
+		height:400px;
+	}
+	svg > *{
+		stroke:black;
+		stroke-width:3;
+		fill:none;
+	}
+	input[type="range"]{
+		margin-left:100px;
+		width:200px;
+	}
+</style>
+
+<svg>
+	<path d="M 100,100
+L 300,100
+A 100,100 1 0 1 400,200
+L 300,300
+" id="mypath"></path>
+
+	<circle cx="20" cy="20" r="100"></circle>
+</svg>
+
+<input id="point_mover" max="300" min="100" type="range">
+<br>
+<input id="radius" max="400" min="0" type="range">
+
+<script>
+	Math.TAU = Math.PI*2;
+
+	var A = {x:100, y:100};
+	var B = {x:300, y:100};
+	var C = {x:300, y:300};
+
+	function distance(a,b){
+		return Math.sqrt(Math.pow((b.x-a.x),2)+Math.pow((b.y-a.y),2));
+	}
+
+	function angle(a,b,c) {
+		var ac = distance(a,c); // a->c (b)
+		var bc = distance(b,c); // b->c (a)
+		var ab = distance(a,b); // a->b (c)
+		return Math.acos((Math.pow(bc,2) + Math.pow(ab,2) - Math.pow(ac,2))/(2*bc*ab));
+	}
+
+	function round_corner(corner, theta){
+		var xTemp = corner.x;
+		corner.x = corner.x*cos(theta) - corner.y*sin(theta);
+  		corner.y = xTemp*sin(theta) + corner.y*cos(theta);
+
+		
+	}
+
+	function redraw(){
+		C.x = parseInt($('#point_mover').val());
+		r = parseInt($('#radius').val());
+
+		var pathdata = [];
+		pathdata.push('M '+A.x+','+A.y+' ');
+		pathdata.push('L '+B.x+','+B.y+' ');
+//		pathdata.push('A '+r+','+r+' 1 0 1 300,200 ');
+		pathdata.push('L '+ C.x +','+C.y+'\n');
+
+		$('#mypath').attr('d', pathdata.join('\n'));
+		console.log('angle',angle(A,B,C) / Math.PI * 180, ', radius',r);
+	}
+
+	$('#point_mover').change(function(e){
+		redraw();
+	});
+	$('#radius').change(function(e){
+		redraw();
+	});
+</script>
