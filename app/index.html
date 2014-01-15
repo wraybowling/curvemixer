@@ -243,11 +243,13 @@
 
 
 	// GROUP CLASS
+	// Collections of objects. Most macro level. groups can contain other groups.
 	GROUP = function(translate, scale, rotate){
 		this.selected = false;
 		this.translate = {x: translate.x, y: translate.y};
 		this.scale = {x: scale.x, y: scale.y};
 		this.rotate = rotate.x;
+		this.contains = [];
 	}
 
 	GROUP.prototype.translate = function(translation_delta) {
@@ -278,23 +280,42 @@
 
 	// CHAIN CLASS
 	CHAIN = function(){
+		this.subchains = [];
+	}
+
+	// SUBCHAIN CLASS
+	// contains a set of segments that share the same algorithm
+	SUBCHAIN = function(){
 		this.segments = [];
 	}
 
-	// ANCHOR CLASS
-	ANCHOR = function(type,coordinates){
+	var SEGMENT_TYPES = {
+		'Castel Curve 1' : { handles:1 },
+		'Castel Curve 2' : { handles:2, handle_types:['straight', 'free']},
+		'Vertical' : { handles:0, no_locking:true },
+		'Horizontal' : { handles:0, no_locking:true },
+		'Arc' : { handles:1 },
+		'Spiro' : { handles:0 },
+	};
+
+	// SEGMENT CLASS
+	SEGMENT = function(parameters){
+		this.algorithm = parameters.algorithm || 'Castel Curve 2';
+		this.type = parameters.type || 'S';
+		this.locked_with_previous = false;
+	}
+
+	// POINT CLASS
+	POINT = function(type,coordinates){
 		this.selected = false;
 		this.type = mixer.selected_anchor_type;
-
-		this.coordinates = {
-			x: coordinates.x
-			,y: coordinates.y
-		};
+		this.x: coordinates.x;
+		this.y: coordinates.y;
 	};
 
 	ANCHOR.prototype.setCoordinates = function(coordinates){
-		this.coordinates.x = coordinates.x;
-		this.coordinates.y = coordinates.y;
+		this.x = coordinates.x;
+		this.y = coordinates.y;
 	};
 
 	ANCHOR.prototype.catmullRom2bezier = function(coordinates, closed) {
@@ -302,7 +323,7 @@
 		// coordinates (array)
 		// closed (Boolean) if the shape is closed or not
 		var d = [], i, iLen, p;
-		for (i = 0, iLen = coordinates.length; iLen - 2 * !closed > i; i += 2) {
+		for (i = 0, iLen = coordinates.length; (iLen - 2 * !closed) > i; i += 2) {
 			p = [
 				{x: +coordinates[i - 2], y: +coordinates[i - 1]},
 				{x: +coordinates[i],     y: +coordinates[i + 1]},
