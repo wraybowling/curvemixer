@@ -229,7 +229,7 @@
 	};
 
 	CURVEMIXER.prototype.keyup = function(event){
-		event.preventDefault();
+		//event.preventDefault();
 		switch(event.keyCode){
 			case 71:
 				mixer.mode = null;
@@ -309,11 +309,11 @@
 	POINT = function(type,coordinates){
 		this.selected = false;
 		this.type = mixer.selected_anchor_type;
-		this.x: coordinates.x;
-		this.y: coordinates.y;
+		this.x = coordinates.x;
+		this.y = coordinates.y;
 	};
 
-	ANCHOR.prototype.setCoordinates = function(coordinates){
+	POINT.prototype.setCoordinates = function(coordinates){
 		this.x = coordinates.x;
 		this.y = coordinates.y;
 	};
