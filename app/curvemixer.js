@@ -1,3 +1,5 @@
+( function( window ) {
+"use strict";
 
 // GLOBALS
 function distance(Xa,Ya,Xb,Yb){
@@ -5,19 +7,19 @@ function distance(Xa,Ya,Xb,Yb){
 }
 
 // XML CLASS
-XML = function(name){
+function XML(name){
 	var namespace = 'http://www.w3.org/2000/svg';
 	this.element = document.createElementNS(namespace,name);
-};
+}
 
 XML.prototype.attr = function(name,value){
 	this.element.setAttributeNS(null,name,value);
 };
 
 // MASTER CLASS
-CURVEMIXER = function(element){
+function CURVEMIXER(element){
 	// storage
-	this.container = element;
+	this.container = typeof element === 'string' ? document.querySelector(element) : element;
 	this.interface = element.querySelector('.interface');
 	this.stage = element.querySelector('.stage');
 	this.mode = null;
@@ -45,7 +47,7 @@ CURVEMIXER = function(element){
 	this.container.onmousewheel = this.mousewheel;
 	window.addEventListener("keydown", this.keydown);
 	window.addEventListener("keyup", this.keyup);
-};
+}
 
 // Render
 CURVEMIXER.prototype.renderInterface = function() {
@@ -223,7 +225,7 @@ CURVEMIXER.prototype.keyup = function(event){
 //		,scale : xy
 //		,rotate : r
 //	}
-GROUP = function(properties){
+function GROUP(properties){
 	this.selected = false;
 	this.translate = {x: properties.translate.x, y: properties.translate.y};
 	this.scale = {x: properties.scale.x, y: properties.scale.y};
@@ -237,7 +239,7 @@ GROUP.prototype.translate = function(translation_delta) {
 };
 
 // OBJECT CLASS
-OBJECT = function(){
+function OBJECT(){
 	this.selected = false;
 	this.chains = [];
 	this.classList = [];
@@ -258,13 +260,7 @@ OBJECT.prototype.addClass = function(name){
 };
 
 // CHAIN CLASS
-CHAIN = function(){
-	this.subchains = [];
-};
-
-// SUBCHAIN CLASS
-// contains a set of segments that share the same algorithm
-SUBCHAIN = function(){
+function CHAIN(){
 	this.segments = [];
 };
 
@@ -278,14 +274,14 @@ var SEGMENT_TYPES = {
 };
 
 // SEGMENT CLASS
-SEGMENT = function(parameters){
+function SEGMENT(parameters){
 	this.algorithm = parameters.algorithm || 'Castel Curve 2';
 	this.type = parameters.type || 'S';
 	this.locked_with_previous = false;
 };
 
 // POINT CLASS
-POINT = function(type,coordinates){
+function POINT(x,y){
 	this.selected = false;
 	this.type = mixer.selected_anchor_type;
 	this.x = coordinates.x;
@@ -354,4 +350,6 @@ var g = GROUP({translate: {x:100, y:100}, rotation:0, scale:1});
 mixer.groups.push( g );
 mixer.groups[0].push(  );
 
-//mixer.paths.push( new PATH() );
+// mixer.paths.push( new PATH() );
+
+})( window );

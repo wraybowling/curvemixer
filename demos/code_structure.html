@@ -1,0 +1,60 @@
+<script>
+
+( function( window ) {
+"use strict";
+
+function CLASS(args){ this.init(args); }
+CLASS.prototype = {
+	x: 0
+	,init: function(args){
+		args = args || {};
+		this.x = args.x !== undefined ? args.x : this.x;
+		return this;
+	}
+};
+
+window.CLASS = new CLASS();
+
+})( window );
+
+
+
+( function( window ) {
+"use strict";
+
+var TWO = function(){};
+TWO.prototype = {
+	a: 123
+	,b: 456
+	,sum: function(){
+		return this.a + this.b;
+	}
+};
+TWO.constructor = function(args){
+	this.a = args.a !== undefined ? args.a : this.a;
+	this.b = args.b !== undefined ? args.b : this.b;
+	return this;
+}
+
+window.TWO = new TWO();
+
+})( window );
+
+
+</script>
+
+<!-- how to use it -->
+
+<pre>
+
+CLASS.x // undefined
+CLASS.q // undefined
+
+CLASS = CLASS.init();
+CLASS.x // undefined
+
+CLASS = CLASS.init({y:456});
+CLASS.x // undefined
+CLASS.y // 456
+
+</pre>
