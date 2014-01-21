@@ -2,46 +2,8 @@
 <html>
 <head>
 <title>CurveMixer</title>
-<script src="uservoice.js"></script>
-<style>
-	body{
-		margin:0;
-		cursor:crosshair;
-		font-family:Helvetica Neue;
-	}
-
-	svg{
-		position:absolute;
-	}
-
-	.stage{
-		background-color:#cbfffb;
-	}
-
-	.interface .selection-line{
-		stroke-width:2px;
-		stroke:red;
-	}
-
-	.final_stage{
-		fill:none;
-		stroke-width:15;
-		stroke:#ff6b20;
-	}
-
-	.interface circle{
-		fill:black;
-	}
-
-	svg *{
-		fill:black;
-	}
-
-	.cheatsheet{
-		position:fixed;
-		padding:10px;
-	}
-</style>
+<script type="text/javascript" src="uservoice.js"></script>
+<link rel="stylesheet" type="text/css" href="ui.css">
 </head>
 <body>
 	<div class="mixablz">
@@ -303,6 +265,7 @@
 
 	ANCHOR.prototype.catmullRom2bezier = function(coordinates, closed) {
 	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
+	// inputs: 
 	// coordinates (array)
 	// closed (Boolean) if the shape is closed or not
 	var d = [], i, iLen, p;
