@@ -1,3 +1,7 @@
+// Curvemixer
+// Group > Object > Chain > Segment (holds type and modulus) > Point (handle or anchor. interchangeable)
+
+
 ( function( window ) {
 "use strict";
 
@@ -6,7 +10,102 @@ function distance(Xa,Ya,Xb,Yb){
 	return Math.sqrt(Math.pow((Xb - Xa),2) + Math.pow((Yb - Ya),2));
 }
 
-// XML CLASS
+
+////
+
+
+function POINT(ex,wai){
+	this.x = ex;
+	this.y = wai;
+//	this.selected = false;
+}
+
+POINT.prototype.setCoordinates = function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+window.POINT = POINT;
+var p = new POINT(100,100);
+console.log('test point', p);
+
+
+////
+
+
+function SEGMENT(coordinates,algorithm,options){
+	this.anchor = POINT(coordinates); // end point
+	this.algorithm = algorithm; // spiro, casteljau, linear, et cetera
+
+	this.theta = args.theta;
+	this.locked = options.locked;
+
+	this.handles = args.handles; // array of POINTs
+
+	this.chain = args.chain; // parent chain
+	this.prev = args.prev; // prev anchor
+	this.next = args.next; // next anchor
+}
+
+/*
+
+////
+
+function CHAIN(){
+	this.
+}
+
+CHAIN.prototype.catmullRom2bezier = function(closed) {
+	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
+	// coordinates (array)
+	// closed (Boolean) if the shape is closed or not
+	var d = [], i, iLen, p;
+	for (i = 0, iLen = coordinates.length; (iLen - 2 * !closed) > i; i += 2) {
+		p = [
+			{x: +coordinates[i - 2], y: +coordinates[i - 1]},
+			{x: +coordinates[i],     y: +coordinates[i + 1]},
+			{x: +coordinates[i + 2], y: +coordinates[i + 3]},
+			{x: +coordinates[i + 4], y: +coordinates[i + 5]}
+		];
+		if (closed) {
+			if (!i) {
+				p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
+			} else if (iLen - 4 === i) {
+				p[3] = {x: +coordinates[0], y: +coordinates[1]};
+			} else if (iLen - 2 === i) {
+				p[2] = {x: +coordinates[0], y: +coordinates[1]};
+				p[3] = {x: +coordinates[2], y: +coordinates[3]};
+			}
+		} else {
+			if (iLen - 4 === i) {
+				p[3] = p[2];
+			} else if (!i) {
+				p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
+			}
+		}
+		d.push("C");
+
+		d.push((-p[0].x + 6 * p[1].x + p[2].x) / 6);
+		d.push((-p[0].y + 6 * p[1].y + p[2].y) / 6);
+
+		d.push((p[1].x + 6 * p[2].x - p[3].x) / 6);
+		d.push((p[1].y + 6 * p[2].y - p[3].y) / 6);
+
+		d.push(p[2].x);
+		d.push(p[2].y);
+	}
+
+	return d;
+};
+
+var a = new ANCHOR(p,'linear',{});
+console.log('test anchor',a);
+
+
+////
+
+
+
 function XML(name){
 	var namespace = 'http://www.w3.org/2000/svg';
 	this.element = document.createElementNS(namespace,name);
@@ -16,7 +115,10 @@ XML.prototype.attr = function(name,value){
 	this.element.setAttributeNS(null,name,value);
 };
 
+
 // MASTER CLASS
+
+
 function CURVEMIXER(element){
 	// storage
 	this.container = typeof element === 'string' ? document.querySelector(element) : element;
@@ -95,20 +197,20 @@ CURVEMIXER.prototype.renderPaths = function() {
 
 	final_path.setAttributeNS(null,'d',data.join(' '));
 
-/*
-	var path_index = 0;
-	var anchor_index = 0;
-	for(; path_index<this.paths.length; path_index++){
-		var doop = new XML('circle');
-		for(var i=0; i<this.paths[path_index].anchor_count; i++){
-			var doop = new XML('circle');
-			doop.attr('cx',this.anchors[i].coordinates.x);
-			doop.attr('cy',this.anchors[i].coordinates.y);
-			doop.attr('r',3);
-			this.interface.appendChild(doop.element);
-		}
-	}
-*/
+
+//	var path_index = 0;
+//	var anchor_index = 0;
+//	for(; path_index<this.paths.length; path_index++){
+//		var doop = new XML('circle');
+//		for(var i=0; i<this.paths[path_index].anchor_count; i++){
+//			var doop = new XML('circle');
+//			doop.attr('cx',this.anchors[i].coordinates.x);
+//			doop.attr('cy',this.anchors[i].coordinates.y);
+//			doop.attr('r',3);
+//			this.interface.appendChild(doop.element);
+//		}
+//	}
+
 };
 
 // Event functions
@@ -215,7 +317,7 @@ CURVEMIXER.prototype.keyup = function(event){
 };
 
 
-// Group > Object > Chain > Segment (holds type and modulus) > Point (handle or anchor. interchangeable)
+
 
 
 // GROUP CLASS
@@ -280,65 +382,7 @@ function SEGMENT(parameters){
 	this.locked_with_previous = false;
 };
 
-// POINT CLASS
-function POINT(x,y){
-	this.selected = false;
-	this.type = mixer.selected_anchor_type;
-	this.x = coordinates.x;
-	this.y = coordinates.y;
-};
 
-POINT.prototype.setCoordinates = function(coordinates){
-	this.x = coordinates.x;
-	this.y = coordinates.y;
-};
-
-ANCHOR = function(properties){
-	this.point = POINT(properties.point);
-};
-
-ANCHOR.prototype.catmullRom2bezier = function(coordinates, closed) {
-	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
-	// coordinates (array)
-	// closed (Boolean) if the shape is closed or not
-	var d = [], i, iLen, p;
-	for (i = 0, iLen = coordinates.length; (iLen - 2 * !closed) > i; i += 2) {
-		p = [
-			{x: +coordinates[i - 2], y: +coordinates[i - 1]},
-			{x: +coordinates[i],     y: +coordinates[i + 1]},
-			{x: +coordinates[i + 2], y: +coordinates[i + 3]},
-			{x: +coordinates[i + 4], y: +coordinates[i + 5]}
-		];
-		if (closed) {
-			if (!i) {
-				p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
-			} else if (iLen - 4 === i) {
-				p[3] = {x: +coordinates[0], y: +coordinates[1]};
-			} else if (iLen - 2 === i) {
-				p[2] = {x: +coordinates[0], y: +coordinates[1]};
-				p[3] = {x: +coordinates[2], y: +coordinates[3]};
-			}
-		} else {
-			if (iLen - 4 === i) {
-				p[3] = p[2];
-			} else if (!i) {
-				p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
-			}
-		}
-		d.push("C");
-
-		d.push((-p[0].x + 6 * p[1].x + p[2].x) / 6);
-		d.push((-p[0].y + 6 * p[1].y + p[2].y) / 6);
-
-		d.push((p[1].x + 6 * p[2].x - p[3].x) / 6);
-		d.push((p[1].y + 6 * p[2].y - p[3].y) / 6);
-
-		d.push(p[2].x);
-		d.push(p[2].y);
-	}
-
-	return d;
-};
 
 //////////
 
@@ -352,4 +396,5 @@ mixer.groups[0].push(  );
 
 // mixer.paths.push( new PATH() );
 
+*/
 })( window );
