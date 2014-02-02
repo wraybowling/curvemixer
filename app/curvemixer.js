@@ -1,23 +1,36 @@
-// Curvemixer
-// Group > Object > Chain > Segment (holds type and modulus) > Point (handle or anchor. interchangeable)
-
-
-( function( window ) {
-"use strict";
 
 // GLOBALS
 function distance(Xa,Ya,Xb,Yb){
 	return Math.sqrt(Math.pow((Xb - Xa),2) + Math.pow((Yb - Ya),2));
 }
 
+// CURVEMIXER
+//
+// Curvemixer: contains all groups, objects, chains, segments, & points. Renders UI & handles mouse/keyboard/touch events.
+// v v v
+// Group: contains objects and other groups
+// v v v
+// Object: contains Chains
+// v v v
+// Chain: a list of segments that share the same type. Can merge with other chains or bisect into two Chains
+// v v v
+// Segment: has curve type, one end anchor Point, up to two Handle Points
+// v v v
+// Point: a set of x,y coordinates
+// v v v
+// Handle: a point that has a casteljau type: linear, catmul-rom, free
+//
+( function( window ) {
+"use strict";
+
 
 ////
 
 
-function POINT(ex,wai){
-	this.x = ex;
-	this.y = wai;
-//	this.selected = false;
+function POINT(x,y){
+	this.x = x;
+	this.y = y;
+	this.selected = false;
 }
 
 POINT.prototype.setCoordinates = function(x,y){
@@ -33,27 +46,47 @@ console.log('test point', p);
 ////
 
 
-function SEGMENT(coordinates,algorithm,options){
-	this.anchor = POINT(coordinates); // end point
-	this.algorithm = algorithm; // spiro, casteljau, linear, et cetera
-
-	this.theta = args.theta;
-	this.locked = options.locked;
-
-	this.handles = args.handles; // array of POINTs
-
-	this.chain = args.chain; // parent chain
-	this.prev = args.prev; // prev anchor
-	this.next = args.next; // next anchor
+function HANDLE(x,y,type){
+	this.point = new POINT(x,y);
+	this.type = type || 'free'; // linear, catmul-rom, free
 }
+
+window.HANDLE = HANDLE;
+var h = new HANDLE(200,100,'free');
+var h2 = new HANDLE(300,100);
+console.log('test handles',h,h2);
+
+
+////
+
+
+function SEGMENT(chain,x,y,type){
+	this.chain = chain; // parent chain
+
+	this.anchor = new POINT(x,y); // end point
+	this.type = type; // spiro, casteljau, linear, et cetera
+
+	this.theta = undefined;
+	this.locked = false;
+
+	this.handles = undefined; // array of POINTs
+
+	this.prev = undefined; // prev anchor
+	this.next = undefined; // next anchor
+}
+
+window.SEGMENT = SEGMENT;
+var s = new SEGMENT(p, 'linear', {});
+console.log('test segment',s);
 
 /*
 
 ////
 
+
 function CHAIN(){
-	this.
-}
+	this.segments = [];
+};
 
 CHAIN.prototype.catmullRom2bezier = function(closed) {
 	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
@@ -105,6 +138,32 @@ console.log('test anchor',a);
 ////
 
 
+function OBJECT(){
+	this.selected = false;
+	this.chains = [];
+	this.classList = [];
+};
+
+OBJECT.prototype.translateOrigin = function(translation_delta){
+	var c,p;
+	for(c=0; c<this.chains.length; c++){
+		for(p=0; p<this.chains[c].points.length; p++){
+			this.chains[c].points[p].x += translation_delta.x;
+			this.chains[c].points[p].y += translation_delta.y;
+		}
+	}
+};
+
+OBJECT.prototype.addClass = function(name){
+	this.classList.push(name);
+};
+
+
+////
+
+
+
+
 
 function XML(name){
 	var namespace = 'http://www.w3.org/2000/svg';
@@ -117,11 +176,11 @@ XML.prototype.attr = function(name,value){
 
 
 // MASTER CLASS
-
+*/
 
 function CURVEMIXER(element){
 	// storage
-	this.container = typeof element === 'string' ? document.querySelector(element) : element;
+	this.element = element;
 	this.interface = element.querySelector('.interface');
 	this.stage = element.querySelector('.stage');
 	this.mode = null;
@@ -150,7 +209,7 @@ function CURVEMIXER(element){
 	window.addEventListener("keydown", this.keydown);
 	window.addEventListener("keyup", this.keyup);
 }
-
+/*
 // Render
 CURVEMIXER.prototype.renderInterface = function() {
 	console.log('Building interface');
@@ -340,31 +399,7 @@ GROUP.prototype.translate = function(translation_delta) {
 	this.translate.y += translation_delta.y;
 };
 
-// OBJECT CLASS
-function OBJECT(){
-	this.selected = false;
-	this.chains = [];
-	this.classList = [];
-};
 
-OBJECT.prototype.translateOrigin = function(translation_delta){
-	var c,p;
-	for(c=0; c<this.chains.length; c++){
-		for(p=0; p<this.chains[c].points.length; p++){
-			this.chains[c].points[p].x += translation_delta.x;
-			this.chains[c].points[p].y += translation_delta.y;
-		}
-	}
-};
-
-OBJECT.prototype.addClass = function(name){
-	this.classList.push(name);
-};
-
-// CHAIN CLASS
-function CHAIN(){
-	this.segments = [];
-};
 
 var SEGMENT_TYPES = {
 	'Castel Curve 1' : { handles:1 },
@@ -386,7 +421,7 @@ function SEGMENT(parameters){
 
 //////////
 
-mixer = CURVEMIXER(document.querySelector('.mixablz'));
+mixer = CURVEMIXER(document.querySelector('.curvemixer_container'));
 
 //////////
 
