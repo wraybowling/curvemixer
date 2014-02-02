@@ -18,10 +18,10 @@ function distance(Xa,Ya,Xb,Yb){
 // v v v
 // Point: a set of x,y coordinates
 // v v v
-// Handle: a point that has a casteljau type: linear, catmul-rom, free
+// Handle: a point that has a casteljau type: straight, catmul-rom, free
 //
 ( function( window ) {
-"use strict";
+'use strict';
 
 
 ////
@@ -48,7 +48,7 @@ console.log('test point', p);
 
 function HANDLE(x,y,type){
 	this.point = new POINT(x,y);
-	this.type = type || 'free'; // linear, catmul-rom, free
+	this.type = type || 'free'; // straight, catmul-rom, free
 }
 
 window.HANDLE = HANDLE;
@@ -75,10 +75,18 @@ function SEGMENT(chain,x,y,type){
 	this.next = undefined; // next anchor
 }
 
+SEGMENT.prototype.types = {
+	'Castel Curve 1' : { handles:1 },
+	'Castel Curve 2' : { handles:2, handle_types:['straight', 'free', 'catmul-rom']},
+	'Vertical' : { handles:0, no_locking:true },
+	'Horizontal' : { handles:0, no_locking:true },
+	'Arc' : { handles:1 },
+	'Spiro' : { handles:0 },
+};
+
 window.SEGMENT = SEGMENT;
 var s = new SEGMENT(p, 'linear', {});
 console.log('test segment',s);
-
 /*
 
 ////
@@ -133,7 +141,7 @@ CHAIN.prototype.catmullRom2bezier = function(closed) {
 
 var a = new ANCHOR(p,'linear',{});
 console.log('test anchor',a);
-
+/*
 
 ////
 
@@ -162,7 +170,22 @@ OBJECT.prototype.addClass = function(name){
 ////
 
 
+function GROUP(properties){
+	this.selected = false;
+	this.translate = {x: properties.translate.x, y: properties.translate.y};
+	this.scale = {x: properties.scale.x, y: properties.scale.y};
+	this.rotate = properties.rotate;
+	this.contains = [];
+};
 
+GROUP.prototype.translate = function(translation_delta) {
+	this.translate.x += translation_delta.x;
+	this.translate.y += translation_delta.y;
+};
+
+*/
+
+////
 
 
 function XML(name){
@@ -174,17 +197,29 @@ XML.prototype.attr = function(name,value){
 	this.element.setAttributeNS(null,name,value);
 };
 
+window.XML = XML;
+var x = new XML('g');
+console.log('xml',x);
 
-// MASTER CLASS
-*/
+
+////
+
 
 function CURVEMIXER(element){
-	// storage
+	// DOM elements
 	this.element = element;
-	this.interface = element.querySelector('.interface');
+	console.log('this el',this.element);
 	this.stage = element.querySelector('.stage');
-	this.mode = null;
+	this.interface = element.querySelector('.interface');
+
+	// data
 	this.groups = [];
+	this.objets = [];
+	this.chains = [];
+	this.segments = [];
+	this.points = [];
+
+	// states
 	this.states = {
 		editing: false,
 		grabbing: false,
@@ -210,7 +245,7 @@ function CURVEMIXER(element){
 	window.addEventListener("keyup", this.keyup);
 }
 /*
-// Render
+// Render functions
 CURVEMIXER.prototype.renderInterface = function() {
 	console.log('Building interface');
 	var i;
@@ -255,21 +290,6 @@ CURVEMIXER.prototype.renderPaths = function() {
 	}
 
 	final_path.setAttributeNS(null,'d',data.join(' '));
-
-
-//	var path_index = 0;
-//	var anchor_index = 0;
-//	for(; path_index<this.paths.length; path_index++){
-//		var doop = new XML('circle');
-//		for(var i=0; i<this.paths[path_index].anchor_count; i++){
-//			var doop = new XML('circle');
-//			doop.attr('cx',this.anchors[i].coordinates.x);
-//			doop.attr('cy',this.anchors[i].coordinates.y);
-//			doop.attr('r',3);
-//			this.interface.appendChild(doop.element);
-//		}
-//	}
-
 };
 
 // Event functions
@@ -374,62 +394,17 @@ CURVEMIXER.prototype.keyup = function(event){
 	}
 //		console.log('key up',event.keyCode,event);
 };
-
-
-
-
-
-// GROUP CLASS
-// Collections of objects. Most macro level. groups can contain other groups.
-//	properties = {
-//		translate : {x,y}
-//		,scale : xy
-//		,rotate : r
-//	}
-function GROUP(properties){
-	this.selected = false;
-	this.translate = {x: properties.translate.x, y: properties.translate.y};
-	this.scale = {x: properties.scale.x, y: properties.scale.y};
-	this.rotate = properties.rotate;
-	this.contains = [];
-};
-
-GROUP.prototype.translate = function(translation_delta) {
-	this.translate.x += translation_delta.x;
-	this.translate.y += translation_delta.y;
-};
-
-
-
-var SEGMENT_TYPES = {
-	'Castel Curve 1' : { handles:1 },
-	'Castel Curve 2' : { handles:2, handle_types:['straight', 'free']},
-	'Vertical' : { handles:0, no_locking:true },
-	'Horizontal' : { handles:0, no_locking:true },
-	'Arc' : { handles:1 },
-	'Spiro' : { handles:0 },
-};
-
-// SEGMENT CLASS
-function SEGMENT(parameters){
-	this.algorithm = parameters.algorithm || 'Castel Curve 2';
-	this.type = parameters.type || 'S';
-	this.locked_with_previous = false;
-};
-
-
-
-//////////
-
-mixer = CURVEMIXER(document.querySelector('.curvemixer_container'));
-
-//////////
-
-var g = GROUP({translate: {x:100, y:100}, rotation:0, scale:1});
-mixer.groups.push( g );
-mixer.groups[0].push(  );
-
-// mixer.paths.push( new PATH() );
-
 */
+
+window.CURVEMIXER = CURVEMIXER;
+
 })( window );
+
+
+//////////
+
+var mixer_el = document.querySelector('.curvemixer_container');
+var mixer = new CURVEMIXER(mixer_el);
+
+//////////
+
