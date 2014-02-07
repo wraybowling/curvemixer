@@ -46,9 +46,9 @@ console.log('test point', p);
 ////
 
 
-function HANDLE(x,y,type){
-	this.point = new POINT(x,y);
+function HANDLE(type,point){
 	this.type = type || 'free'; // straight, catmul-rom, free
+	this.point = point;
 }
 
 window.HANDLE = HANDLE;
@@ -60,32 +60,31 @@ console.log('test handles',h,h2);
 ////
 
 
-function SEGMENT(chain,x,y,type){
-	this.chain = chain; // parent chain
-
-	this.anchor = new POINT(x,y); // end point
+function SEGMENT(type,anchor,handles){
+	this.anchor = anchor; // end point
 	this.type = type; // spiro, casteljau, linear, et cetera
 
 	this.theta = undefined;
 	this.locked = false;
 
-	this.handles = undefined; // array of POINTs
+//	this.handleCount = this.types[type].handleCount;
+	this.handleList = [];
 
 	this.prev = undefined; // prev anchor
 	this.next = undefined; // next anchor
 }
 
 SEGMENT.prototype.types = {
-	'Castel Curve 1' : { handles:1 },
-	'Castel Curve 2' : { handles:2, handle_types:['straight', 'free', 'catmul-rom']},
-	'Vertical' : { handles:0, no_locking:true },
-	'Horizontal' : { handles:0, no_locking:true },
-	'Arc' : { handles:1 },
-	'Spiro' : { handles:0 },
+	'Castel Curve 1' : { handleCount:1 },
+	'Castel Curve 2' : { handleCount:2, handleTypes:['straight', 'free', 'catmul-rom']},
+	'Vertical' : { handleCount:0, noLocking:true },
+	'Horizontal' : { handleCount:0, noLocking:true },
+	'Arc' : { handleCount:1 },
+	'Spiro' : { handleCount:0 },
 };
 
 window.SEGMENT = SEGMENT;
-var s = new SEGMENT(p, 'linear', {});
+var s = new SEGMENT('linear', p);
 console.log('test segment',s);
 /*
 
@@ -208,7 +207,6 @@ console.log('xml',x);
 function CURVEMIXER(element){
 	// DOM elements
 	this.element = element;
-	console.log('this el',this.element);
 	this.stage = element.querySelector('.stage');
 	this.interface = element.querySelector('.interface');
 
@@ -228,7 +226,10 @@ function CURVEMIXER(element){
 		lockX: false,
 		lockY: false,
 		flipping: false, // horizontal and vertical flips
-		sorting: false // move selected forward and back interactively
+		sorting: false, // move selected forward and back interactively
+		keyDown: false,
+		mouseDown: false,
+		touchDown: false
 	};
 	this.prevX = 0;
 	this.prevY = 0;
@@ -237,14 +238,14 @@ function CURVEMIXER(element){
 	this.selected_anchor_index = null;
 
 	// Attach DOM Listeners
-	this.container.onmousemove = this.mousemove;
-	this.container.onmousedown = this.mousedown;
-	this.container.onmouseup = this.mouseup;
-	this.container.onmousewheel = this.mousewheel;
+//	this.container.onmousemove = this.mousemove;
+//	this.container.onmousedown = this.mousedown;
+//	this.container.onmouseup = this.mouseup;
+//	this.container.onmousewheel = this.mousewheel;
 	window.addEventListener("keydown", this.keydown);
 	window.addEventListener("keyup", this.keyup);
 }
-/*
+
 // Render functions
 CURVEMIXER.prototype.renderInterface = function() {
 	console.log('Building interface');
@@ -263,7 +264,7 @@ CURVEMIXER.prototype.renderInterface = function() {
 		this.interface.appendChild(dot.element);
 	}
 };
-
+/*
 CURVEMIXER.prototype.renderPaths = function() {
 	console.log('Building paths');
 	var i;
@@ -358,31 +359,39 @@ CURVEMIXER.prototype.mousewheel = function(event){
 	event.preventDefault();
 	console.log('wheel',event);
 };
-
+*/
 CURVEMIXER.prototype.keydown = function(event){
 	event.preventDefault();
-//		console.log('key dn',event.keyCode,event);
-	switch(event.keyCode){
-		case 76:mixer.selected_anchor_type = 'L'; break;
-		case 72:mixer.selected_anchor_type = 'H'; break;
-		case 86:mixer.selected_anchor_type = 'V'; break;
-		case 67:mixer.selected_anchor_type = 'C'; break;
-		case 83:mixer.selected_anchor_type = 'S'; break;
-		case 81:mixer.selected_anchor_type = 'Q'; break;
-		case 84:mixer.selected_anchor_type = 'T'; break;
-		case 65:mixer.selected_anchor_type = 'A'; break;
+	console.log('key dn',event.keyCode,event);
+	console.log('this',this);
 
-		case 90: // Z
-			mixer.closed = !mixer.closed;
-			mixer.renderPaths();
-			break;
+	if( ! mixer.states.keyDown){
+		switch(event.keyCode){
+			case 9: console.log('tab'); break;
+			case 76:mixer.selected_anchor_type = 'L'; break;
+			case 72:mixer.selected_anchor_type = 'H'; break;
+			case 86:mixer.selected_anchor_type = 'V'; break;
+			case 67:mixer.selected_anchor_type = 'C'; break;
+			case 83:mixer.selected_anchor_type = 'S'; break;
+			case 81:mixer.selected_anchor_type = 'Q'; break;
+			case 84:mixer.selected_anchor_type = 'T'; break;
+			case 65:mixer.selected_anchor_type = 'A'; break;
 
-		case 71: // G
-			mixer.mode = 'move';
-			mixer.selected_anchor_index = mixer.closest_anchor_index;
+			case 90: // Z
+				mixer.closed = !mixer.closed;
+				mixer.renderPaths();
+				break;
+
+			case 71: // G
+				mixer.mode = 'move';
+				mixer.selected_anchor_index = mixer.closest_anchor_index;
+				break;
+		}
 	}
+
 	console.log('anchor type',mixer.selected_anchor_type);
 	console.log('mode',mixer.mode);
+	mixer.states.keyDown = true;
 };
 
 CURVEMIXER.prototype.keyup = function(event){
@@ -393,8 +402,8 @@ CURVEMIXER.prototype.keyup = function(event){
 			mixer.selected_anchor_index = null;
 	}
 //		console.log('key up',event.keyCode,event);
+	mixer.states.keyDown = false;
 };
-*/
 
 window.CURVEMIXER = CURVEMIXER;
 
