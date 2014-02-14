@@ -12,9 +12,9 @@ function distance(Xa,Ya,Xb,Yb){
 // v v v
 // Object: contains Chains
 // v v v
-// Chain: a list of segments that share the same type. Can merge with other chains or bisect into two Chains
+// Chain: a list of segments that are connected and share the same type. Used for processing meta-curves into castle-curves.
 // v v v
-// Segment: has curve type, one end anchor Point, up to two Handle Points
+// Segment: has curve type, one end anchor Point, up to two Handle Points. is aware of "previous" and "next" Segments.
 // v v v
 // Point: a set of x,y coordinates
 // v v v
@@ -81,21 +81,31 @@ SEGMENT.prototype.types = {
 	'Horizontal' : { handleCount:0, noLocking:true },
 	'Arc' : { handleCount:1 },
 	'Spiro' : { handleCount:0 },
+	'PenUp' : { handleCount:0 } // used for breaking chains
 };
 
 window.SEGMENT = SEGMENT;
 var s = new SEGMENT('linear', p);
 console.log('test segment',s);
-/*
+
 
 ////
 
 
-function CHAIN(){
+function CHAIN(start){
+	this.start = new POINT(start);
 	this.segments = [];
+}
+
+CHAIN.prototype.addSegment = function(segment,index){
+	if(index == undefined){
+		this.segments.push(segment);
+	}else{
+		this.segments.splice(index, 0, segment);
+	}
 };
 
-CHAIN.prototype.catmullRom2bezier = function(closed) {
+CHAIN.prototype.catmullRom = function(closed) {
 	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
 	// coordinates (array)
 	// closed (Boolean) if the shape is closed or not
@@ -138,18 +148,22 @@ CHAIN.prototype.catmullRom2bezier = function(closed) {
 	return d;
 };
 
-var a = new ANCHOR(p,'linear',{});
-console.log('test anchor',a);
-/*
+window.CHAIN = CHAIN;
+var m = new POINT(800,800);
+var c = new CHAIN(m);
+c.addSegment(s);
+console.log('test chain',c);
+
 
 ////
 
 
 function OBJECT(){
 	this.selected = false;
+	this.segments = [];
 	this.chains = [];
 	this.classList = [];
-};
+}
 
 OBJECT.prototype.translateOrigin = function(translation_delta){
 	var c,p;
@@ -175,14 +189,13 @@ function GROUP(properties){
 	this.scale = {x: properties.scale.x, y: properties.scale.y};
 	this.rotate = properties.rotate;
 	this.contains = [];
-};
+}
 
 GROUP.prototype.translate = function(translation_delta) {
 	this.translate.x += translation_delta.x;
 	this.translate.y += translation_delta.y;
 };
 
-*/
 
 ////
 
@@ -264,9 +277,9 @@ CURVEMIXER.prototype.renderInterface = function() {
 		this.interface.appendChild(dot.element);
 	}
 };
-/*
-CURVEMIXER.prototype.renderPaths = function() {
-	console.log('Building paths');
+
+CURVEMIXER.prototype.render = function() {
+	console.log('Rendering Mixer');
 	var i;
 
 	var final_path = this.stage.querySelector('.final_stage');
@@ -359,7 +372,7 @@ CURVEMIXER.prototype.mousewheel = function(event){
 	event.preventDefault();
 	console.log('wheel',event);
 };
-*/
+
 CURVEMIXER.prototype.keydown = function(event){
 	event.preventDefault();
 	console.log('key dn',event.keyCode,event);
