@@ -39,8 +39,6 @@ POINT.prototype.setCoordinates = function(x,y){
 };
 
 window.POINT = POINT;
-var p = new POINT(100,100);
-console.log('test point', p);
 
 
 ////
@@ -52,9 +50,6 @@ function HANDLE(type,point){
 }
 
 window.HANDLE = HANDLE;
-var h = new HANDLE(200,100,'free');
-var h2 = new HANDLE(300,100);
-console.log('test handles',h,h2);
 
 
 ////
@@ -85,8 +80,6 @@ SEGMENT.prototype.types = {
 };
 
 window.SEGMENT = SEGMENT;
-var s = new SEGMENT('linear', p);
-console.log('test segment',s);
 
 
 ////
@@ -98,7 +91,7 @@ function CHAIN(start){
 }
 
 CHAIN.prototype.addSegment = function(segment,index){
-	if(index == undefined){
+	if(index === undefined){
 		this.segments.push(segment);
 	}else{
 		this.segments.splice(index, 0, segment);
@@ -149,10 +142,6 @@ CHAIN.prototype.catmullRom = function(closed) {
 };
 
 window.CHAIN = CHAIN;
-var m = new POINT(800,800);
-var c = new CHAIN(m);
-c.addSegment(s);
-console.log('test chain',c);
 
 
 ////
@@ -180,14 +169,21 @@ OBJECT.prototype.addClass = function(name){
 };
 
 
+window.OBJECT = OBJECT;
+
 ////
 
 
-function GROUP(properties){
+function GROUP(options){
+	options = options || {};
+
 	this.selected = false;
-	this.translate = {x: properties.translate.x, y: properties.translate.y};
-	this.scale = {x: properties.scale.x, y: properties.scale.y};
-	this.rotate = properties.rotate;
+	if(options.translate !== undefined)
+		this.translate = {x: options.translate.x, y: options.translate.y};
+	if(options.scale !== undefined)
+		this.scale = options.scale;
+	if(options.rotate !== undefined)
+		this.rotate = options.rotate;
 	this.contains = [];
 }
 
@@ -195,6 +191,8 @@ GROUP.prototype.translate = function(translation_delta) {
 	this.translate.x += translation_delta.x;
 	this.translate.y += translation_delta.y;
 };
+
+window.GROUP = GROUP;
 
 
 ////
@@ -253,10 +251,10 @@ function CURVEMIXER(element){
 	// Attach DOM Listeners
 //	this.container.onmousemove = this.mousemove;
 //	this.container.onmousedown = this.mousedown;
-//	this.container.onmouseup = this.mouseup;
+	this.container.onmouseup = this.mouseup();
 //	this.container.onmousewheel = this.mousewheel;
-	window.addEventListener("keydown", this.keydown);
-	window.addEventListener("keyup", this.keyup);
+	window.addEventListener('keydown', this.keydown);
+//	window.addEventListener('keyup', this.keyup);
 }
 
 // Render functions
@@ -355,17 +353,17 @@ CURVEMIXER.prototype.mousemove = function(event){
 };
 
 CURVEMIXER.prototype.mousedown = function(event){
-	console.log('down',event);
+	console.log('mouse down',event);
 };
 
 CURVEMIXER.prototype.mouseup = function(event){
-	console.log('up',event);
+	console.log('mouse up',event);
 //		this.RenderInterface();
-	var new_anchor = new ANCHOR('M',event);
-	console.log(new_anchor);
-	mixer.anchors.push(new_anchor);
-	mixer.renderInterface();
-	mixer.renderPaths();
+//	var new_anchor = new ANCHOR('M',event);
+//	console.log(new_anchor);
+//	mixer.anchors.push(new_anchor);
+//	mixer.renderInterface();
+//	mixer.renderPaths();
 };
 
 CURVEMIXER.prototype.mousewheel = function(event){
@@ -374,9 +372,9 @@ CURVEMIXER.prototype.mousewheel = function(event){
 };
 
 CURVEMIXER.prototype.keydown = function(event){
+	console.log('keydown',event.keyCode);
+
 	event.preventDefault();
-	console.log('key dn',event.keyCode,event);
-	console.log('this',this);
 
 	if( ! mixer.states.keyDown){
 		switch(event.keyCode){
@@ -402,8 +400,8 @@ CURVEMIXER.prototype.keydown = function(event){
 		}
 	}
 
-	console.log('anchor type',mixer.selected_anchor_type);
-	console.log('mode',mixer.mode);
+	//console.log('anchor type',mixer.selected_anchor_type); 
+	//console.log('mode',mixer.mode);
 	mixer.states.keyDown = true;
 };
 
@@ -421,12 +419,3 @@ CURVEMIXER.prototype.keyup = function(event){
 window.CURVEMIXER = CURVEMIXER;
 
 })( window );
-
-
-//////////
-
-var mixer_el = document.querySelector('.curvemixer_container');
-var mixer = new CURVEMIXER(mixer_el);
-
-//////////
-

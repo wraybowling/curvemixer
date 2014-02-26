@@ -8,8 +8,7 @@
 </head>
 <body>
 	<div class="curvemixer_container">
-		<svg class="stage">
-		</svg>
+		<svg class="stage"></svg>
 		<svg class="interface">
 			<path class="selection-line" />
 			<g class="segments"></g>
@@ -34,5 +33,10 @@
 </body>
 
 <script type="text/javascript" src="curvemixer.js"></script>
+<script type="text/javascript" src="tests.js"></script>
+<script>
+var mixer_el = document.querySelector('.curvemixer_container');
+var mixer = new CURVEMIXER(mixer_el);
+</script>
 
 </html>
