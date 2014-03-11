@@ -251,11 +251,11 @@ function CURVEMIXER(element){
 
 	// Attach DOM Listeners
 	this.element.onmousemove = this.mousemove;
-	//this.element.onmousedown = this.mousedown();
-	//this.element.onmouseup = this.mouseup();
-	//this.element.onmousewheel = this.mousewheel();
-	this.element.keydown = this.keydown;
-	this.element.keyup = this.keyup;
+	this.element.onmousedown = this.mousedown;
+	this.element.onmouseup = this.mouseup;
+	this.element.onmousewheel = this.mousewheel;
+	this.element.onkeydown = this.keydown;
+	this.element.onkeyup = this.keyup;
 }
 
 // Render functions
@@ -377,8 +377,9 @@ CURVEMIXER.prototype.mousewheel = function(event){
 };
 
 CURVEMIXER.prototype.keydown = function(event){
-	event.preventDefault();
-	console.log('keydown',event.keyCode);
+	//event.preventDefault();
+	//console.log('keydown',event.keyCode);
+	console.log('key down');
 /*
 	
 
