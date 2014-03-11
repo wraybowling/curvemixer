@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="ui.css">
 </head>
 <body>
-	<div class="curvemixer_container">
+	<div class="curvemixer" tabindex="1">
 		<svg class="stage"></svg>
 		<svg class="interface">
 			<path class="selection-line" />
@@ -35,7 +35,7 @@
 <script type="text/javascript" src="curvemixer.js"></script>
 <script type="text/javascript" src="tests.js"></script>
 <script>
-var mixer_el = document.querySelector('.curvemixer_container');
+var mixer_el = document.querySelector('.curvemixer');
 var mixer = new CURVEMIXER(mixer_el);
 </script>
 

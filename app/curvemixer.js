@@ -5,64 +5,6 @@ function distance(Xa,Ya,Xb,Yb){
 }
 
 
-// HOTKEY CAPTURING HELPER
-//
-// Interfaces with the currently active Curvemixer so that hotkeys are sent to the right mixer
-( function( window ) {
-'use strict';
-
-function keydown(event){
-	console.log('keydown',event.keyCode);
-
-	event.preventDefault();
-
-	if( ! mixer.states.keyDown){
-		switch(event.keyCode){
-			case 9: console.log('tab'); break;
-			case 76:mixer.selected_anchor_type = 'L'; break;
-			case 72:mixer.selected_anchor_type = 'H'; break;
-			case 86:mixer.selected_anchor_type = 'V'; break;
-			case 67:mixer.selected_anchor_type = 'C'; break;
-			case 83:mixer.selected_anchor_type = 'S'; break;
-			case 81:mixer.selected_anchor_type = 'Q'; break;
-			case 84:mixer.selected_anchor_type = 'T'; break;
-			case 65:mixer.selected_anchor_type = 'A'; break;
-
-			case 90: // Z
-				mixer.closed = !mixer.closed;
-				mixer.renderPaths();
-				break;
-
-			case 71: // G
-				mixer.mode = 'move';
-				mixer.selected_anchor_index = mixer.closest_anchor_index;
-				break;
-		}
-	}
-
-	//console.log('anchor type',mixer.selected_anchor_type);
-	//console.log('mode',mixer.mode);
-	mixer.states.keyDown = true;
-}
-
-function keyup(event){
-	//event.preventDefault();
-	switch(event.keyCode){
-		case 71:
-			mixer.mode = null;
-			mixer.selected_anchor_index = null;
-	}
-//		console.log('key up',event.keyCode,event);
-	mixer.states.keyDown = false;
-}
-
-window.addEventListener('keydown', keydown);
-window.addEventListener('keyup', keyup);
-
-})( window );
-
-
-
 // CURVEMIXER
 //
 // Curvemixer: contains all groups, objects, chains, segments, & points. Renders UI & handles mouse/keyboard/touch events.
@@ -308,11 +250,12 @@ function CURVEMIXER(element){
 	this.selected_anchor_index = null;
 
 	// Attach DOM Listeners
-//	this.container.onmousemove = this.mousemove;
-//	this.container.onmousedown = this.mousedown;
-	this.container.onmouseup = this.mouseup();
-//	this.container.onmousewheel = this.mousewheel;
-	
+	this.element.onmousemove = this.mousemove;
+	//this.element.onmousedown = this.mousedown();
+	//this.element.onmouseup = this.mouseup();
+	//this.element.onmousewheel = this.mousewheel();
+	this.element.keydown = this.keydown;
+	this.element.keyup = this.keyup;
 }
 
 // Render functions
@@ -365,6 +308,9 @@ CURVEMIXER.prototype.render = function() {
 // Event functions
 CURVEMIXER.prototype.mousemove = function(event){
 
+	//window.activeCurvemixer = this;
+	//console.log(this);
+/*
 	// move selected anchor
 	if(mixer.mode == 'move'){
 		console.log(event);
@@ -408,6 +354,7 @@ CURVEMIXER.prototype.mousemove = function(event){
 	// set previous to current
 	mixer.prevX = event.x;
 	mixer.prevY = event.y;
+	*/
 };
 
 CURVEMIXER.prototype.mousedown = function(event){
@@ -429,6 +376,55 @@ CURVEMIXER.prototype.mousewheel = function(event){
 	console.log('wheel',event);
 };
 
+CURVEMIXER.prototype.keydown = function(event){
+	event.preventDefault();
+	console.log('keydown',event.keyCode);
+/*
+	
+
+	if( ! mixer.states.keyDown){
+		switch(event.keyCode){
+			case 9: console.log('tab'); break;
+			case 76:mixer.selected_anchor_type = 'L'; break;
+			case 72:mixer.selected_anchor_type = 'H'; break;
+			case 86:mixer.selected_anchor_type = 'V'; break;
+			case 67:mixer.selected_anchor_type = 'C'; break;
+			case 83:mixer.selected_anchor_type = 'S'; break;
+			case 81:mixer.selected_anchor_type = 'Q'; break;
+			case 84:mixer.selected_anchor_type = 'T'; break;
+			case 65:mixer.selected_anchor_type = 'A'; break;
+
+			case 90: // Z
+				mixer.closed = !mixer.closed;
+				mixer.renderPaths();
+				break;
+
+			case 71: // G
+				mixer.mode = 'move';
+				mixer.selected_anchor_index = mixer.closest_anchor_index;
+				break;
+		}
+	}
+
+	//console.log('anchor type',mixer.selected_anchor_type);
+	//console.log('mode',mixer.mode);
+	mixer.states.keyDown = true;
+	*/
+};
+
+CURVEMIXER.prototype.keyup = function(event){
+	event.preventDefault();
+	console.log('key up',event.keyCode,event);
+	/*
+	switch(event.keyCode){
+		case 71:
+			mixer.mode = null;
+			mixer.selected_anchor_index = null;
+	}
+
+	mixer.states.keyDown = false;
+	*/
+};
 
 window.CURVEMIXER = CURVEMIXER;
 
