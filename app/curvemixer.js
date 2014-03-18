@@ -250,12 +250,13 @@ function CURVEMIXER(element){
 	this.selected_anchor_index = null;
 
 	// Attach DOM Listeners
-	this.element.onmousemove = this.mousemove;
-	this.element.onmousedown = this.mousedown;
-	this.element.onmouseup = this.mouseup;
-	this.element.onmousewheel = this.mousewheel;
-	this.element.onkeydown = this.keydown;
-	this.element.onkeyup = this.keyup;
+	var self = this;
+	this.element.onmousemove = function(event){ self.mousemove(event); };
+	this.element.onmousedown = function(event){ self.mousedown(event); };
+	this.element.onmouseup = function(event){ self.mouseup(event); };
+	this.element.onmousewheel = function(event){ self.mousewheel(event); };
+	this.element.onkeydown = function(event){ self.keydown(event); };
+	this.element.onkeyup = function(event){ self.keyup(event); };
 }
 
 // Render functions
@@ -377,11 +378,9 @@ CURVEMIXER.prototype.mousewheel = function(event){
 };
 
 CURVEMIXER.prototype.keydown = function(event){
-	//event.preventDefault();
-	//console.log('keydown',event.keyCode);
-	console.log('key down');
+//	event.preventDefault();
+	console.log('keydown',event.keyCode);
 /*
-	
 
 	if( ! mixer.states.keyDown){
 		switch(event.keyCode){
@@ -414,8 +413,8 @@ CURVEMIXER.prototype.keydown = function(event){
 };
 
 CURVEMIXER.prototype.keyup = function(event){
-	event.preventDefault();
-	console.log('key up',event.keyCode,event);
+//	event.preventDefault();
+	console.log('key up',event.keyCode);
 	/*
 	switch(event.keyCode){
 		case 71:
