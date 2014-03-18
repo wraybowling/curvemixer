@@ -169,29 +169,43 @@ OBJECT.prototype.addClass = function(name){
 	this.classList.push(name);
 };
 
-
 window.OBJECT = OBJECT;
+
 
 ////
 
 
-function GROUP(options){
-	options = options || {};
-
+function GROUP(super,options){
 	this.selected = false;
+	this.contains = [];
+
+	options = options || {};
 	if(options.translate !== undefined)
 		this.translate = {x: options.translate.x, y: options.translate.y};
 	if(options.scale !== undefined)
 		this.scale = options.scale;
 	if(options.rotate !== undefined)
 		this.rotate = options.rotate;
-	this.contains = [];
+
+	this.render();
+	return this;
 }
 
 GROUP.prototype.translate = function(translation_delta) {
 	this.translate.x += translation_delta.x;
 	this.translate.y += translation_delta.y;
+	return this;
 };
+
+GROUP.prototype.render = function(){
+	var dot = new XML('circle');
+	dot.attr('cx',this.translate.x);
+	dot.attr('cy',this.translate.y);
+	dot.attr('r',4);
+	dot.attr('class','group');
+	this.interface.appendChild(dot.element);
+	return this;
+}
 
 window.GROUP = GROUP;
 
@@ -220,7 +234,7 @@ function CURVEMIXER(element){
 	// DOM elements
 	this.element = element;
 	this.stage = element.querySelector('.stage');
-	this.interface = element.querySelector('.interface');
+	this.gui = element.querySelector('.gui');
 
 	// data
 	this.groups = [];
@@ -261,10 +275,10 @@ function CURVEMIXER(element){
 
 // Render functions
 CURVEMIXER.prototype.renderInterface = function() {
-	console.log('Building interface');
+	console.log('Building gui');
 	var i;
 
-	current_circles = this.interface.querySelectorAll('circle');
+	current_circles = this.gui.querySelectorAll('circle');
 	for(i=0; i<current_circles.length; i++){
 		current_circles[i].remove();
 	}
@@ -274,7 +288,7 @@ CURVEMIXER.prototype.renderInterface = function() {
 		dot.attr('cx',this.anchors[i].coordinates.x);
 		dot.attr('cy',this.anchors[i].coordinates.y);
 		dot.attr('r',3);
-		this.interface.appendChild(dot.element);
+		this.gui.appendChild(dot.element);
 	}
 };
 
@@ -351,11 +365,10 @@ CURVEMIXER.prototype.mousemove = function(event){
 	var d = result.join(' ');
 
 	mixer.interface.querySelector('.selection-line').setAttributeNS(null,'d',d);
-
+*/
 	// set previous to current
-	mixer.prevX = event.x;
-	mixer.prevY = event.y;
-	*/
+	this.prevX = event.x;
+	this.prevY = event.y;
 };
 
 CURVEMIXER.prototype.mousedown = function(event){
@@ -378,21 +391,21 @@ CURVEMIXER.prototype.mousewheel = function(event){
 };
 
 CURVEMIXER.prototype.keydown = function(event){
-//	event.preventDefault();
+	event.preventDefault();
 	console.log('keydown',event.keyCode);
-/*
 
-	if( ! mixer.states.keyDown){
+	if( ! this.states.keyDown){
 		switch(event.keyCode){
-			case 9: console.log('tab'); break;
-			case 76:mixer.selected_anchor_type = 'L'; break;
-			case 72:mixer.selected_anchor_type = 'H'; break;
-			case 86:mixer.selected_anchor_type = 'V'; break;
-			case 67:mixer.selected_anchor_type = 'C'; break;
-			case 83:mixer.selected_anchor_type = 'S'; break;
-			case 81:mixer.selected_anchor_type = 'Q'; break;
-			case 84:mixer.selected_anchor_type = 'T'; break;
-			case 65:mixer.selected_anchor_type = 'A'; break;
+			case 20: console.log('edit mode'); this.states.editing = true; break;
+			case 9: console.log('making group'); this.groups.push( new GROUP({translate:{x:this.prevX, y:this.prevY}}) ); break;
+			// case 76:mixer.selected_anchor_type = 'L'; break;
+			// case 72:mixer.selected_anchor_type = 'H'; break;
+			// case 86:mixer.selected_anchor_type = 'V'; break;
+			// case 67:mixer.selected_anchor_type = 'C'; break;
+			// case 83:mixer.selected_anchor_type = 'S'; break;
+			// case 81:mixer.selected_anchor_type = 'Q'; break;
+			// case 84:mixer.selected_anchor_type = 'T'; break;
+			// case 65:mixer.selected_anchor_type = 'A'; break;
 
 			case 90: // Z
 				mixer.closed = !mixer.closed;
@@ -408,22 +421,22 @@ CURVEMIXER.prototype.keydown = function(event){
 
 	//console.log('anchor type',mixer.selected_anchor_type);
 	//console.log('mode',mixer.mode);
-	mixer.states.keyDown = true;
-	*/
+	this.states.keyDown = true;
 };
 
 CURVEMIXER.prototype.keyup = function(event){
 //	event.preventDefault();
 	console.log('key up',event.keyCode);
-	/*
+
 	switch(event.keyCode){
+		case 20: console.log('object mode'); this.states.editing = false; break;
 		case 71:
 			mixer.mode = null;
 			mixer.selected_anchor_index = null;
 	}
 
 	mixer.states.keyDown = false;
-	*/
+
 };
 
 window.CURVEMIXER = CURVEMIXER;
