@@ -175,13 +175,17 @@ window.OBJECT = OBJECT;
 ////
 
 
-function GROUP(super,options){
+function GROUP(owner,options){
 	this.selected = false;
 	this.contains = [];
+	this.owner = owner;
 
 	options = options || {};
-	if(options.translate !== undefined)
-		this.translate = {x: options.translate.x, y: options.translate.y};
+	this.translate = {
+		x: options.translate.x || 0
+		, y: options.translate.y || 0
+	};
+
 	if(options.scale !== undefined)
 		this.scale = options.scale;
 	if(options.rotate !== undefined)
@@ -203,9 +207,10 @@ GROUP.prototype.render = function(){
 	dot.attr('cy',this.translate.y);
 	dot.attr('r',4);
 	dot.attr('class','group');
-	this.interface.appendChild(dot.element);
+	console.log('interface?????',this.owner);
+	this.owner.gui.appendChild(dot.element);
 	return this;
-}
+};
 
 window.GROUP = GROUP;
 
@@ -396,8 +401,15 @@ CURVEMIXER.prototype.keydown = function(event){
 
 	if( ! this.states.keyDown){
 		switch(event.keyCode){
-			case 20: console.log('edit mode'); this.states.editing = true; break;
-			case 9: console.log('making group'); this.groups.push( new GROUP({translate:{x:this.prevX, y:this.prevY}}) ); break;
+			case 20: // caps lock
+				console.log('edit mode');
+				this.states.editing = true;
+				break;
+			case 9: // tab
+				console.log('making group');
+				this.groups.push( new GROUP(this,{translate:{x:this.prevX, y:this.prevY}}) );
+				console.log(this.groups);
+				break;
 			// case 76:mixer.selected_anchor_type = 'L'; break;
 			// case 72:mixer.selected_anchor_type = 'H'; break;
 			// case 86:mixer.selected_anchor_type = 'V'; break;
