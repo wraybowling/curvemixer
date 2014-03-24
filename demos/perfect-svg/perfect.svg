@@ -1,8 +1,8 @@
-<?xml-stylesheet type="text/css" href="svg.css" ?>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg viewBox="0 0 123 123">
+<?xml-stylesheet type="text/css" href="perfect.css" ?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 	<defs>
-		<filter id="filter0" y="0" x="0" width="123" height="123">
+		<filter id="filter0" y="0" x="0" width="100" height="100">
 			<feGaussianBlur id="blur0" stdDeviation="12"/>
 		</filter>
 	</defs>
@@ -10,6 +10,11 @@
 	<!-- begin content -->
 
 	<g id="group0">
-		<path id="path0" d="M 0 0, A 19 17 0 1 1 -38 0 19 17 0 1 1 38 0 z">
+		<path id="path0" d="
+			M 50 50,
+			l 40 0,
+			a 40 40, 0 1 0 -40,40
+			z
+			"/>
 	</g>
 </svg>
