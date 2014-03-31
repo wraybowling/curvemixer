@@ -181,6 +181,7 @@ function GROUP(owner,options){
 	this.owner = owner;
 
 	options = options || {};
+	options.translate = options.translate || {};
 	this.translate = {
 		x: options.translate.x || 0
 		, y: options.translate.y || 0
