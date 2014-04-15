@@ -148,11 +148,24 @@ window.CHAIN = CHAIN;
 ////
 
 
-function OBJECT(){
+function OBJECT(owner,options){
+	console.group('Object created', this);
+	this.owner = owner;
 	this.selected = false;
 	this.segments = [];
 	this.chains = [];
 	this.classList = [];
+
+	options = options || {};
+	this.translate = {
+		x: options.translate.x || 0
+		, y: options.translate.y || 0
+	};
+
+	this.render();
+
+	console.groupEnd();
+	return this;
 }
 
 OBJECT.prototype.translateOrigin = function(translation_delta){
@@ -163,11 +176,24 @@ OBJECT.prototype.translateOrigin = function(translation_delta){
 			this.chains[c].points[p].y += translation_delta.y;
 		}
 	}
+	return this;
 };
 
 OBJECT.prototype.addClass = function(name){
 	this.classList.push(name);
+	return this;
 };
+
+OBJECT.prototype.render = function(){
+	var dot = new XML('circle');
+	dot.attr('cx',this.translate.x);
+	dot.attr('cy',this.translate.y);
+	dot.attr('r',4);
+	dot.attr('class','object');
+	console.log('interface?????',this.owner);
+	this.owner.gui.appendChild(dot.element);
+	return this;
+}
 
 window.OBJECT = OBJECT;
 
@@ -244,7 +270,7 @@ function CURVEMIXER(element){
 
 	// data
 	this.groups = [];
-	this.objets = [];
+	this.objects = [];
 	this.chains = [];
 	this.segments = [];
 	this.points = [];
@@ -411,6 +437,10 @@ CURVEMIXER.prototype.keydown = function(event){
 				this.groups.push( new GROUP(this,{translate:{x:this.prevX, y:this.prevY}}) );
 				console.log(this.groups);
 				break;
+			case 80: // P
+				this.objects.push( new OBJECT(this,{translate:{x:this.prevX, y:this.prevY}}) );
+				break;
+
 			// case 76:mixer.selected_anchor_type = 'L'; break;
 			// case 72:mixer.selected_anchor_type = 'H'; break;
 			// case 86:mixer.selected_anchor_type = 'V'; break;

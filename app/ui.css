@@ -12,7 +12,7 @@ svg{
 	background-color:#cbfffb;
 }
 
-.interface .selection-line{
+.gui .selection-line{
 	stroke-width:2px;
 	stroke:red;
 }
@@ -23,10 +23,14 @@ svg{
 	stroke:#ff6b20;
 }
 
-.interface circle{
+.gui circle.group{
 	fill:black;
 }
-	
+
+.gui circle.object{
+	fill:red;
+}
+
 svg *{
 	fill:black;
 }
