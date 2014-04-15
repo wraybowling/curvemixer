@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="2351"
+   height="512"
+   id="svg4509"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/Users/wray/Projects/Curvemixer/trunk/app/logo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4511">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4531"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4527"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4523"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4519"
+       is_visible="true" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.23198395"
+     inkscape:cx="1907.7014"
+     inkscape:cy="196.11487"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="763"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2987"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4514">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-540.36218)">
+    <path
+       id="path4525"
+       style="fill:#fd3301;stroke:#103800;stroke-width:12.33295536;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:path-effect="#path-effect4527"
+       inkscape:original-d="M 500,932.36218 400,1032.3622 300,932.36218 l 100,-100 z m -100,-380 -100,100 100,100 100,-100 z m -80,20 80,80 -80,80 c 0,0 -162.84584,-16.83709 -160,60 2.8458,76.8371 160,60 160,60 l 80,80 -80,80.00002 c 0,0 -342.687282,-29.33019 -300,-220.00002 42.687282,-190.66985 300,-220 300,-220 z"
+       d="M 500,932.36218 400,1032.3622 300,932.36218 l 100,-100 100,100 m -100,-380 -100,100 100,100 100,-100 -100,-100 m -80,20 80,80 -80,80 C 307.87974,718.47439 291.45406,708.3981 273.5817,703.887 c -17.87237,-4.5111 -37.11246,-3.43708 -54.37171,3.03514 -17.25926,6.47222 -32.46142,18.31405 -42.9607,33.46451 C 165.75001,755.53712 160,773.92929 160,792.36218 c 0,18.43289 5.75001,36.82506 16.24929,51.97553 10.49928,15.15046 25.70144,26.99229 42.9607,33.46451 17.25925,6.47222 36.49934,7.54624 54.37171,3.03514 17.87236,-4.5111 34.29804,-14.58739 46.4183,-28.47518 l 80,80 -80,80.00002 c -68.79015,21.6793 -147.57892,8.6631 -205.74122,-33.98926 C 56.09647,935.72058 19.999997,864.48761 20,792.36218 20.000003,720.23675 56.096479,649.00379 114.25878,606.35143 172.42109,563.69907 251.20985,550.68286 320,572.36218"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccccccscccsc" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3829"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Optima;-inkscape-font-specification:Optima"
+       transform="matrix(1.9654864,0,0,1.9654864,-1497.4036,328.17138)"><flowRegion
+         id="flowRegion3831"><rect
+           id="rect3833"
+           width="1650.9763"
+           height="293.12372"
+           x="650.9071"
+           y="93.867622"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Optima;-inkscape-font-specification:Optima" /></flowRegion><flowPara
+         id="flowPara3835"
+         style="font-size:214px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Optima;-inkscape-font-specification:Optima">urvemixer</flowPara></flowRoot>  </g>
+</svg>
