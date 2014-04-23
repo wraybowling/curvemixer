@@ -157,10 +157,8 @@ function OBJECT(owner,options){
 	this.classList = [];
 
 	options = options || {};
-	this.translate = {
-		x: options.translate.x || 0
-		, y: options.translate.y || 0
-	};
+	this.x = options.x || 0;
+	this.y = options.y || 0;
 
 	this.render();
 
@@ -186,14 +184,14 @@ OBJECT.prototype.addClass = function(name){
 
 OBJECT.prototype.render = function(){
 	var dot = new XML('circle');
-	dot.attr('cx',this.translate.x);
-	dot.attr('cy',this.translate.y);
+	dot.attr('cx',this.x);
+	dot.attr('cy',this.y);
 	dot.attr('r',4);
 	dot.attr('class','object');
 	console.log('interface?????',this.owner);
 	this.owner.gui.appendChild(dot.element);
 	return this;
-}
+};
 
 window.OBJECT = OBJECT;
 
@@ -207,11 +205,8 @@ function GROUP(owner,options){
 	this.owner = owner;
 
 	options = options || {};
-	options.translate = options.translate || {};
-	this.translate = {
-		x: options.translate.x || 0
-		, y: options.translate.y || 0
-	};
+	this.x = options.x || 0;
+	this.y = options.y || 0;
 
 	if(options.scale !== undefined)
 		this.scale = options.scale;
@@ -223,15 +218,15 @@ function GROUP(owner,options){
 }
 
 GROUP.prototype.translate = function(translation_delta) {
-	this.translate.x += translation_delta.x;
-	this.translate.y += translation_delta.y;
+	this.x += translation_delta.x;
+	this.y += translation_delta.y;
 	return this;
 };
 
 GROUP.prototype.render = function(){
 	var dot = new XML('circle');
-	dot.attr('cx',this.translate.x);
-	dot.attr('cy',this.translate.y);
+	dot.attr('cx',this.x);
+	dot.attr('cy',this.y);
 	dot.attr('r',4);
 	dot.attr('class','group');
 	console.log('interface?????',this.owner);
@@ -267,6 +262,7 @@ function CURVEMIXER(element){
 	this.element = element;
 	this.stage = element.querySelector('.stage');
 	this.gui = element.querySelector('.gui');
+	this.selection_line = element.querySelector('.gui .selection-line');
 
 	// data
 	this.groups = [];
@@ -292,8 +288,8 @@ function CURVEMIXER(element){
 	this.prevX = 0;
 	this.prevY = 0;
 	this.closest_anchor_index = 0;
-	this.selected_anchor_type = null;
-	this.selected_anchor_index = null;
+	this.selected_type = null;
+	this.selected = undefined;
 
 	// Attach DOM Listeners
 	var self = this;
@@ -354,6 +350,29 @@ CURVEMIXER.prototype.render = function() {
 
 // Event functions
 CURVEMIXER.prototype.mousemove = function(event){
+	var i;
+
+	// group manipulation mode
+	if( ! this.states.editing ){
+		if(this.groups.length > 0){
+//			console.log('a group is here');
+
+			var closest_distance = 9999;
+			var closest_index = 0;
+
+			// determine closest group and select it
+			for(i=0; i<this.groups.length; i++){
+				var new_distance = distance(this.groups[i].x, this.groups[i].y, event.x, event.y);
+				if(new_distance < closest_distance){
+					closest_distance = new_distance;
+					closest_index = i;
+				}
+			}
+			this.selected = this.groups[closest_index];
+		}
+	}else{
+
+	}
 
 	//window.activeCurvemixer = this;
 	//console.log(this);
@@ -389,15 +408,15 @@ CURVEMIXER.prototype.mousemove = function(event){
 		}
 	}
 //		console.groupEnd();
-
-	// display line to nearest anchor
-	result = ['M'];
-	result.push(event.x + ',' + event.y);
-	result.push('L' + mixer.anchors[mixer.closest_anchor_index].coordinates.x + ',' + mixer.anchors[mixer.closest_anchor_index].coordinates.y);
-	var d = result.join(' ');
-
-	mixer.interface.querySelector('.selection-line').setAttributeNS(null,'d',d);
 */
+	// display line to nearest anchor
+	if(this.selected != undefined){
+		var d = ['M'];
+		d.push(event.x + ',' + event.y);
+		d.push('L' + this.selected.x + ',' + this.selected.y);
+		this.selection_line.setAttributeNS(null,'d',d.join(' '));
+	}
+
 	// set previous to current
 	this.prevX = event.x;
 	this.prevY = event.y;
@@ -434,11 +453,11 @@ CURVEMIXER.prototype.keydown = function(event){
 				break;
 			case 9: // tab
 				console.log('making group');
-				this.groups.push( new GROUP(this,{translate:{x:this.prevX, y:this.prevY}}) );
+				this.groups.push( new GROUP(this,{x:this.prevX, y:this.prevY}) );
 				console.log(this.groups);
 				break;
 			case 80: // P
-				this.objects.push( new OBJECT(this,{translate:{x:this.prevX, y:this.prevY}}) );
+				this.objects.push( new OBJECT(this,{x:this.prevX, y:this.prevY}) );
 				break;
 
 			// case 76:mixer.selected_anchor_type = 'L'; break;
