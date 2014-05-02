@@ -40,12 +40,12 @@
         var l = m;
         for (var k = 0; k < n; k += 1) {
             if (l < n) l += 1;
-            for (var i = k + 1; i < l; i += 1) {
+            for (i = k + 1; i < l; i += 1) {
                 v[i] -= mat[k].al[i - k - 1] * v[k];
             }
         }
         l = 0;
-        for (var i = n - 1; i >= 0; i--) {
+        for (i = n - 1; i >= 0; i--) {
             var mat_i = mat[i];
             var x = v[i];
             for (k = 1; k <= l; k += 1) {
@@ -64,7 +64,7 @@
     function integ_euler_10(k0, k1) {
         console.group('integrate euler 10');
         var t1_1 = k0;
-        var t1_2 = .5 * k1;
+        var t1_2 = 0.5 * k1;
         var t2_2 = t1_1 * t1_1;
         var t2_3 = 2 * (t1_1 * t1_2);
         var t2_4 = t1_2 * t1_2;
@@ -83,27 +83,25 @@
         var t7_8 = t6_6 * t1_2 + t6_7 * t1_1;
         var t8_8 = t6_6 * t2_2;
         var u = 1;
-        u -= (1./24) * t2_2 + (1./160) * t2_4;
-        u += (1./1920) * t4_4 + (1./10752) * t4_6 + (1./55296) * t4_8;
-        u -= (1./322560) * t6_6 + (1./1658880) * t6_8;
-        u += (1./92897280) * t8_8;
-        var v = (1./12) * t1_2;
-        v -= (1./480) * t3_4 + (1./2688) * t3_6;
-        v += (1./53760) * t5_6 + (1./276480) * t5_8;
-        v -= (1./11612160) * t7_8;
-        res[0] = u;
-        res[1] = v;
-        console.log('res',res);
+        u -= (1/24) * t2_2 + (1/160) * t2_4;
+        u += (1/1920) * t4_4 + (1/10752) * t4_6 + (1/55296) * t4_8;
+        u -= (1/322560) * t6_6 + (1/1658880) * t6_8;
+        u += (1/92897280) * t8_8;
+        var v = (1/12) * t1_2;
+        v -= (1/480) * t3_4 + (1/2688) * t3_6;
+        v += (1/53760) * t5_6 + (1/276480) * t5_8;
+        v -= (1/11612160) * t7_8;
+        console.log('u,v',[u,v]);
         console.groupEnd();
-        return res;
+        return [u,v];
     }
 
     function integ_spiro_12(k0, k1, k2, k3) {
         console.group('integrate spiro 12');
         var t1_1 = k0;
-        var t1_2 = .5 * k1;
-        var t1_3 = (1./6) * k2;
-        var t1_4 = (1./24) * k3;
+        var t1_2 = 0.5 * k1;
+        var t1_3 = (1/6) * k2;
+        var t1_4 = (1/24) * k3;
         var t2_2 = t1_1 * t1_1;
         var t2_3 = 2 * (t1_1 * t1_2);
         var t2_4 = 2 * (t1_1 * t1_3) + t1_2 * t1_2;
@@ -138,33 +136,32 @@
         var t9_10 = t8_8 * t1_2 + t8_9 * t1_1;
         var t10_10 = t8_8 * t2_2;
         var u = 1;
-        u -= (1./24) * t2_2 + (1./160) * t2_4 + (1./896) * t2_6 + (1./4608) * t2_8;
-        u += (1./1920) * t4_4 + (1./10752) * t4_6 + (1./55296) * t4_8 + (1./270336) * t4_10;
-        u -= (1./322560) * t6_6 + (1./1658880) * t6_8 + (1./8110080) * t6_10;
-        u += (1./92897280) * t8_8 + (1./454164480) * t8_10;
+        u -= (1/24) * t2_2 + (1/160) * t2_4 + (1/896) * t2_6 + (1/4608) * t2_8;
+        u += (1/1920) * t4_4 + (1/10752) * t4_6 + (1/55296) * t4_8 + (1/270336) * t4_10;
+        u -= (1/322560) * t6_6 + (1/1658880) * t6_8 + (1/8110080) * t6_10;
+        u += (1/92897280) * t8_8 + (1/454164480) * t8_10;
         u -= 2.4464949595157930e-11 * t10_10;
-        var v = (1./12) * t1_2 + (1./80) * t1_4;
-        v -= (1./480) * t3_4 + (1./2688) * t3_6 + (1./13824) * t3_8 + (1./67584) * t3_10;
-        v += (1./53760) * t5_6 + (1./276480) * t5_8 + (1./1351680) * t5_10;
-        v -= (1./11612160) * t7_8 + (1./56770560) * t7_10;
+        var v = (1/12) * t1_2 + (1/80) * t1_4;
+        v -= (1/480) * t3_4 + (1/2688) * t3_6 + (1/13824) * t3_8 + (1/67584) * t3_10;
+        v += (1/53760) * t5_6 + (1/276480) * t5_8 + (1/1351680) * t5_10;
+        v -= (1/11612160) * t7_8 + (1/56770560) * t7_10;
         v += 2.4464949595157932e-10 * t9_10;
-        res[0] = u;
-        res[1] = v;
+        console.log('u,v',[u,v]);
         console.groupEnd();
-        return res;
+        return [u,v];
     }
 
     function integ_spiro_12n(k0, k1, k2, k3, n) {
         console.group('integrate spiro 12 n');
         var th1 = k0;
-        var th2 = .5 * k1;
-        var th3 = (1./6) * k2;
-        var th4 = (1./24) * k3;
+        var th2 = 0.5 * k1;
+        var th3 = (1/6) * k2;
+        var th4 = (1/24) * k3;
         var x, y;
-        var ds = 1. / n;
+        var ds = 1.0 / n;
         var ds2 = ds * ds;
         var ds3 = ds2 * ds;
-        var s = .5 * ds - .5;
+        var s = 0.5 * ds - 0.5;
 
         k0 *= ds;
         k1 *= ds;
@@ -175,8 +172,8 @@
         y = 0;
 
         for (var i = 0; i < n; i += 1) {
-        var km0 = (((1./6) * k3 * s + .5 * k2) * s + k1) * s + k0;
-        var km1 = ((.5 * k3 * s + k2) * s + k1) * ds;
+        var km0 = (((1/6) * k3 * s + 0.5 * k2) * s + k1) * s + k0;
+        var km1 = ((0.5 * k3 * s + k2) * s + k1) * ds;
         var km2 = (k3 * s + k2) * ds2;
         var km3 = k3 * ds3;
 
@@ -192,6 +189,7 @@
         y += cth * v + sth * u;
         s += ds;
         }
+        console.log('[x * ds, y * ds]',[x * ds, y * ds]);
         console.groupEnd();
         return [x * ds, y * ds];
     }
@@ -200,9 +198,10 @@
     function fresnel(x, res) {
         console.group('fresnel');
         var x2 = x * x;
+        var t;
         if (x2 < 2.5625) {
             console.log('x^2 > 2.5625');
-            var t = x2 * x2;
+            t = x2 * x2;
             res[0] = x * x2 * (((((-2.99181919401019853726E3 * t +
                      7.08840045257738576863E5) * t +
                     -6.29741486205862506537E7) * t +
@@ -228,7 +227,7 @@
               4.12142090722199792936E-2) * t + 1.00000000000000000118E0);
         } else {
             console.log('x^2 < 2.5625');
-            var t = 1.0 / (Math.PI * x2);
+            t = 1.0 / (Math.PI * x2);
             var u = t * t;
             var f = 1.0 - u * (((((((((4.21543555043677546506E-1 * u +
                        1.43407919780758885261E-1) * u +
@@ -270,7 +269,7 @@
             1.10273215066240270757E-12) * u +
                1.38796531259578871258E-15) * u +
               8.39158816283118707363E-19) * u + 1.86958710162783236342E-22);
-            t = Math.PI * .5 * x2;
+            t = Math.PI * 0.5 * x2;
             var c = Math.cos(t);
         var s = Math.sin(t);
             t = Math.PI * x;
@@ -289,16 +288,16 @@
         console.group('integrate euler');
         var ak1 = Math.abs(k1);
         if (ak1 < 5e-8) {
-        res[0] = (k0 == 0) ? 1 : Math.sin(k0 * .5) / (k0 * .5);
+        res[0] = (k0 === 0) ? 1 : Math.sin(k0 * 0.5) / (k0 * 0.5);
         res[1] = 0;
         return res;
         }
         var sqrk1 = Math.sqrt(ak1 * Math.PI);
-        var t0 = (k0 - .5 * ak1) / sqrk1;
-        var t1 = (k0 + .5 * ak1) / sqrk1;
+        var t0 = (k0 - 0.5 * ak1) / sqrk1;
+        var t1 = (k0 + 0.5 * ak1) / sqrk1;
         fresnel(t0, yx0);
         fresnel(t1, yx1);
-        var thm = .5 * k0 * k0 / ak1;
+        var thm = 0.5 * k0 * k0 / ak1;
         var s = Math.sin(thm) / (t1 - t0);
         var c = Math.cos(thm) / (t1 - t0);
         res[0] = (yx1[1] - yx0[1]) * c + (yx1[0] - yx0[0]) * s;
@@ -312,41 +311,42 @@
     // This function is tuned to give an accuracy within 1e-9.
     function integ_spiro(k0, k1, k2, k3) {
         console.group('integrate spiro');
-        if (k2 == 0 && k3 == 0) {
+        var result;
+        if (k2 === 0 && k3 === 0) {
             // Euler spiral
-            var est_err_raw = .2 * k0 * k0 + Math.abs(k1);
+            var est_err_raw = 0.2 * k0 * k0 + Math.abs(k1);
             if (est_err_raw < 1) {
                 console.log('estimated error < 1');
-                if (est_err_raw < .45){
+                if (est_err_raw < 0.45){
                     console.log('error < 0.45');
-                    var result = integ_euler_10(k0, k1);
+                    result = integ_euler_10(k0, k1);
                     console.groupEnd();
                     return result;
                 }else{
                     console.log('error > 0.45');
-                    var result = integ_spiro_12(k0, k1, k2, k3);
+                    result = integ_spiro_12(k0, k1, k2, k3);
                     console.groupEnd();
                     return result;
                 }
             }
             console.log('error > 1');
-            var result = integ_euler(k0, k1);
+            result = integ_euler(k0, k1);
             console.groupEnd();
             return result;
         }
-        console.log('either k2 or k3 is not equal to 0.')
-        var result = integ_spiro_12n(k0, k1, k2, k3, 4);
+        console.log('either k2 or k3 is not equal to 0.');
+        result = integ_spiro_12n(k0, k1, k2, k3, 4);
         console.groupEnd();
         return result;
     }
 
-    var alternating_stroke = true;
+    var alternating_stroke = true; //wray's
 
     function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
         console.group('seg_to_bez');
         console.log('ks',ks);
         console.log('coordinates', x0, y0, x1, y1);
-        var bend = Math.abs(ks[0]) + Math.abs(.5 * ks[1]) + Math.abs(.125 * ks[2]) + Math.abs((1./48) * ks[3]);
+        var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
         console.log('bend',bend);
         if (bend < 1e-8) {
             console.log('bend < 0.00000001');
@@ -362,9 +362,9 @@
             var rot = seg_th - th;
             if (bend < 1) {
                 console.log('bend < 1');
-                var th_even = (1./384) * ks[3] + (1./8) * ks[1] + rot;
-                var th_odd = (1./48) * ks[2] + .5 * ks[0];
-                var scale3 = scale * (1./3);
+                var th_even = (1/384) * ks[3] + (1/8) * ks[1] + rot;
+                var th_odd = (1/48) * ks[2] + 0.5 * ks[0];
+                var scale3 = scale * (1/3);
                 var ul = scale3 * Math.cos(th_even - th_odd);
                 var vl = scale3 * Math.sin(th_even - th_odd);
                 var ur = scale3 * Math.cos(th_even + th_odd);
@@ -385,21 +385,21 @@
                 console.log('bend > 1 (subdivide)');
                 /* subdivide */
                 var ksub =
-                [.5 * ks[0] - .125 * ks[1] + (1./64) * ks[2] - (1./768) * ks[3],
-                 .25 * ks[1] - (1./16) * ks[2] + (1./128) * ks[3],
-                 .125 * ks[2] - (1./32) * ks[3],
-                 (1./16) * ks[3]
+                [0.5 * ks[0] - 0.125 * ks[1] + (1/64) * ks[2] - (1/768) * ks[3],
+                 0.25 * ks[1] - (1/16) * ks[2] + (1/128) * ks[3],
+                 0.125 * ks[2] - (1/32) * ks[3],
+                 (1/16) * ks[3]
                  ];
-                var thsub = rot - .25 * ks[0] + (1./32) * ks[1] - (1./384) * ks[2] + (1./6144) * ks[3];
-                var cth = .5 * scale * Math.cos(thsub);
-                var sth = .5 * scale * Math.sin(thsub);
+                var thsub = rot - 0.25 * ks[0] + (1/32) * ks[1] - (1/384) * ks[2] + (1/6144) * ks[3];
+                var cth = 0.5 * scale * Math.cos(thsub);
+                var sth = 0.5 * scale * Math.sin(thsub);
                 var xysub = integ_spiro(ksub[0], ksub[1], ksub[2], ksub[3]);
                 var xmid = x0 + cth * xysub[0] - sth * xysub[1];
                 var ymid = y0 + cth * xysub[1] + sth * xysub[0];
                 seg_to_bez(ctx, ksub, x0, y0, xmid, ymid);
-                ksub[0] += .25 * ks[1] + (1./384) * ks[3];
-                ksub[1] += .125 * ks[2];
-                ksub[2] += (1./16) * ks[3];
+                ksub[0] += 0.25 * ks[1] + (1/384) * ks[3];
+                ksub[1] += 0.125 * ks[2];
+                ksub[2] += (1/16) * ks[3];
                 seg_to_bez(ctx, ksub, xmid, ymid, x1, y1);
             }
         }
@@ -415,10 +415,11 @@
             k0 -= 4 * Math.PI;
         while (k0 < -2 * Math.PI)
             k0 += 4 * Math.PI;
-        var k1 = 6 * (1 - Math.pow((.5 / Math.PI) * k0, 3)) * error_old;
+        var k1 = 6 * (1 - Math.pow((0.5 / Math.PI) * k0, 3)) * error_old;
+        var xy;
         for (var i = 0; i < 10; i += 1) {
-            var xy = integ_spiro(k0, k1, 0, 0);
-            var error = (th1 - th0) - (.25 * k1 - 2 * Math.atan2(xy[1], xy[0]));
+            xy = integ_spiro(k0, k1, 0, 0);
+            var error = (th1 - th0) - (0.25 * k1 - 2 * Math.atan2(xy[1], xy[0]));
             if (Math.abs(error) < 1e-9) break;
             var new_k1 = k1 + (k1_old - k1) * error / (error - error_old);
             k1_old = k1;
@@ -436,8 +437,8 @@
         console.group('fit euler ks', th0, th1, chord);
         var p = fit_euler(th0, th1);
         var sc = p.chord / chord;
-        p.k0 = (p.ks[0] - .5 * p.ks[1]) * sc;
-        p.k1 = (p.ks[0] + .5 * p.ks[1]) * sc;
+        p.k0 = (p.ks[0] - 0.5 * p.ks[1]) * sc;
+        p.k1 = (p.ks[0] + 0.5 * p.ks[1]) * sc;
         console.groupEnd();
         return p;
     }
@@ -474,15 +475,16 @@
     Spline.prototype.show_in_shell = function () {
         showobj(this.segs);
         showobj(this.nodes);
-    }
+    };
 
     function setup_solver(path) {
         console.group('set up solver');
-        var segs = new Array;
-        var nodes = new Array;
+        var segs = [];
+        var nodes = [];
+        var i,seg;
 
-        for (var i = 0; i < path.length - 1; i += 1) {
-        var seg = {};
+        for (i = 0; i < path.length - 1; i += 1) {
+        seg = {};
         var dx = path[i + 1][0] - path[i][0];
         var dy = path[i + 1][1] - path[i][1];
         seg.th = Math.atan2(dy, dx);
@@ -493,12 +495,8 @@
         var node = {};
         node.xy = path[i];
         node.dth = 0;
-        if (i > 0) {
-            node.left = segs[i - 1];
-        }
-        if (i < path.length - 1) {
-            node.right = segs[i];
-        }
+        if (i > 0) node.left = segs[i - 1];
+        if (i < path.length - 1) node.right = segs[i];
         if (node.left) node.left.right = node;
         if (node.right) node.right.left = node;
         if (node.left && node.right) {
@@ -512,10 +510,10 @@
         }
         nodes[i] = node;
         }
-        for (var i = 0; i < segs.length; i += 1) {
-            var seg = segs[i];
-            if (seg.init_th0 == undefined) {
-                if (seg.init_th1 == undefined) {
+        for (i = 0; i < segs.length; i += 1) {
+            seg = segs[i];
+            if (seg.init_th0 === undefined) {
+                if (seg.init_th1 === undefined) {
                 seg.init_th0 = 0;
                 seg.init_th1 = 0;
                 seg.get_ths = get_ths_straight;
@@ -524,7 +522,7 @@
                 seg.get_ths = get_ths_left;
                 }
             } else {
-                if (seg.init_th1 == undefined) {
+                if (seg.init_th1 === undefined) {
                 seg.init_th1 = seg.init_th0;
                 seg.get_ths = get_ths_right;
                 } else {
@@ -532,7 +530,7 @@
                 }
             }
         }
-        var result = new Spline(segs, nodes)
+        var result = new Spline(segs, nodes);
         console.trace();
         console.groupEnd();
         return result;
@@ -567,16 +565,18 @@
         var maxerr = 0;
         var segs = spline.segs;
         var nodes = spline.nodes;
-        for (var i = 0; i < segs.length; i += 1) {
+        var i;
+        for (i = 0; i < segs.length; i += 1) {
         var seg = segs[i];
         var ths = seg.get_ths();
         seg.params = fit_euler_ks(ths[0], ths[1], seg.chord);
         }
         var dks = [];
         var mat = [];
-        j = 0;
-        for (var i = 0; i < nodes.length; i += 1) {
-            var node = nodes[i];
+        var j = 0;
+        var node;
+        for (i = 0; i < nodes.length; i += 1) {
+            node = nodes[i];
             if (node.left && node.right) {
                 var kerr = node.right.params.k0 - node.left.params.k1;
                 dks[j] = kerr;
@@ -585,12 +585,12 @@
                 j += 1;
             }
         }
-        if (mat.length == 0) return 0;
+        if (mat.length === 0) return 0;
             bandec(mat, mat.length, 1);
             banbks(mat, dks, mat.length, 1);
             j = 0;
             for (i = 0; i < nodes.length; i += 1) {
-            var node = nodes[i];
+            node = nodes[i];
             if (node.left && node.right) {
                 node.dth -= step * dks[j];
                 j += 1;
@@ -706,8 +706,9 @@
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         step = 1;
         msg = null;
+        var i, spline;
         for (var outer = 0; outer < 3; outer += 1) {
-            var spline = setup_solver(this.path);
+            spline = setup_solver(this.path);
             if (outer == 2) break;
             try {
                 for (var j = 0; j < 30; j += 1)
@@ -716,7 +717,7 @@
             } catch (e) {
                 console.error(msg);
             }
-                step *= .5;
+                step *= 0.5;
             }
             var nodes = spline.nodes;
 
@@ -733,7 +734,7 @@
             alternating_stroke = false;
             ctx.lineWidth = 3;
             var segs = spline.segs;
-            for (var i = 0; i < segs.length; i += 1) {
+            for (i = 0; i < segs.length; i += 1) {
                 var seg = segs[i];
                 var ths = seg.get_ths();
                 var ks = fit_euler(ths[0], ths[1]).ks;
@@ -757,7 +758,7 @@
 
             // draw dots
             ctx.fillStyle = 'white';
-            for (var i = 0; i < nodes.length; i += 1) {
+            for (i = 0; i < nodes.length; i += 1) {
                 var node = nodes[i];
                 ctx.beginPath();
                 ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
@@ -765,7 +766,7 @@
             }
         }
         console.groupEnd();
-    }
+    };
 
     SpiroUi.prototype.queue_repaint = function () {
         //var start = new Date();
@@ -774,48 +775,46 @@
         this.timeoutid = window.setTimeout(function () { self.paint(); }, 1);
         //this.paint();
         //myalert(String(new Date() - start));
-    }
-
-
+    };
 
     SpiroUi.prototype.down = function(evt) {
         var canvas = this.canvas;
-        var x = evt.offsetX != undefined ? evt.offsetX : evt.pageX - canvas.offsetLeft;
-        var y = evt.offsetY != undefined ? evt.offsetY : evt.pageY - canvas.offsetTop;
+        var x = evt.offsetX !== undefined ? evt.offsetX : evt.pageX - canvas.offsetLeft;
+        var y = evt.offsetY !== undefined ? evt.offsetY : evt.pageY - canvas.offsetTop;
         var hit = null;
         var hitr2 = null;
         for (var i = 0; i < this.path.length; i += 1) {
         var xy = this.path[i];
         var r2 = (xy[0] - x) * (xy[0] - x) + (xy[1] - y) * (xy[1] - y);
-        if (r2 < (hitr2 == null ? 20 : hitr2)) {
+        if (r2 < (hitr2 === null ? 20 : hitr2)) {
             hit = i;
             hitr2 = r2;
         }
         }
-        if (hit == null) {
+        if (hit === null) {
         this.path[i] = [x, y];
         hit = this.path.length - 1;
         this.queue_repaint();
         }
         this.hit = hit;
         evt.preventDefault();
-    }
+    };
 
     SpiroUi.prototype.move = function(evt) {
         var canvas = this.canvas;
-        var x = evt.offsetX != undefined ? evt.offsetX : evt.pageX - canvas.offsetLeft;
-        var y = evt.offsetY != undefined ? evt.offsetY : evt.pageY - canvas.offsetTop;
-        if (this.hit != null) {
+        var x = evt.offsetX !== undefined ? evt.offsetX : evt.pageX - canvas.offsetLeft;
+        var y = evt.offsetY !== undefined ? evt.offsetY : evt.pageY - canvas.offsetTop;
+        if (this.hit !== null) {
         this.path[this.hit] = [x, y];
         this.queue_repaint();
         }
         evt.preventDefault();
-    }
+    };
 
     SpiroUi.prototype.up = function(evt) {
         this.hit = null;
         evt.preventDefault();
-    }
+    };
 
     /*
     function myalert(s) {
