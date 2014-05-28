@@ -48,6 +48,7 @@ window.POINT = POINT;
 function HANDLE(type,point){
 	this.type = type || 'free'; // straight, catmul-rom, free
 	this.point = point;
+	this.k = undefined; // curvature as the curve approaches the anchor
 }
 
 window.HANDLE = HANDLE;
@@ -370,12 +371,18 @@ CURVEMIXER.prototype.mousemove = function(event){
 			}
 			this.selected = this.groups[closest_index];
 		}
-	}else{
-
 	}
+
+	if( this.states.grabbing ){
+		this.selected.x += event.x - this.prevX;
+		this.selected.y += event.y - this.prevY;
+		this.selected.render();
+	}
+
 
 	//window.activeCurvemixer = this;
 	//console.log(this);
+	
 /*
 	// move selected anchor
 	if(mixer.mode == 'move'){
@@ -424,6 +431,7 @@ CURVEMIXER.prototype.mousemove = function(event){
 
 CURVEMIXER.prototype.mousedown = function(event){
 	console.log('mouse down',event);
+	if(this.states.grabbing) this.states.grabbing = false;
 };
 
 CURVEMIXER.prototype.mouseup = function(event){
@@ -460,23 +468,22 @@ CURVEMIXER.prototype.keydown = function(event){
 				this.objects.push( new OBJECT(this,{x:this.prevX, y:this.prevY}) );
 				break;
 
-			// case 76:mixer.selected_anchor_type = 'L'; break;
-			// case 72:mixer.selected_anchor_type = 'H'; break;
-			// case 86:mixer.selected_anchor_type = 'V'; break;
-			// case 67:mixer.selected_anchor_type = 'C'; break;
-			// case 83:mixer.selected_anchor_type = 'S'; break;
-			// case 81:mixer.selected_anchor_type = 'Q'; break;
-			// case 84:mixer.selected_anchor_type = 'T'; break;
-			// case 65:mixer.selected_anchor_type = 'A'; break;
+//			case 76:mixer.selected_anchor_type = 'L'; break;
+//			case 72:mixer.selected_anchor_type = 'H'; break;
+//			case 86:mixer.selected_anchor_type = 'V'; break;
+//			case 67:mixer.selected_anchor_type = 'C'; break;
+//			case 83:mixer.selected_anchor_type = 'S'; break;
+//			case 81:mixer.selected_anchor_type = 'Q'; break;
+//			case 84:mixer.selected_anchor_type = 'T'; break;
+//			case 65:mixer.selected_anchor_type = 'A'; break;
 
-			case 90: // Z
-				mixer.closed = !mixer.closed;
-				mixer.renderPaths();
-				break;
+//			case 90: // Z
+//				mixer.closed = !mixer.closed;
+//				mixer.renderPaths();
+//				break;
 
 			case 71: // G
-				mixer.mode = 'move';
-				mixer.selected_anchor_index = mixer.closest_anchor_index;
+				this.states.grabbing = true;
 				break;
 		}
 	}
