@@ -1,5 +1,9 @@
+(function(){
 //console.groupCollapsed('tests');
 console.group('tests');
+
+var svg = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
+var curvemixer = new CURVEMIXER(svg);
 
 var p = new POINT(100,100);
 console.log('point', p);
@@ -16,11 +20,13 @@ var c = new CHAIN(m);
 c.addSegment(s);
 console.log('chain',c);
 
-var o = new OBJECT();
+var o = new OBJECT(curvemixer);
 console.log('object',o);
 
-var g1 = new GROUP();
-var g2 = new GROUP();
+var g1 = new GROUP(curvemixer);
+var g2 = new GROUP(curvemixer);
 console.log('two groups',g1,g2);
 
 console.groupEnd();
+
+}());

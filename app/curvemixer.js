@@ -1,3 +1,6 @@
+(function(){
+'use strict';
+
 
 // GLOBALS
 function distance(Xa,Ya,Xb,Yb){
@@ -5,7 +8,7 @@ function distance(Xa,Ya,Xb,Yb){
 }
 
 
-// CURVEMIXER
+// CURVEMIXER PROTOTYPES
 //
 // Curvemixer: contains all groups, objects, chains, segments, & points. Renders UI & handles mouse/keyboard/touch events.
 // v v v
@@ -21,11 +24,6 @@ function distance(Xa,Ya,Xb,Yb){
 // v v v
 // Handle: a point that has a casteljau type: straight, catmul-rom, free
 //
-( function( window ) {
-'use strict';
-
-
-////
 
 
 function POINT(x,y){
@@ -150,7 +148,6 @@ window.CHAIN = CHAIN;
 
 
 function OBJECT(owner,options){
-	console.group('Object created', this);
 	this.owner = owner;
 	this.selected = false;
 	this.segments = [];
@@ -163,7 +160,6 @@ function OBJECT(owner,options){
 
 	this.render();
 
-	console.groupEnd();
 	return this;
 }
 
@@ -189,7 +185,7 @@ OBJECT.prototype.render = function(){
 	dot.attr('cy',this.y);
 	dot.attr('r',4);
 	dot.attr('class','object');
-	console.log('interface?????',this.owner);
+	console.log(this.owner);
 	this.owner.gui.appendChild(dot.element);
 	return this;
 };
@@ -204,6 +200,7 @@ function GROUP(owner,options){
 	this.selected = false;
 	this.contains = [];
 	this.owner = owner;
+	this.element = undefined;
 
 	options = options || {};
 	this.x = options.x || 0;
@@ -225,13 +222,18 @@ GROUP.prototype.translate = function(translation_delta) {
 };
 
 GROUP.prototype.render = function(){
-	var dot = new XML('circle');
-	dot.attr('cx',this.x);
-	dot.attr('cy',this.y);
-	dot.attr('r',4);
-	dot.attr('class','group');
-	console.log('interface?????',this.owner);
-	this.owner.gui.appendChild(dot.element);
+	console.log('render group element',this.element);
+	if( this.element !== undefined){
+		var dot = new XML('circle');
+		dot.attr('cx',this.x);
+		dot.attr('cy',this.y);
+		dot.attr('r',4);
+		dot.attr('class','group');
+		this.element = this.owner.gui.appendChild(dot.element);
+	}else{
+		this.element.attr('cx',this.x);
+		this.element.attr('cy',this.y);
+	}
 	return this;
 };
 
@@ -417,7 +419,7 @@ CURVEMIXER.prototype.mousemove = function(event){
 //		console.groupEnd();
 */
 	// display line to nearest anchor
-	if(this.selected != undefined){
+	if(this.selected !== undefined){
 		var d = ['M'];
 		d.push(event.x + ',' + event.y);
 		d.push('L' + this.selected.x + ',' + this.selected.y);
@@ -510,4 +512,4 @@ CURVEMIXER.prototype.keyup = function(event){
 
 window.CURVEMIXER = CURVEMIXER;
 
-})( window );
+}());
