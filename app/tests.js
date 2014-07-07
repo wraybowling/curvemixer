@@ -2,8 +2,13 @@
 //console.groupCollapsed('tests');
 console.group('tests');
 
-var svg = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
-var curvemixer = new CURVEMIXER(svg);
+//var stage = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
+//var gui = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
+
+var stage = document.querySelector('.curvemixer .stage');
+var gui = document.querySelector('.curvemixer .gui');
+
+var curvemixer = new CURVEMIXER(stage,gui);
 
 var p = new POINT(100,100);
 console.log('point', p);

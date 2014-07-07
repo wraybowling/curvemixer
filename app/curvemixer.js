@@ -223,7 +223,7 @@ GROUP.prototype.translate = function(translation_delta) {
 
 GROUP.prototype.render = function(){
 	console.log('render group element',this.element);
-	if( this.element !== undefined){
+	if( this.element == undefined){
 		var dot = new XML('circle');
 		dot.attr('cx',this.x);
 		dot.attr('cy',this.y);
@@ -260,12 +260,13 @@ console.log('xml',x);
 ////
 
 
-function CURVEMIXER(element){
+function CURVEMIXER(stage, gui){
 	// DOM elements
-	this.element = element;
-	this.stage = element.querySelector('.stage');
-	this.gui = element.querySelector('.gui');
-	this.selection_line = element.querySelector('.gui .selection-line');
+	this.stage = stage;
+	console.log('this.stage',this.stage);
+	this.gui = gui;
+	console.log('this.gui',this.gui);
+	this.selection_line = this.gui.querySelector('.selection-line');
 
 	// data
 	this.groups = [];
@@ -296,12 +297,12 @@ function CURVEMIXER(element){
 
 	// Attach DOM Listeners
 	var self = this;
-	this.element.onmousemove = function(event){ self.mousemove(event); };
-	this.element.onmousedown = function(event){ self.mousedown(event); };
-	this.element.onmouseup = function(event){ self.mouseup(event); };
-	this.element.onmousewheel = function(event){ self.mousewheel(event); };
-	this.element.onkeydown = function(event){ self.keydown(event); };
-	this.element.onkeyup = function(event){ self.keyup(event); };
+	this.stage.onmousemove = function(event){ self.mousemove(event); };
+	this.stage.onmousedown = function(event){ self.mousedown(event); };
+	this.stage.onmouseup = function(event){ self.mouseup(event); };
+	this.stage.onmousewheel = function(event){ self.mousewheel(event); };
+	this.stage.onkeydown = function(event){ self.keydown(event); };
+	this.stage.onkeyup = function(event){ self.keyup(event); };
 }
 
 // Render functions
@@ -452,6 +453,7 @@ CURVEMIXER.prototype.mousewheel = function(event){
 };
 
 CURVEMIXER.prototype.keydown = function(event){
+	console.log(event);
 	event.preventDefault();
 	console.log('keydown',event.keyCode);
 
