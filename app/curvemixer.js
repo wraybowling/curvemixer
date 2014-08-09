@@ -230,10 +230,11 @@ GROUP.prototype.render = function(){
 		dot.attr('class','group');
 		this.element = this.owner.gui.appendChild(dot.element);
 		console.log('create new group element',this.element);
+		console.log('dot',dot);
 	}else{
-		this.element.attr('cx',this.x);
-		this.element.attr('cy',this.y);
 		console.log('reposition group element',this.element);
+		this.element.setAttributeNS(null,'cx',this.x);
+		this.element.setAttributeNS(null,'cy',this.y);
 	}
 	return this;
 };
