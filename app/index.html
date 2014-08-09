@@ -34,9 +34,12 @@
 
 <script type="text/javascript" src="curvemixer.js"></script>
 <script type="text/javascript" src="tests.js"></script>
-<!--<script>
-var mixer_el = document.querySelector('.curvemixer');
-var mixer = new CURVEMIXER(mixer_el);
-</script>-->
+<script>
+var container = document.querySelector('.curvemixer');
+var stage = container.querySelector('.stage');
+var gui = container.querySelector('.gui');
+
+var mixer = new CURVEMIXER(container, stage,gui);
+</script>
 
 </html>

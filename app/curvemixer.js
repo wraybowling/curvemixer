@@ -261,8 +261,9 @@ console.log('xml',x);
 ////
 
 
-function CURVEMIXER(stage, gui){
+function CURVEMIXER(container, stage, gui){
 	// DOM elements
+	this.container = container;
 	this.stage = stage;
 	console.log('this.stage',this.stage);
 	this.gui = gui;
@@ -298,12 +299,12 @@ function CURVEMIXER(stage, gui){
 
 	// Attach DOM Listeners
 	var self = this;
-	this.stage.onmousemove = function(event){ self.mousemove(event); };
-	this.stage.onmousedown = function(event){ self.mousedown(event); };
-	this.stage.onmouseup = function(event){ self.mouseup(event); };
-	this.stage.onmousewheel = function(event){ self.mousewheel(event); };
-	this.stage.onkeydown = function(event){ self.keydown(event); };
-	this.stage.onkeyup = function(event){ self.keyup(event); };
+	this.container.onmousemove = function(event){ self.mousemove(event); };
+	this.container.onmousedown = function(event){ self.mousedown(event); };
+	this.container.onmouseup = function(event){ self.mouseup(event); };
+	this.container.onmousewheel = function(event){ self.mousewheel(event); };
+	this.container.onkeydown = function(event){ self.keydown(event); };
+	this.container.onkeyup = function(event){ self.keyup(event); };
 }
 
 // Render functions
