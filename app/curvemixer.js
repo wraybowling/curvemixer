@@ -222,7 +222,6 @@ GROUP.prototype.translate = function(translation_delta) {
 };
 
 GROUP.prototype.render = function(){
-	console.log('render group element',this.element);
 	if( this.element == undefined){
 		var dot = new XML('circle');
 		dot.attr('cx',this.x);
@@ -230,9 +229,11 @@ GROUP.prototype.render = function(){
 		dot.attr('r',4);
 		dot.attr('class','group');
 		this.element = this.owner.gui.appendChild(dot.element);
+		console.log('create new group element',this.element);
 	}else{
 		this.element.attr('cx',this.x);
 		this.element.attr('cy',this.y);
+		console.log('reposition group element',this.element);
 	}
 	return this;
 };
