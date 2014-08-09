@@ -153,13 +153,17 @@ function OBJECT(owner,options){
 	this.segments = [];
 	this.chains = [];
 	this.classList = [];
+	this.element = undefined;
+
+	// add this object to the selected group
+	if(owner.selected !== undefined) owner.selected.contains.push(this);
 
 	options = options || {};
 	this.x = options.x || 0;
 	this.y = options.y || 0;
 
 	this.render();
-
+	console.log('OBJECT',this);
 	return this;
 }
 
@@ -180,13 +184,20 @@ OBJECT.prototype.addClass = function(name){
 };
 
 OBJECT.prototype.render = function(){
-	var dot = new XML('circle');
-	dot.attr('cx',this.x);
-	dot.attr('cy',this.y);
-	dot.attr('r',4);
-	dot.attr('class','object');
-	console.log(this.owner);
-	this.owner.gui.appendChild(dot.element);
+	if( this.element === undefined){
+		var dot = new XML('circle');
+		dot.attr('cx',this.x);
+		dot.attr('cy',this.y);
+		dot.attr('r',4);
+		dot.attr('class','object');
+		this.element = this.owner.gui.appendChild(dot.element);
+		console.log('create new object element',this.element);
+		console.log('dot',dot);
+	}else{
+		console.log('reposition object element',this.element);
+		this.element.setAttributeNS(null,'cx',this.x);
+		this.element.setAttributeNS(null,'cy',this.y);
+	}
 	return this;
 };
 
@@ -222,7 +233,7 @@ GROUP.prototype.translate = function(translation_delta) {
 };
 
 GROUP.prototype.render = function(){
-	if( this.element == undefined){
+	if( this.element === undefined){
 		var dot = new XML('circle');
 		dot.attr('cx',this.x);
 		dot.attr('cy',this.y);
@@ -383,12 +394,17 @@ CURVEMIXER.prototype.mousemove = function(event){
 		this.selected.x += event.x - this.prevX;
 		this.selected.y += event.y - this.prevY;
 		this.selected.render();
+		for(i=0; i < this.selected.contains.length; i++){
+			this.selected.contains[i].x += event.x - this.prevX;
+			this.selected.contains[i].y += event.y - this.prevY;
+			this.selected.contains[i].render();
+		}
 	}
 
 
 	//window.activeCurvemixer = this;
 	//console.log(this);
-	
+
 /*
 	// move selected anchor
 	if(mixer.mode == 'move'){
