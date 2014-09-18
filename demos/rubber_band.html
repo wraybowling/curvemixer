@@ -18,41 +18,103 @@
 	#guides circle{
 		fill:none;
 		stroke:#ba5a55;
-		stroke-dash-array:0,1;
+		stroke-dasharray:5,3;
 		stroke-width:2px;
+	}
+
+	#result{
+		stroke:black;
+		fill:none;
+		stroke-width:4px;
 	}
 	</style>
 </head>
 <body>
 	<svg>
-		<g id="guides">
-			<circle r="200" cx="500" cy="300"/>
-		</g>
+		<g id="guides"></g>
 		<path id="result"/>
 	</svg>
 
 	<script type="text/javascript">
-		var guides = document.getElementById('guides');
+		var guidesEl = document.getElementById('guides');
+		var guides = [];
+		var lastRadius = 100;
+		var closed = true;
 
-		function guide(options){
-			this.x = options.x || 0;
-			this.y = options.y || 0;
-			this.radius = options.radius || 100;
+		function guide(x,y){
+			this.x = x;
+			this.y = y;
+			this.radius = lastRadius + Math.random()* 100;
+			this.isInside = true;
+			this.isOutside = false;
 			var namespace = 'http://www.w3.org/2000/svg';
 			this.element = document.createElementNS(namespace,'circle');
-			this.element.setAttributeNS(null,'r',100);
-			this.element.setAttributeNS(null,'cx',event.x);
-			this.element.setAttributeNS(null,'cy',event.y);
-			guides.appendChild(newGuide);
+			this.element.setAttributeNS(null,'r',this.radius);
+			this.element.setAttributeNS(null,'cx',x);
+			this.element.setAttributeNS(null,'cy',y);
+			guidesEl.appendChild(this.element);
 		}
+
 
 		window.onmousedown = function(event){
 			console.log(event);
-			
-			
-			
+			var newGuide = new guide(event.x,event.y);
+			guides.push(newGuide);
 		};
 
+		function connex(A,B){
+			var D = Math.sqrt( Math.pow(A.x-B.x,2) + Math.pow(A.y-B.y,2) );
+			console.log('distance',D);
+			var theta = Math.acos( (A.radius + B.radius) / D );
+			console.log('theta',theta);
+			return theta;
+		}
+
+		////
+		// test
+
+		var apple = new guide(200,300);
+		guides.push(apple);
+		var banana = new guide(600,300);
+		guides.push(banana);
+
+		var guidesAngle = Math.atan2((apple.y - banana.y),(apple.x - banana.x));
+
+		var finalAngle = connex(apple,banana);
+		var normalizedAngle = Math.PI - finalAngle; //from the perspective of the B circle
+
+		console.log( 'final angle', finalAngle);
+
+		var pathData = ['M'];
+		pathData.push(apple.x + Math.cos(finalAngle)*apple.radius);
+		pathData.push(apple.y + Math.sin(finalAngle)*apple.radius);
+
+		pathData.push('L');
+		pathData.push(banana.x + Math.cos(finalAngle+Math.PI)*banana.radius);
+		pathData.push(banana.y + Math.sin(finalAngle+Math.PI)*banana.radius);
+
+		var end = 2*Math.PI*Math.random();
+		console.log('end',end);
+
+		pathData.push('A');// +guides[1].x +','+ guides[1].y);
+		pathData.push(banana.radius +','+ banana.radius);
+		pathData.push(0); //orientation angle
+		if(Math.PI - finalAngle + end > Math.PI){
+			console.log(normalizedAngle - end,'bigger than 180')
+			pathData.push(1); //large arc 0=false 1=true
+		}else{
+			console.log(normalizedAngle - end,'smaller than 180')
+			pathData.push(0); //large arc 0=false 1=true
+		}
+		pathData.push(1); //sweep 0=false 1=true
+
+		pathData.push(banana.x + Math.cos(end)*banana.radius);
+		pathData.push(banana.y + Math.sin(end)*banana.radius);
+
+		var result = document.getElementById('result');
+		result.setAttributeNS(null,'d',pathData.join(' '));
+
+		////
 
 	</script>
 </body>
