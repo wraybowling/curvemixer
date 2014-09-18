@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+	<title>Rubber Band Mode</title>
+	<style type="text/css">
+	html,body,svg{
+		width:100%;
+		height:100%;
+		border:0;
+		margin:0;
+		padding:0;
+		cursor: crosshair;
+	}
+	svg{
+		background-color:tan;
+	}
+
+	#guides circle{
+		fill:none;
+		stroke:#ba5a55;
+		stroke-dash-array:0,1;
+		stroke-width:2px;
+	}
+	</style>
+</head>
+<body>
+	<svg>
+		<g id="guides">
+			<circle r="200" cx="500" cy="300"/>
+		</g>
+		<path id="result"/>
+	</svg>
+
+	<script type="text/javascript">
+		var guides = document.getElementById('guides');
+
+		function guide(options){
+			this.x = options.x || 0;
+			this.y = options.y || 0;
+			this.radius = options.radius || 100;
+			var namespace = 'http://www.w3.org/2000/svg';
+			this.element = document.createElementNS(namespace,'circle');
+			this.element.setAttributeNS(null,'r',100);
+			this.element.setAttributeNS(null,'cx',event.x);
+			this.element.setAttributeNS(null,'cy',event.y);
+			guides.appendChild(newGuide);
+		}
+
+		window.onmousedown = function(event){
+			console.log(event);
+			
+			
+			
+		};
+
+
+	</script>
+</body>
+</html>
