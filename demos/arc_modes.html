@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="description" content="SVG: arc modes" />
+  <meta charset="utf-8">
+  <title>SVG: arc modes</title>
+  <style>
+  html,body,svg{
+    margin:0;
+    border:0;
+    padding:0;
+    height:100%;
+    width:100%;
+  }
+
+  circle{
+    fill:#ddd;
+  }
+
+  path{
+    stroke:red;
+    stroke-width:2px;
+    fill:none;
+  }
+  </style>
+</head>
+<body>
+  <svg>
+    <circle r="40" cx="100" cy="100"/>
+    <circle r="40" cx="100" cy="200"/>
+    <circle r="40" cx="100" cy="300"/>
+    <circle r="40" cx="100" cy="400"/>
+
+    <path data-big="0" data-sweep="0" />
+    <path data-big="0" data-sweep="1" />
+    <path data-big="1" data-sweep="0" />
+    <path data-big="1" data-sweep="1" />
+  </svg>
+
+<script>
+var angleA = 0;
+var angleB = 0;
+
+var paths = document.querySelectorAll('path');
+
+function animate(){
+  angleA += 0.0012;
+  angleB += 0.01;
+  for(var i=0; i<paths.length; i++){
+    var d = ['M'];
+    //d.push 100,' + (i*100+60)];
+    d.push(Math.cos(angleA) * 40 + 100);
+    d.push(Math.sin(angleA) * 40 + (i*100 + 100));
+    d.push('A 40 40 0');
+    d.push(paths[i].dataset.big);
+    d.push(paths[i].dataset.sweep);
+    d.push(Math.cos(angleB) * 40 + 100);
+    d.push(Math.sin(angleB) * 40 + (i*100 + 100));
+    paths[i].setAttributeNS(null,'d',d.join(' '));
+  }
+}
+
+animate();
+
+var timer = setInterval(animate, 1000 / 60.0);
+</script>
+
+</body>
+</html>
