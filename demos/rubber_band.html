@@ -78,11 +78,7 @@
 		var banana = new guide(600,300);
 		guides.push(banana);
 
-		var guidesAngle = Math.atan2((apple.y - banana.y),(apple.x - banana.x));
-
 		var finalAngle = connex(apple,banana);
-		var normalizedAngle = Math.PI - finalAngle; //from the perspective of the B circle
-
 		console.log( 'final angle', finalAngle);
 
 		var pathData = ['M'];
@@ -99,12 +95,12 @@
 		pathData.push('A');// +guides[1].x +','+ guides[1].y);
 		pathData.push(banana.radius +','+ banana.radius);
 		pathData.push(0); //orientation angle
-		if(Math.PI - finalAngle + end > Math.PI){
-			console.log(normalizedAngle - end,'bigger than 180')
-			pathData.push(1); //large arc 0=false 1=true
-		}else{
-			console.log(normalizedAngle - end,'smaller than 180')
+		if(end < finalAngle || end > Math.PI + finalAngle){
+			console.log('smaller than 180')
 			pathData.push(0); //large arc 0=false 1=true
+		}else{
+			console.log('bigger than 180')
+			pathData.push(1); //large arc 0=false 1=true
 		}
 		pathData.push(1); //sweep 0=false 1=true
 
