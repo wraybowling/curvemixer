@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+	<title>Rubber Band Mode</title>
+	<style type="text/css">
+	html,body,svg{
+		width:100%;
+		height:100%;
+		border:0;
+		margin:0;
+		padding:0;
+		cursor: crosshair;
+	}
+
+	svg{
+		background-color:tan;
+	}
+
+	#guides circle{
+		fill:none;
+		stroke:rgba(2, 55, 65, 0.33);
+		stroke-dasharray:5,3;
+		stroke-width:4px;
+	}
+
+	#result{
+		stroke:rgb(218, 86, 25);
+		fill:none;
+		stroke-width:75px;
+	}
+	</style>
+</head>
+<body>
+	<svg>
+		<path id="result"/>
+		<g id="guides"></g>
+	</svg>
+
+	<script type="text/javascript">
+		var guidesEl = document.getElementById('guides');
+		var guides = [];
+		var closed = false;
+
+		function guide(x,y){
+			this.x = x;
+			this.y = y;
+			this.radius = 10 + Math.random() * 150;
+			this.isInside = true;
+			this.isOutside = false;
+			var namespace = 'http://www.w3.org/2000/svg';
+			this.element = document.createElementNS(namespace,'circle');
+			this.element.setAttributeNS(null,'r',this.radius);
+			this.move(x,y);
+			guidesEl.appendChild(this.element);
+		}
+
+		guide.prototype.move = function(x,y){
+			this.x = x;
+			this.y = y;
+			this.element.setAttributeNS(null,'cx',x);
+			this.element.setAttributeNS(null,'cy',y);
+		};
+
+		guide.prototype.size = function(){
+			this.element.setAttributeNS(null,'r',this.radius);
+		};
+
+		function belt(A,B){
+			var D = Math.sqrt( Math.pow(A.x-B.x,2) + Math.pow(A.y-B.y,2) );
+			//console.log('distance',D);
+			var theta = Math.acos( (A.radius + B.radius) / D ); //plus
+			//console.log('theta',theta);
+			return theta;
+		}
+
+		function pulley(A,B){
+			var D = Math.sqrt( Math.pow(A.x-B.x,2) + Math.pow(A.y-B.y,2) );
+			//console.log('distance',D);
+			var theta = Math.acos( (A.radius - B.radius) / D ); //minus
+			//console.log('theta',theta);
+			return theta;
+		}
+
+		function outerTangent(A,B){
+			var theta = Math.atan2((A.y - B.y),(A.x - B.x));
+			var distance = Math.sqrt( Math.pow(A.x-B.x,2) + Math.pow(A.y-B.y,2) );
+			theta -= Math.acos( (A.radius - B.radius) / distance ); //minus
+			return theta;
+		}
+/*
+		window.onmousewheel = function(event){
+			event.preventDefault();
+			guides[0].radius += event.wheelDeltaY;
+			guides[0].size();
+			render();
+		};
+
+		window.onmousemove = function(event){
+			guides[0].move(event.x,event.y);
+			render();
+		};
+*/
+		window.onkeydown = function(event){
+			console.log(event.keyCode);
+		};
+
+		function segment(Ax,Ay,Bx,By){
+			this.A = {x:Ax,y:Ay};
+			this.B = {x:Bx,y:By};
+			this.guides = [];
+			return this;
+		}
+
+		segment.prototype.addGuide = function(){
+			var newGuide = new guide();
+			guides.push(newGuide);
+		};
+
+		segment.prototype.render = function(){
+			var pathData = [];
+			if(guides.length > 0){
+				var i=0;
+
+				var angleToStart = outerTangent(start,guides[i]) + Math.PI;
+				var angleToFinish = outerTangent(guides[i],finish) + Math.PI;
+
+				pathData.push('M');
+				pathData.push(start.x + Math.cos(angleToStart)*start.radius);
+				pathData.push(start.y + Math.sin(angleToStart)*start.radius);
+
+				pathData.push('L');
+				pathData.push(guides[i].x + Math.cos(angleToStart)*guides[i].radius);
+				pathData.push(guides[i].y + Math.sin(angleToStart)*guides[i].radius);
+
+				pathData.push('A');
+				pathData.push(guides[i].radius +','+ guides[i].radius);
+				pathData.push(0); //orientation angle
+				console.log(angleToFinish - angleToStart);
+				if( Math.abs(angleToStart - angleToFinish) < Math.PI){
+//					console.log('smaller than 180');
+					pathData.push(1); //large arc 0=false 1=true
+				}else{
+//					console.log('bigger than 180');
+					pathData.push(0); //large arc 0=false 1=true
+				}
+				pathData.push(1); //sweep 0=false 1=true
+
+				pathData.push(guides[i].x + Math.cos(angleToFinish)*guides[i].radius);
+				pathData.push(guides[i].y + Math.sin(angleToFinish)*guides[i].radius);
+
+				pathData.push('L');
+				pathData.push(finish.x + Math.cos(angleToFinish)*finish.radius);
+				pathData.push(finish.y + Math.sin(angleToFinish)*finish.radius);
+
+				var result = document.getElementById('result');
+				result.setAttributeNS(null,'d',pathData.join(' '));
+			}else{
+				pathData.push('L');
+			}
+		};
+
+
+		var startX = 400;
+		var startY = 600;
+		var finishX = 900;
+		var finishY = 700;
+
+		var demo = segment(startX,startY,finishX,finishY);
+
+		window.onmousewheel = function(event){
+			demo.render();
+		};
+
+		window.onmousemove = function(event){
+			demo.render();
+		};
+
+	</script>
+</body>
+</html>

@@ -11,6 +11,7 @@
 		padding:0;
 		cursor: crosshair;
 	}
+
 	svg{
 		background-color:tan;
 	}
@@ -109,15 +110,10 @@
 		function render(){
 			var i=0;
 
-//			var finalAngle = belt(apple,banana);
-//			console.log( 'final angle', finalAngle);
-
 			var angleToStart = outerTangent(start,guides[i]) + Math.PI;
 			var angleToFinish = outerTangent(guides[i],finish) + Math.PI;
 
 			var pathData = ['M'];
-//			pathData.push(start.x);
-//			pathData.push(start.y);
 			pathData.push(start.x + Math.cos(angleToStart)*start.radius);
 			pathData.push(start.y + Math.sin(angleToStart)*start.radius);
 
@@ -125,16 +121,16 @@
 			pathData.push(guides[i].x + Math.cos(angleToStart)*guides[i].radius);
 			pathData.push(guides[i].y + Math.sin(angleToStart)*guides[i].radius);
 
-			pathData.push('A');// +guides[1].x +','+ guides[1].y);
+			pathData.push('A');
 			pathData.push(guides[i].radius +','+ guides[i].radius);
 			pathData.push(0); //orientation angle
 			console.log(angleToFinish - angleToStart);
 			if( Math.abs(angleToStart - angleToFinish) < Math.PI){
 //			if(Math.random() > 0.5){
-				console.log('smaller than 180');
+//				console.log('smaller than 180');
 				pathData.push(1); //large arc 0=false 1=true
 			}else{
-				console.log('bigger than 180');
+//				console.log('bigger than 180');
 				pathData.push(0); //large arc 0=false 1=true
 			}
 			pathData.push(1); //sweep 0=false 1=true
@@ -149,8 +145,6 @@
 			var result = document.getElementById('result');
 			result.setAttributeNS(null,'d',pathData.join(' '));
 		}
-
-		////
 
 	</script>
 </body>

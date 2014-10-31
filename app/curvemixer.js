@@ -74,9 +74,10 @@ SEGMENT.prototype.types = {
 	'Castel Curve 2' : { handleCount:2, handleTypes:['straight', 'free', 'catmul-rom']},
 	'Vertical' : { handleCount:0, noLocking:true },
 	'Horizontal' : { handleCount:0, noLocking:true },
-	'Arc' : { handleCount:1 },
+	'Arc' : { handleCount:1, handleTypes:['bulge', 'angle', 'radius'] },
 	'Spiro' : { handleCount:0 },
-	'PenUp' : { handleCount:0 } // used for breaking chains
+	'PenUp' : { handleCount:0 }, // used for breaking chains
+	'Rubber Band' : { handleCount:0 }
 };
 
 window.SEGMENT = SEGMENT;
