@@ -31,15 +31,15 @@
 	</style>
 </head>
 <body>
-	<svg>
+	<svg id="stage">
 		<path id="result"/>
 		<g id="guides"></g>
 	</svg>
 
 	<script type="text/javascript">
+		var stageEl = document.getElementById('stage');
 		var guidesEl = document.getElementById('guides');
-		var guides = [];
-		var closed = false;
+		var resultEl = document.getElementById('result');
 
 		function guide(x,y){
 			this.x = x;
@@ -61,7 +61,10 @@
 			this.element.setAttributeNS(null,'cy',y);
 		};
 
-		guide.prototype.size = function(){
+		guide.prototype.size = function(value,mode){
+			if(mode === 'relative') this.radius += value;
+			if(mode === 'absolute') this.radius = value;
+			if(this.radius < 0) this.radius = 0;
 			this.element.setAttributeNS(null,'r',this.radius);
 		};
 
@@ -87,94 +90,134 @@
 			theta -= Math.acos( (A.radius - B.radius) / distance ); //minus
 			return theta;
 		}
-/*
-		window.onmousewheel = function(event){
-			event.preventDefault();
-			guides[0].radius += event.wheelDeltaY;
-			guides[0].size();
-			render();
-		};
 
-		window.onmousemove = function(event){
-			guides[0].move(event.x,event.y);
-			render();
-		};
-*/
-		window.onkeydown = function(event){
-			console.log(event.keyCode);
-		};
+		function distance(x1,y1,x2,y2){
+			return Math.sqrt(Math.pow(x1 - x2,2) + Math.pow(y1 - y2,2));
+		}
 
-		function segment(Ax,Ay,Bx,By){
-			this.A = {x:Ax,y:Ay};
-			this.B = {x:Bx,y:By};
-			this.guides = [];
+		function segment(){
+			this.guideList = [];
+			this.guideSelected = undefined;
 			return this;
 		}
 
-		segment.prototype.addGuide = function(){
-			var newGuide = new guide();
-			guides.push(newGuide);
+		segment.prototype.guideAdd = function(x,y){
+			var newGuide = new guide(x,y);
+			this.guideList.push(newGuide);
 		};
 
 		segment.prototype.render = function(){
 			var pathData = [];
-			if(guides.length > 0){
-				var i=0;
+			if(this.guideList.length >= 2){
+				var i;
 
-				var angleToStart = outerTangent(start,guides[i]) + Math.PI;
-				var angleToFinish = outerTangent(guides[i],finish) + Math.PI;
+				var angle = outerTangent(this.guideList[0],this.guideList[1]) + Math.PI;
 
 				pathData.push('M');
-				pathData.push(start.x + Math.cos(angleToStart)*start.radius);
-				pathData.push(start.y + Math.sin(angleToStart)*start.radius);
+				pathData.push(this.guideList[0].x + Math.cos(angle)*this.guideList[0].radius);
+				pathData.push(this.guideList[0].y + Math.sin(angle)*this.guideList[0].radius);
 
-				pathData.push('L');
-				pathData.push(guides[i].x + Math.cos(angleToStart)*guides[i].radius);
-				pathData.push(guides[i].y + Math.sin(angleToStart)*guides[i].radius);
+				for(i=1; i < this.guideList.length; i++){
+					// find angle
+					angle = outerTangent(this.guideList[i-1],this.guideList[i]) + Math.PI;
 
-				pathData.push('A');
-				pathData.push(guides[i].radius +','+ guides[i].radius);
-				pathData.push(0); //orientation angle
-				console.log(angleToFinish - angleToStart);
-				if( Math.abs(angleToStart - angleToFinish) < Math.PI){
-//					console.log('smaller than 180');
-					pathData.push(1); //large arc 0=false 1=true
-				}else{
-//					console.log('bigger than 180');
-					pathData.push(0); //large arc 0=false 1=true
+					// first time move the pen into place
+					if(this.closed === false && i === 0){
+						pathData.push('M');
+						pathData.push(this.guideList[i-1].x + Math.cos(angle)*this.guideList[i-1].radius);
+						pathData.push(this.guideList[i-1].y + Math.sin(angle)*this.guideList[i-1].radius);
+					}else{
+						// draw arc to next circle
+						pathData.push('A');
+						pathData.push(guides[i].radius +','+ guides[i].radius);
+						pathData.push(0); //orientation angle
+						console.log(angleToFinish - angleToStart);
+						if( Math.abs(angleToStart - angleToFinish) < Math.PI){
+							//					console.log('smaller than 180');
+							pathData.push(1); //large arc 0=false 1=true
+						}else{
+							//					console.log('bigger than 180');
+							pathData.push(0); //large arc 0=false 1=true
+						}
+						pathData.push(1); //sweep 0=false 1=true
+
+						pathData.push(guides[i].x + Math.cos(angleToFinish)*guides[i].radius);
+						pathData.push(guides[i].y + Math.sin(angleToFinish)*guides[i].radius);
+
+						pathData.push('L');
+						pathData.push(finish.x + Math.cos(angleToFinish)*finish.radius);
+						pathData.push(finish.y + Math.sin(angleToFinish)*finish.radius);
+					}
+
+					// draw line from circle to circle
+					pathData.push('L');
+					pathData.push(this.guideList[i].x + Math.cos(angle)*this.guideList[i].radius);
+					pathData.push(this.guideList[i].y + Math.sin(angle)*this.guideList[i].radius);
+
+
 				}
-				pathData.push(1); //sweep 0=false 1=true
+			}
+			resultEl.setAttributeNS(null,'d',pathData.join(' '));
+		};
 
-				pathData.push(guides[i].x + Math.cos(angleToFinish)*guides[i].radius);
-				pathData.push(guides[i].y + Math.sin(angleToFinish)*guides[i].radius);
+		var demo = new segment();
 
-				pathData.push('L');
-				pathData.push(finish.x + Math.cos(angleToFinish)*finish.radius);
-				pathData.push(finish.y + Math.sin(angleToFinish)*finish.radius);
+		window.onkeydown = function(event){
 
-				var result = document.getElementById('result');
-				result.setAttributeNS(null,'d',pathData.join(' '));
-			}else{
-				pathData.push('L');
+			switch(event.keyCode){
+				case 70: //f
+					console.log('flip');
+					break;
+				default:
+					console.log('keyCode',event.keyCode);
 			}
 		};
 
+		stage.onmouseup = function(event){
+			console.log(event);
+			demo.guideAdd(event.x,event.y);
 
-		var startX = 400;
-		var startY = 600;
-		var finishX = 900;
-		var finishY = 700;
+		}
 
-		var demo = segment(startX,startY,finishX,finishY);
+		stage.onmousewheel = function(event){
+			if(demo.guideList.length > 0){
+				demo.guideList[demo.guideSelected].size(event.wheelDeltaY,'relative');
+				event.preventDefault();
+			}
+		};
 
+		stage.onmousemove = function(event){
+			if(demo.guideList.length > 0){
+				demo.guideSelected = 0;
+				guideSelectedLength = distance(demo.guideList[0].x,demo.guideList[0].y,event.x,event.y);
+				if(demo.guideList.length !== 1){
+					for(var i=1; i<demo.guideList.length; i++){
+						a = demo.guideList[i];
+						b = demo.guideList[demo.guideSelected];
+						abDistance = distance(demo.guideList[i].x,demo.guideList[i].y,event.x,event.y);
+						if(abDistance < guideSelectedLength){
+							demo.guideSelected = i;
+							demo.guideSelectedLength = abDistance;
+						}
+					}
+				}
+			}
+			console.log(demo.guideSelected);
+		};
+
+		/*
 		window.onmousewheel = function(event){
-			demo.render();
-		};
+		event.preventDefault();
+		guides[0].radius += event.wheelDeltaY;
+		guides[0].size();
+		render();
+	};
 
-		window.onmousemove = function(event){
-			demo.render();
-		};
-
+	window.onmousemove = function(event){
+	guides[0].move(event.x,event.y);
+	render();
+};
+*/
 	</script>
 </body>
 </html>
