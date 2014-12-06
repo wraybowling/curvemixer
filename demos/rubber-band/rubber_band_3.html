@@ -19,8 +19,14 @@
 	#guides circle{
 		fill:none;
 		stroke:rgba(2, 55, 65, 0.33);
-		stroke-dasharray:5,3;
-		stroke-width:4px;
+		stroke-dasharray:17,3;
+		stroke-width:1px;
+		-webkit-animation: crawl 5s linear infinite;
+	}
+
+	@-webkit-keyframes crawl {
+		0% { stroke-dashoffset: 0; }
+		100% { stroke-dashoffset: 20px; }
 	}
 
 	#result{
@@ -95,7 +101,15 @@
 			return Math.sqrt(Math.pow(x1 - x2,2) + Math.pow(y1 - y2,2));
 		}
 
+		function anchor(x,y){
+			this.x = x;
+			this.y = y;
+			this.angle = undefined;
+		}
+
 		function segment(){
+			this.startAnchor = new anchor(20,240);
+			this.finishAnchor = new anchor(1350,240);
 			this.guideList = [];
 			this.guideSelected = undefined;
 			return this;
@@ -108,6 +122,21 @@
 
 		segment.prototype.render = function(){
 			var pathData = [];
+			if(this.guideList.length === 0){
+				pathData.push('M');
+				pathData.push(this.startAnchor.x);
+				pathData.push(this.startAnchor.y);
+				pathData.push('L');
+				pathData.push(this.finishAnchor.x);
+				pathData.push(this.finishAnchor.y);
+			}
+
+			if(this.guideList.length >= 1){
+				//FIXME
+				//this.an = 0;
+				this.angleToFinish = 0;
+			}
+
 			if(this.guideList.length >= 2){
 				var i;
 
@@ -129,9 +158,9 @@
 					}else{
 						// draw arc to next circle
 						pathData.push('A');
-						pathData.push(guides[i].radius +','+ guides[i].radius);
+						pathData.push(this.guideList[i].radius +','+ this.guideList[i].radius);
 						pathData.push(0); //orientation angle
-						console.log(angleToFinish - angleToStart);
+//						console.log(angleToFinish - angleToStart);
 						if( Math.abs(angleToStart - angleToFinish) < Math.PI){
 							//					console.log('smaller than 180');
 							pathData.push(1); //large arc 0=false 1=true
@@ -153,10 +182,10 @@
 					pathData.push('L');
 					pathData.push(this.guideList[i].x + Math.cos(angle)*this.guideList[i].radius);
 					pathData.push(this.guideList[i].y + Math.sin(angle)*this.guideList[i].radius);
-
-
 				}
 			}
+			var resultString = pathData.join(' ');
+			console.log('result string',resultString);
 			resultEl.setAttributeNS(null,'d',pathData.join(' '));
 		};
 
@@ -176,7 +205,7 @@
 		stage.onmouseup = function(event){
 			console.log(event);
 			demo.guideAdd(event.x,event.y);
-
+			demo.render();
 		}
 
 		stage.onmousewheel = function(event){
@@ -187,6 +216,7 @@
 		};
 
 		stage.onmousemove = function(event){
+
 			if(demo.guideList.length > 0){
 				demo.guideSelected = 0;
 				guideSelectedLength = distance(demo.guideList[0].x,demo.guideList[0].y,event.x,event.y);
@@ -202,22 +232,11 @@
 					}
 				}
 			}
-			console.log(demo.guideSelected);
+			console.log(event.x,event.y);
+			demo.render();
 		};
 
-		/*
-		window.onmousewheel = function(event){
-		event.preventDefault();
-		guides[0].radius += event.wheelDeltaY;
-		guides[0].size();
-		render();
-	};
-
-	window.onmousemove = function(event){
-	guides[0].move(event.x,event.y);
-	render();
-};
-*/
+		demo.render();
 	</script>
 </body>
 </html>
