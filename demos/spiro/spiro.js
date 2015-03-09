@@ -4,6 +4,7 @@
     // -- generic band-diagonal matrix solver, adapted from numerical recipes
     function bandec(matrix, n, m) {
         console.group('bandec');
+        console.log('matrix',matrix);
         var i, j, l = m;
         for (i = 0; i < m; i += 1) {
             for (j = 0; j <= i + m; j += 1) {
@@ -406,6 +407,62 @@
         console.groupEnd();
     }
 
+    function seg_to_bez_svg(ks, x0, y0, x1, y1) {
+        console.group('seg_to_bez_svg');
+        console.log('ks',ks);
+        console.log('coordinates', x0, y0, x1, y1);
+        var d = [];
+        var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
+        console.log('bend',bend);
+        if (bend < 1e-8) {
+            console.log('bend < 0.00000001');
+            d.push('L',x1,y1);
+        } else {
+            var seg_ch = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+            var seg_th = Math.atan2(y1 - y0, x1 - x0);
+
+            var xy = integ_spiro(ks[0], ks[1], ks[2], ks[3]);
+            var ch = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
+            var th = Math.atan2(xy[1], xy[0]);
+            var scale = seg_ch / ch;
+            var rot = seg_th - th;
+            if (bend < 1) {
+                console.log('bend < 1');
+                var th_even = (1/384) * ks[3] + (1/8) * ks[1] + rot;
+                var th_odd = (1/48) * ks[2] + 0.5 * ks[0];
+                var scale3 = scale * (1/3);
+                var ul = scale3 * Math.cos(th_even - th_odd);
+                var vl = scale3 * Math.sin(th_even - th_odd);
+                var ur = scale3 * Math.cos(th_even + th_odd);
+                var vr = scale3 * Math.sin(th_even + th_odd);
+                d.push('M',x0,y0);
+                d.push('C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
+            } else {
+                console.log('bend > 1 (subdivide)');
+                /* subdivide */
+                var ksub =
+                [0.5 * ks[0] - 0.125 * ks[1] + (1/64) * ks[2] - (1/768) * ks[3],
+                 0.25 * ks[1] - (1/16) * ks[2] + (1/128) * ks[3],
+                 0.125 * ks[2] - (1/32) * ks[3],
+                 (1/16) * ks[3]
+                 ];
+                var thsub = rot - 0.25 * ks[0] + (1/32) * ks[1] - (1/384) * ks[2] + (1/6144) * ks[3];
+                var cth = 0.5 * scale * Math.cos(thsub);
+                var sth = 0.5 * scale * Math.sin(thsub);
+                var xysub = integ_spiro(ksub[0], ksub[1], ksub[2], ksub[3]);
+                var xmid = x0 + cth * xysub[0] - sth * xysub[1];
+                var ymid = y0 + cth * xysub[1] + sth * xysub[0];
+                seg_to_bez_svg(ksub, x0, y0, xmid, ymid);
+                ksub[0] += 0.25 * ks[1] + (1/384) * ks[3];
+                ksub[1] += 0.125 * ks[2];
+                ksub[2] += (1/16) * ks[3];
+                seg_to_bez_svg(ksub, xmid, ymid, x1, y1);
+            }
+        }
+        console.groupEnd();
+        return d;
+    }
+
     function fit_euler(th0, th1) {
         console.group('fit euler');
         var k1_old = 0;
@@ -531,7 +588,6 @@
             }
         }
         var result = new Spline(segs, nodes);
-        console.trace();
         console.groupEnd();
         return result;
     }
@@ -717,15 +773,16 @@
             } catch (e) {
                 console.error(msg);
             }
-                step *= 0.5;
-            }
-            var nodes = spline.nodes;
+            step *= 0.5;
+        }
+        var nodes = spline.nodes;
 
-            if (nodes.length) {
-                switch (outer) {
+        if (nodes.length) {
+            switch (outer) {
                 case 0: ctx.strokeStyle = "rgb(0, 0, 0)"; break;
                 case 1: ctx.strokeStyle = "rgb(64, 0, 0)"; break;
                 case 2: ctx.strokeStyle = "rgb(255, 0, 0)"; break;
+                default: ctx.strokeStyle = "rgb(255, 255, 0)"; break;
             }
 
             //wray removed

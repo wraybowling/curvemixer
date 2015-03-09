@@ -3,9 +3,28 @@
 <head>
 <script src="spiro.js"></script>
 <style>
+	html,body,svg{
+		margin:0;
+		height:100%;
+	}
+
+	svg{
+		width:100%;
+		background-color:skyblue;
+	}
+
 	path{
+		fill:none;
+	}
+
+	#pathA{
 		stroke:black;
-		stroke-width:2px;
+		stroke-opacity:0.5;
+		stroke-width:1px;
+	}
+	#pathB{
+		stroke:red;
+		stroke-width:1px;
 	}
 </style>
 </head>
@@ -13,53 +32,98 @@
 <body>
 
 <svg>
-<path d="M 0,0,100,100">
+	<path id="pathA" d="M 0,0,100,100"/>
+	<path id="pathB" d="M 0,0,100,100"/>
 </svg>
 
 <script>
-
+/*
 function draw_segs(ctx, segs) {
-    ctx.moveTo(segs[0].left.xy[0], segs[0].left.xy[1]);
-    for (var i = 0; i < segs.length; i++) {
-        var seg = segs[i];
-        var ths = seg.get_ths();
-        var ks = fit_euler(ths[0], ths[1]).ks;
-	ks.push(0); ks.push(0);
-        seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
-    }
+	ctx.moveTo(segs[0].left.xy[0], segs[0].left.xy[1]);
+	for (var i = 0; i < segs.length; i++) {
+		var seg = segs[i];
+		var ths = seg.get_ths();
+		var ks = fit_euler(ths[0], ths[1]).ks;
+		ks.push(0); ks.push(0);
+		seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
+	}
 }
 function draw_nodes(ctx, nodes) {
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
-        ctx.beginPath();
-        ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
-        ctx.fill();
-    }
+	for (var i = 0; i < nodes.length; i++) {
+		var node = nodes[i];
+		ctx.beginPath();
+		ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
+		ctx.fill();
+	}
 }
 function print(s) {
 }
 function paint() {
-    var canvas = document.getElementById("canvas");
-    //var ctx = canvas.getContext("2d");
-    hook_events(canvas);
-    spline = setup_solver(xp);
-    ctx.beginPath();
-    draw_segs(ctx, spline.segs);
-    ctx.stroke();
-    while (refine_euler(spline) > 1e-6);
-    ctx.strokeStyle = "rgb(128, 0, 0)";
-    ctx.beginPath();
-    draw_segs(ctx, spline.segs);
-    ctx.stroke();
-    draw_nodes(ctx, spline.nodes);
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	hook_events(canvas);
+	spline = setup_solver(xp);
+	ctx.beginPath();
+	draw_segs(ctx, spline.segs);
+	ctx.stroke();
+	while (refine_euler(spline) > 1e-6);
+	ctx.strokeStyle = "rgb(128, 0, 0)";
+	ctx.beginPath();
+	draw_segs(ctx, spline.segs);
+	ctx.stroke();
+	draw_nodes(ctx, spline.nodes);
 }
 function init() {
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    spiroui = new SpiroUi(canvas);
-    spiroui.paint();
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	spiroui = new SpiroUi(canvas);
+	spiroui.paint();
 }
 init();
+*/
+
+
+// define base path
+demoPath = [[20,200],[100,100],[300,100],[320,200],[500,120]];
+demoSolver = setup_solver(demoPath);
+var i, d;
+
+d = ['M'];
+for(i=0; i<demoPath.length; i++){
+	d.push(demoPath[i][0]);
+	d.push(demoPath[i][1]);
+}
+var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',d.join(' '));
+
+// refine the curve
+/*var step = 1.0;
+for (var outer = 0; outer < 3; outer += 1) {
+	if (outer == 2) break;
+	try {
+		for (var j = 0; j < 30; j += 1)
+		if (refine_euler(demoPath, step) < 1e-6) break;
+		if (j < 30) break;
+	} catch (e) {
+		console.error(e);
+	}
+	step *= 0.5;
+}
+*/
+
+// convert spiro to bezier
+d = [];
+for(i=0; i<demoSolver.segs.length; i++){
+	var seg = demoSolver.segs[i];
+	var ths = seg.get_ths();
+	var ks = fit_euler(ths[0], ths[1]).ks;
+	ks.push(0,0);
+	d = d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
+	console.log(d);
+}
+var pathBEl = document.getElementById('pathB').setAttributeNS(null,'d',d.join(' '));
+
+
+
 </script>
 
 </body>
