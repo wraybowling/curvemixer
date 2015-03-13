@@ -623,9 +623,9 @@
         var nodes = spline.nodes;
         var i;
         for (i = 0; i < segs.length; i += 1) {
-        var seg = segs[i];
-        var ths = seg.get_ths();
-        seg.params = fit_euler_ks(ths[0], ths[1], seg.chord);
+            var seg = segs[i];
+            var ths = seg.get_ths();
+            seg.params = fit_euler_ks(ths[0], ths[1], seg.chord);
         }
         var dks = [];
         var mat = [];

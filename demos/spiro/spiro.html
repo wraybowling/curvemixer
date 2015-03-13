@@ -19,7 +19,7 @@
 
 	#pathA{
 		stroke:black;
-		stroke-opacity:0.5;
+		stroke-opacity:0.2;
 		stroke-width:1px;
 	}
 	#pathB{
@@ -84,8 +84,8 @@ init();
 
 
 // define base path
-demoPath = [[20,200],[100,100],[300,100],[320,200],[500,120]];
-demoSolver = setup_solver(demoPath);
+demoPath = [[50,120],[100,100],[150,110],[200,95],[250,110]];
+var demoSolver;
 var i, d;
 
 d = ['M'];
@@ -96,19 +96,27 @@ for(i=0; i<demoPath.length; i++){
 var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',d.join(' '));
 
 // refine the curve
-/*var step = 1.0;
+
+var step = 1;
+var msg = null;
 for (var outer = 0; outer < 3; outer += 1) {
-	if (outer == 2) break;
-	try {
-		for (var j = 0; j < 30; j += 1)
-		if (refine_euler(demoPath, step) < 1e-6) break;
-		if (j < 30) break;
-	} catch (e) {
-		console.error(e);
-	}
-	step *= 0.5;
+    demoSolver = setup_solver(demoPath);
+    if (outer == 2) break;
+    try {
+        for (var j = 0; j < 30; j += 1){
+        	var refined = refine_euler(demoSolver, step);
+        	console.log('refining spline...',refined);
+        	console.log('spline',demoSolver);
+        	if (refined < 1e-6) break;
+        }
+        if (j < 30) break;
+    } catch (error) {
+        console.error(error);
+    }
+    step *= 0.5;
+    console.log('solver',demoSolver);
 }
-*/
+
 
 // convert spiro to bezier
 d = [];
