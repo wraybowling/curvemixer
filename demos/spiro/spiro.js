@@ -547,34 +547,35 @@
         var i,seg;
 
         for (i = 0; i < path.length - 1; i += 1) {
-        seg = {};
-        var dx = path[i + 1][0] - path[i][0];
-        var dy = path[i + 1][1] - path[i][1];
-        seg.th = Math.atan2(dy, dx);
-        seg.chord = Math.sqrt(dx * dx + dy * dy);
-        segs[i] = seg;
+            seg = {};
+            var dx = path[i + 1][0] - path[i][0];
+            var dy = path[i + 1][1] - path[i][1];
+            seg.th = Math.atan2(dy, dx);
+            seg.chord = Math.sqrt(dx * dx + dy * dy);
+            segs[i] = seg;
         }
         for (i = 0; i < path.length; i += 1) {
-        var node = {};
-        node.xy = path[i];
-        node.dth = 0;
-        if (i > 0) node.left = segs[i - 1];
-        if (i < path.length - 1) node.right = segs[i];
-        if (node.left) node.left.right = node;
-        if (node.right) node.right.left = node;
-        if (node.left && node.right) {
-            var th = node.right.th - node.left.th;
-            if (th > Math.PI) th -= 2 * Math.PI;
-            if (th < -Math.PI) th += 2 * Math.PI;
-            node.th = th;
-            var chord_sum = node.left.chord + node.right.chord;
-            node.left.init_th1 = th * node.left.chord / chord_sum;
-            node.right.init_th0 = th * node.right.chord / chord_sum;
-        }
-        nodes[i] = node;
+            var node = {};
+            node.xy = path[i];
+            node.dth = 0;
+            if (i > 0) node.left = segs[i - 1];
+            if (i < path.length - 1) node.right = segs[i];
+            if (node.left) node.left.right = node;
+            if (node.right) node.right.left = node;
+            if (node.left && node.right) {
+                var th = node.right.th - node.left.th;
+                if (th > Math.PI) th -= 2 * Math.PI;
+                if (th < -Math.PI) th += 2 * Math.PI;
+                node.th = th;
+                var chord_sum = node.left.chord + node.right.chord;
+                node.left.init_th1 = th * node.left.chord / chord_sum;
+                node.right.init_th0 = th * node.right.chord / chord_sum;
+            }
+            nodes[i] = node;
         }
         for (i = 0; i < segs.length; i += 1) {
             seg = segs[i];
+            if(i === 0) seg.init_th0 = Math.PI;
             if (seg.init_th0 === undefined) {
                 if (seg.init_th1 === undefined) {
                 seg.init_th0 = 0;
