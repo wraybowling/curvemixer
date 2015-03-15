@@ -407,11 +407,13 @@
         console.groupEnd();
     }
 
+    var d = [];
+
     function seg_to_bez_svg(ks, x0, y0, x1, y1) {
         console.group('seg_to_bez_svg');
         console.log('ks',ks);
         console.log('coordinates', x0, y0, x1, y1);
-        var d = [];
+        
         var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
         console.log('bend',bend);
         if (bend < 1e-8) {
@@ -424,6 +426,7 @@
             var xy = integ_spiro(ks[0], ks[1], ks[2], ks[3]);
             var ch = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
             var th = Math.atan2(xy[1], xy[0]);
+            console.log('segment theta',th);
             var scale = seg_ch / ch;
             var rot = seg_th - th;
             if (bend < 1) {
@@ -435,6 +438,7 @@
                 var vl = scale3 * Math.sin(th_even - th_odd);
                 var ur = scale3 * Math.cos(th_even + th_odd);
                 var vr = scale3 * Math.sin(th_even + th_odd);
+                console.log('x',x0,'y',y0);
                 d.push('M',x0,y0);
                 d.push('C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
             } else {
@@ -446,10 +450,12 @@
                  0.125 * ks[2] - (1/32) * ks[3],
                  (1/16) * ks[3]
                  ];
+                 console.log('k subdivided',ksub);
                 var thsub = rot - 0.25 * ks[0] + (1/32) * ks[1] - (1/384) * ks[2] + (1/6144) * ks[3];
                 var cth = 0.5 * scale * Math.cos(thsub);
                 var sth = 0.5 * scale * Math.sin(thsub);
                 var xysub = integ_spiro(ksub[0], ksub[1], ksub[2], ksub[3]);
+                 console.log('xysub',xysub);
                 var xmid = x0 + cth * xysub[0] - sth * xysub[1];
                 var ymid = y0 + cth * xysub[1] + sth * xysub[0];
                 seg_to_bez_svg(ksub, x0, y0, xmid, ymid);
@@ -464,7 +470,7 @@
     }
 
     function fit_euler(th0, th1) {
-        console.group('fit euler');
+        console.group('fit_euler');
         var k1_old = 0;
         var error_old = th1 - th0;
         var k0 = th0 + th1;
@@ -617,7 +623,6 @@
     function refine_euler(spline, step) {
         console.group('refine euler');
         console.log('spline',spline);
-        console.log('step',step);
         var maxerr = 0;
         var segs = spline.segs;
         var nodes = spline.nodes;
@@ -762,20 +767,31 @@
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         step = 1;
         msg = null;
+        
         var i, spline;
-        for (var outer = 0; outer < 3; outer += 1) {
+        var outer = 1;
+        //for (; outer < 3; outer += 1) {
             spline = setup_solver(this.path);
-            if (outer == 2) break;
+/*            console.warn('before nodes',spline.nodes);
+//            if (outer == 2) break;
             try {
-                for (var j = 0; j < 30; j += 1)
-                if (refine_euler(spline, step) < 1e-6) break;
-                if (j < 30) break;
+                for (var j = 0; j < 30; j += 1){
+                    if (refine_euler(spline, step) < 1e-6) break;
+                }
+                //if (j < 30) break;
             } catch (e) {
                 console.error(msg);
             }
-            step *= 0.5;
+//            step *= 0.5;
+        //}
+        */
+
+        for (var i = 4; i >= 0; i--) {
+            refine_euler(spline,1);
         }
+
         var nodes = spline.nodes;
+        console.warn('after',spline);
 
         if (nodes.length) {
             switch (outer) {

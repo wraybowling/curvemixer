@@ -84,7 +84,7 @@ init();
 
 
 // define base path
-demoPath = [[50,120],[100,100],[150,110],[200,95],[250,110]];
+demoPath = [[50,100],[100,50],[150,110],[200,95],[250,110]];
 var demoSolver;
 var i, d;
 
@@ -96,9 +96,7 @@ for(i=0; i<demoPath.length; i++){
 var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',d.join(' '));
 
 // refine the curve
-
 var step = 1;
-var msg = null;
 for (var outer = 0; outer < 3; outer += 1) {
     demoSolver = setup_solver(demoPath);
     if (outer == 2) break;
@@ -117,20 +115,22 @@ for (var outer = 0; outer < 3; outer += 1) {
     console.log('solver',demoSolver);
 }
 
-
 // convert spiro to bezier
 d = [];
 for(i=0; i<demoSolver.segs.length; i++){
 	var seg = demoSolver.segs[i];
 	var ths = seg.get_ths();
+//	if(i === 0) ths = [0,ths[1]];
+//	if(i === demoSolver.segs.length-1) ths = [ths[0],0];
+	console.log('loop theta',ths);
 	var ks = fit_euler(ths[0], ths[1]).ks;
+//	if(i === demoSolver.segs.length-1) ks = [0.999,ks[1]];
+	console.log('loop ks',ks);
 	ks.push(0,0);
 	d = d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
 	console.log(d);
 }
 var pathBEl = document.getElementById('pathB').setAttributeNS(null,'d',d.join(' '));
-
-
 
 </script>
 
