@@ -413,7 +413,9 @@
         console.group('seg_to_bez_svg');
         console.log('ks',ks);
         console.log('coordinates', x0, y0, x1, y1);
-        
+
+        if(d.length === 0) d.push('M',x0,y0);
+
         var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
         console.log('bend',bend);
         if (bend < 1e-8) {
@@ -439,7 +441,7 @@
                 var ur = scale3 * Math.cos(th_even + th_odd);
                 var vr = scale3 * Math.sin(th_even + th_odd);
                 console.log('x',x0,'y',y0);
-                d.push('M',x0,y0);
+//                d.push('M',x0,y0);
                 d.push('C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
             } else {
                 console.log('bend > 1 (subdivide)');
