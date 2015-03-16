@@ -77,7 +77,7 @@ SEGMENT.prototype.types = {
 	'Arc' : { handleCount:1, handleTypes:['bulge', 'angle', 'radius'] },
 	'Spiro' : { handleCount:0 },
 	'PenUp' : { handleCount:0 }, // used for breaking chains
-	'Rubber Band' : { handleCount:0 }
+	'Rubber Band' : { handleCount:0, handleTypes:['starboard','port'] }
 };
 
 window.SEGMENT = SEGMENT;
@@ -185,6 +185,7 @@ OBJECT.prototype.addClass = function(name){
 };
 
 OBJECT.prototype.render = function(){
+	// render GUI
 	if( this.element === undefined){
 		var dot = new XML('circle');
 		dot.attr('cx',this.x);
@@ -198,6 +199,19 @@ OBJECT.prototype.render = function(){
 		console.log('reposition object element',this.element);
 		this.element.setAttributeNS(null,'cx',this.x);
 		this.element.setAttributeNS(null,'cy',this.y);
+	}
+
+	// render Path
+	if(this.pathEl === undefined){
+		this.pathEl = new XML('path');
+	}
+	var pathData = ['M 100,100'];
+	for(i=0; i<this.chains.length; i++){
+		for(j=0; j<this.chains[i].segments.length; j++){
+			pathData.push('L');
+			pathData.push(this.chains[i].segments[j].anchor.x);
+			pathData.push(this.chains[i].segments[j].anchor.y);
+		}
 	}
 	return this;
 };
