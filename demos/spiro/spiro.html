@@ -85,8 +85,9 @@ init();
 
 // define base path
 demoPath = [[50,100],[100,50],[150,110],[200,95],[250,110]];
-var demoSolver;
 var i, d;
+function update(){
+var demoSolver;
 
 d = ['M'];
 for(i=0; i<demoPath.length; i++){
@@ -131,6 +132,15 @@ for(i=0; i<demoSolver.segs.length; i++){
 	console.log(d);
 }
 var pathBEl = document.getElementById('pathB').setAttributeNS(null,'d',d.join(' '));
+}
+
+update();
+
+window.onmousemove = function(event){
+	console.log('event',event);
+	demoPath[1] = [event.x || event.clientX , event.y || event.clientY];
+	update();
+};
 
 </script>
 
