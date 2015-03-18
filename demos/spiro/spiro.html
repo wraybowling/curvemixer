@@ -7,16 +7,13 @@
 		margin:0;
 		height:100%;
 	}
-
 	svg{
 		width:100%;
 		background-color:skyblue;
 	}
-
 	path{
 		fill:none;
 	}
-
 	#pathA{
 		stroke:black;
 		stroke-opacity:0.2;
@@ -24,125 +21,78 @@
 	}
 	#pathB{
 		stroke:red;
-		stroke-width:1px;
+		stroke-width:3px;
+		marker-mid:url(#C-marker);
+	}
+	marker{
+		stroke:white;
+		stroke-width:0.5px;
+		stroke-opacity:0.5;
+		overflow:visible;
 	}
 </style>
 </head>
-
 <body>
-
 <svg>
+	<defs>
+		<marker id="C-marker" orient="auto">
+			<path d="M 0 0 L 0 10" transform="translate(0 ,-5)"/>
+		</marker>
+	</defs>
 	<path id="pathA" d="M 0,0,100,100"/>
 	<path id="pathB" d="M 0,0,100,100"/>
 </svg>
-
 <script>
-/*
-function draw_segs(ctx, segs) {
-	ctx.moveTo(segs[0].left.xy[0], segs[0].left.xy[1]);
-	for (var i = 0; i < segs.length; i++) {
-		var seg = segs[i];
+// define base path
+demoPath = [[50,100],[100,50],[300,200],[350,128],[650,250]];
+var pathBEl = document.getElementById('pathB')
+var i;
+var starting = true; // boolean to tell first recursive seg_to_bez_svg that the process is starting
+function update(){
+	console.clear();
+	var demoSolver;
+	var my_d = ['M'];
+	for(i=0; i<demoPath.length; i++){
+		my_d.push(demoPath[i][0]);
+		my_d.push(demoPath[i][1]);
+	}
+	var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',my_d.join(' '));
+		// refine the curve
+	var step = 1;
+	for (var outer = 0; outer < 3; outer += 1) {
+		demoSolver = setup_solver(demoPath);
+		if (outer == 2) break;
+		try {
+			for (var j = 0; j < 30; j += 1){
+				var refined = refine_euler(demoSolver, step);
+				if (refined < 1e-6) break;
+			}
+			if (j < 30) break;
+		} catch (error) {
+			console.error(error);
+		}
+		step *= 0.5;
+	}
+
+	// convert spiro to bezier
+	var spiro_d = ['M',demoPath[0][0],demoPath[0][1]];
+	starting = true;
+	for(i=0; i<demoSolver.segs.length; i++){
+		console.group('segment',i);
+		var seg = demoSolver.segs[i];
 		var ths = seg.get_ths();
 		var ks = fit_euler(ths[0], ths[1]).ks;
-		ks.push(0); ks.push(0);
-		seg_to_bez(ctx, ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]);
+		ks.push(0,0);
+		spiro_d = ['M',demoPath[0][0],demoPath[0][1]].concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
+		console.groupEnd();
 	}
+	pathBEl.setAttributeNS(null,'d',spiro_d.join(' '));
 }
-function draw_nodes(ctx, nodes) {
-	for (var i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
-		ctx.beginPath();
-		ctx.arc(node.xy[0], node.xy[1], 2, 0, 2 * Math.PI, 0);
-		ctx.fill();
-	}
-}
-function print(s) {
-}
-function paint() {
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	hook_events(canvas);
-	spline = setup_solver(xp);
-	ctx.beginPath();
-	draw_segs(ctx, spline.segs);
-	ctx.stroke();
-	while (refine_euler(spline) > 1e-6);
-	ctx.strokeStyle = "rgb(128, 0, 0)";
-	ctx.beginPath();
-	draw_segs(ctx, spline.segs);
-	ctx.stroke();
-	draw_nodes(ctx, spline.nodes);
-}
-function init() {
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	spiroui = new SpiroUi(canvas);
-	spiroui.paint();
-}
-init();
-*/
-
-
-// define base path
-demoPath = [[50,100],[100,50],[150,110],[200,95],[250,110]];
-var i, d;
-function update(){
-var demoSolver;
-
-d = ['M'];
-for(i=0; i<demoPath.length; i++){
-	d.push(demoPath[i][0]);
-	d.push(demoPath[i][1]);
-}
-var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',d.join(' '));
-
-// refine the curve
-var step = 1;
-for (var outer = 0; outer < 3; outer += 1) {
-    demoSolver = setup_solver(demoPath);
-    if (outer == 2) break;
-    try {
-        for (var j = 0; j < 30; j += 1){
-        	var refined = refine_euler(demoSolver, step);
-        	console.log('refining spline...',refined);
-        	console.log('spline',demoSolver);
-        	if (refined < 1e-6) break;
-        }
-        if (j < 30) break;
-    } catch (error) {
-        console.error(error);
-    }
-    step *= 0.5;
-    console.log('solver',demoSolver);
-}
-
-// convert spiro to bezier
-d = [];
-for(i=0; i<demoSolver.segs.length; i++){
-	var seg = demoSolver.segs[i];
-	var ths = seg.get_ths();
-//	if(i === 0) ths = [0,ths[1]];
-//	if(i === demoSolver.segs.length-1) ths = [ths[0],0];
-	console.log('loop theta',ths);
-	var ks = fit_euler(ths[0], ths[1]).ks;
-//	if(i === demoSolver.segs.length-1) ks = [0.999,ks[1]];
-	console.log('loop ks',ks);
-	ks.push(0,0);
-	d = d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
-	console.log(d);
-}
-var pathBEl = document.getElementById('pathB').setAttributeNS(null,'d',d.join(' '));
-}
-
-update();
-
+	update();
 window.onmousemove = function(event){
-	console.log('event',event);
 	demoPath[1] = [event.x || event.clientX , event.y || event.clientY];
 	update();
 };
-
 </script>
-
 </body>
 </html>
