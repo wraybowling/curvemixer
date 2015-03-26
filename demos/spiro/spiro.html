@@ -83,6 +83,7 @@ function update(){
 		var ths = seg.get_ths();
 		var ks = fit_euler(ths[0], ths[1]).ks;
 		ks.push(0,0);
+		//FIXME seg_to_bez_svg is returning the whole curve, not just the segment
 		spiro_d = ['M',demoPath[0][0],demoPath[0][1]].concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
 		console.groupEnd();
 	}
