@@ -11,15 +11,18 @@
 		width:100%;
 		background-color:#222;
 	}
-	path{
+	path,polyline{
 		fill:none;
 	}
-	#pathA{
+	#referencePath{
 		stroke:red;
-		stroke-opacity:1;
 		stroke-width:1px;
 	}
-	#pathB{
+	#arc{
+		stroke:yellow;
+		stroke-width:1px;
+	}
+	#spiro{
 		stroke:white;
 		stroke-width:5px;
 		marker-mid:url(#C-marker);
@@ -39,59 +42,96 @@
 			<path d="M 0 0 L 0 10" transform="translate(0 ,-5)"/>
 		</marker>
 	</defs>
-	<path id="pathA" d="M 0,0,100,100"/>
-	<path id="pathB" d="M 0,0,100,100"/>
+	<polyline id="referencePath" points="0,0,100,100"/>
+	<path id="spiro" d="M 0,0,100,100"/>
+	<path id="arc" d=""/>
 </svg>
 <script>
 // define base path
-demoPath = [[50,100],[100,50],[300,200],[350.5,128],[350.5,250]];
-var pathBEl = document.getElementById('pathB')
+demoPath = [[300,150],[300,300]];
+
+var referencePath = document.getElementById('referencePath')
+var spiroPath = document.getElementById('spiro');
+var arcPath = document.getElementById('arc');
 var i;
-var starting = true; // boolean to tell first recursive seg_to_bez_svg that the process is starting
+
 function update(){
-	console.clear();
-	var demoSolver;
-	var my_d = ['M'];
+
+	// remove doubles
+	cleanedData = [];
+	referenceData = [];
+	var lastNonZeroDistancePoint = [];
 	for(i=0; i<demoPath.length; i++){
-		my_d.push(demoPath[i][0]);
-		my_d.push(demoPath[i][1]);
-	}
-	var pathAEl = document.getElementById('pathA').setAttributeNS(null,'d',my_d.join(' '));
-		// refine the curve
-	var step = 1;
-	for (var outer = 0; outer < 3; outer += 1) {
-		demoSolver = setup_solver(demoPath);
-		if (outer == 2) break;
-		try {
-			for (var j = 0; j < 30; j += 1){
-				var refined = refine_euler(demoSolver, step);
-				if (refined < 1e-6) break;
-			}
-			if (j < 30) break;
-		} catch (error) {
-			console.error(error);
+		if((lastNonZeroDistancePoint.length !== 0)
+		&&((demoPath[i][0] === lastNonZeroDistancePoint[0])
+		&& (demoPath[i][1] === lastNonZeroDistancePoint[1]))){
+			// do nothing
+		}else{
+			cleanedData.push(demoPath[i]);
+			referenceData.push(demoPath[i][0]);
+			referenceData.push(demoPath[i][1]);
+			lastNonZeroDistancePoint = demoPath[i];
 		}
-		step *= 0.5;
 	}
 
-	// convert spiro to bezier
-	var spiro_d = ['M',demoPath[0][0],demoPath[0][1]];
-	starting = true;
-	for(i=0; i<demoSolver.segs.length; i++){
-		console.group('segment',i);
-		var seg = demoSolver.segs[i];
-		var ths = seg.get_ths();
-		var ks = fit_euler(ths[0], ths[1]).ks;
-		ks.push(0,0);
-		bez_data = [];
-		spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
-		console.groupEnd();
+	// update reference line
+	referencePath.setAttributeNS(null,'points',cleanedData.join(','));
+
+	// update spiro
+	if(cleanedData.length >= 2){
+		var spiro_d = ['M',cleanedData[0][0],cleanedData[0][1]];
 	}
-	pathBEl.setAttributeNS(null,'d',spiro_d.join(' '));
+	if(cleanedData.length === 2){
+		spiro_d.push('L',cleanedData[1][0],cleanedData[1][1]);
+	}
+	if(cleanedData.length >= 3){
+		var demoSolver;
+		var step = 1;
+		for (var outer = 0; outer < 3; outer += 1) {
+			demoSolver = setup_solver(cleanedData);
+			if (outer == 2) break;
+			try {
+				for (var j = 0; j < 30; j += 1){
+					var refined = refine_euler(demoSolver, step);
+					if (refined < 1e-6) break;
+				}
+				if (j < 30) break;
+			} catch (error) {
+				console.error(error);
+			}
+			step *= 0.5;
+		}
+
+		// convert spiro to bezier
+		for(i=0; i<demoSolver.segs.length; i++){
+			var seg = demoSolver.segs[i];
+			var ths = seg.get_ths();
+			var ks = fit_euler(ths[0], ths[1]).ks;
+			ks.push(0,0);
+			bez_data = [];
+			spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
+		}
+	}
+	spiroPath.setAttributeNS(null,'d',spiro_d.join(' '));
 }
-	update();
+update();
+
+var x,y;
 window.onmousemove = function(event){
-	demoPath[1] = [event.x || event.clientX , event.y || event.clientY];
+	x = event.x;
+	y = event.y;
+	demoPath[demoPath.length-1] = [event.x || event.clientX , event.y || event.clientY];
+	update();
+};
+
+window.onkeydown = function(event){
+	console.log(event.keyCode);
+	if(event.keyCode === 32){
+		// spacebar
+		drift();
+	}else{
+		demoPath.push([x,y]);
+	}
 	update();
 };
 

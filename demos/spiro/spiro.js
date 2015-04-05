@@ -360,7 +360,6 @@
             var scale = seg_ch / ch;
             var rot = seg_th - th;
             if (bend < 1) {
-                
                 var th_even = (1/384) * ks[3] + (1/8) * ks[1] + rot;
                 var th_odd = (1/48) * ks[2] + 0.5 * ks[0];
                 var scale3 = scale * (1/3);
@@ -369,12 +368,10 @@
                 var ur = scale3 * Math.cos(th_even + th_odd);
                 var vr = scale3 * Math.sin(th_even + th_odd);
                 d = d.concat(['C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1]);
-                console.log('no',d);
               // try catching cases where the spiral gets too spiraly
 //            } else if(bend > 6){
 //                d.push('M',x1,y1);
             } else {
-                //console.log('subdividing');
                 /* subdivide */
                 var ksub =
                 [0.5 * ks[0] - 0.125 * ks[1] + (1/64) * ks[2] - (1/768) * ks[3],
@@ -393,10 +390,8 @@
                 ksub[1] += 0.125 * ks[2];
                 ksub[2] += (1/16) * ks[3];
                 d = d.concat(seg_to_bez_svg(ksub, xmid, ymid, x1, y1));
-                console.log('sub',d);
             }
         }
-        console.log('all done!');
         return d;
     }
     function fit_euler(th0, th1) {
@@ -484,18 +479,16 @@
         for (i = 0; i < segs.length; i += 1) {
             seg = segs[i];
             // MANUALLY CONTROL THETA
+            /*
             if(i === 0){
-                console.log('nodes',nodes);
                 var init_angle = Math.atan2(nodes[1].xy[1] - nodes[0].xy[1], nodes[1].xy[0] - nodes[0].xy[0]);
-                console.log(init_angle);
-                seg.init_th0 = init_angle - Math.PI/2;
+                seg.init_th0 = init_angle - Math.PI;
             }
             if(i === segs.length - 1){
                 var x = nodes.length - 1;
-                //console.log(seg);
                 var init_angle = Math.atan2(nodes[x].xy[1] - nodes[x-1].xy[1], nodes[x].xy[0] - nodes[x-1].xy[0]);
-                seg.init_th1 = init_angle;
-            }
+                seg.init_th1 = -init_angle + Math.PI;
+            }*/
             if (seg.init_th0 === undefined) {
                 if (seg.init_th1 === undefined) {
                     seg.init_th0 = 0;
