@@ -1,10 +1,7 @@
 //(function () {
 //    "use strict";
-
     // -- generic band-diagonal matrix solver, adapted from numerical recipes
     function bandec(matrix, n, m) {
-        
-        
         var i, j, l = m;
         for (i = 0; i < m; i += 1) {
             for (j = 0; j <= i + m; j += 1) {
@@ -32,11 +29,8 @@
                 matrix[j].a[m + m] = 0;
             }
         }
-        
     }
-
     function banbks(mat, v, n, m) {
-        
         var i;
         var l = m;
         for (var k = 0; k < n; k += 1) {
@@ -55,16 +49,11 @@
             v[i] = x / mat_i.a[0];
             if (l < m + m) l += 1;
         }
-        
     }
-
-    // -- actual spiro code
-
-    res = [0, 0];
-
-    function integ_euler_10(k0, k1) {
-        
-        var t1_1 = k0;
+        // -- actual spiro code
+        res = [0, 0];
+        function integ_euler_10(k0, k1) {
+            var t1_1 = k0;
         var t1_2 = 0.5 * k1;
         var t2_2 = t1_1 * t1_1;
         var t2_3 = 2 * (t1_1 * t1_2);
@@ -92,13 +81,9 @@
         v -= (1/480) * t3_4 + (1/2688) * t3_6;
         v += (1/53760) * t5_6 + (1/276480) * t5_8;
         v -= (1/11612160) * t7_8;
-        
-        
         return [u,v];
     }
-
     function integ_spiro_12(k0, k1, k2, k3) {
-        
         var t1_1 = k0;
         var t1_2 = 0.5 * k1;
         var t1_3 = (1/6) * k2;
@@ -147,13 +132,9 @@
         v += (1/53760) * t5_6 + (1/276480) * t5_8 + (1/1351680) * t5_10;
         v -= (1/11612160) * t7_8 + (1/56770560) * t7_10;
         v += 2.4464949595157932e-10 * t9_10;
-        
-        
         return [u,v];
     }
-
     function integ_spiro_12n(k0, k1, k2, k3, n) {
-        
         var th1 = k0;
         var th2 = 0.5 * k1;
         var th3 = (1/6) * k2;
@@ -163,45 +144,34 @@
         var ds2 = ds * ds;
         var ds3 = ds2 * ds;
         var s = 0.5 * ds - 0.5;
-
         k0 *= ds;
         k1 *= ds;
         k2 *= ds;
         k3 *= ds;
-
         x = 0;
         y = 0;
-
         for (var i = 0; i < n; i += 1) {
         var km0 = (((1/6) * k3 * s + 0.5 * k2) * s + k1) * s + k0;
         var km1 = ((0.5 * k3 * s + k2) * s + k1) * ds;
         var km2 = (k3 * s + k2) * ds2;
         var km3 = k3 * ds3;
-
         var uv = integ_spiro_12(km0, km1, km2, km3);
         var u = uv[0];
         var v = uv[1];
-
         var th = (((th4 * s + th3) * s + th2) * s + th1) * s;
         var cth = Math.cos(th);
         var sth = Math.sin(th);
-
         x += cth * u - sth * v;
         y += cth * v + sth * u;
         s += ds;
         }
-        
-        
         return [x * ds, y * ds];
     }
-
-    // technique and coefficients adapted from cephes library
+        // technique and coefficients adapted from cephes library
     function fresnel(x, res) {
-        
         var x2 = x * x;
         var t;
         if (x2 < 2.5625) {
-            
             t = x2 * x2;
             res[0] = x * x2 * (((((-2.99181919401019853726E3 * t +
                      7.08840045257738576863E5) * t +
@@ -227,7 +197,6 @@
                8.68029542941784300606E-4) * t +
               4.12142090722199792936E-2) * t + 1.00000000000000000118E0);
         } else {
-            
             t = 1.0 / (Math.PI * x2);
             var u = t * t;
             var f = 1.0 - u * (((((((((4.21543555043677546506E-1 * u +
@@ -278,15 +247,11 @@
             res[1] = p + (f * s - g * c) / t;
             res[0] = p - (f * c + g * s) / t;
         }
-        
     }
-
     var yx0 = [0, 0];
     var yx1 = [0, 0];
-
-    // direct evaluation by fresnel integrals
+        // direct evaluation by fresnel integrals
     function integ_euler(k0, k1) {
-        
         var ak1 = Math.abs(k1);
         if (ak1 < 5e-8) {
         res[0] = (k0 === 0) ? 1 : Math.sin(k0 * 0.5) / (k0 * 0.5);
@@ -304,65 +269,43 @@
         res[0] = (yx1[1] - yx0[1]) * c + (yx1[0] - yx0[0]) * s;
         var v = (yx1[0] - yx0[0]) * c - (yx1[1] - yx0[1]) * s;
         res[1] = k1 < 0 ? -v : v;
-        
-        
         return res;
     }
-
-    // This function is tuned to give an accuracy within 1e-9.
+        // This function is tuned to give an accuracy within 1e-9.
     function integ_spiro(k0, k1, k2, k3) {
-        
         var result;
         if (k2 === 0 && k3 === 0) {
             // Euler spiral
             var est_err_raw = 0.2 * k0 * k0 + Math.abs(k1);
             if (est_err_raw < 1) {
-                
                 if (est_err_raw < 0.45){
-                    
                     result = integ_euler_10(k0, k1);
-                    
                     return result;
                 }else{
-                    
                     result = integ_spiro_12(k0, k1, k2, k3);
-                    
                     return result;
                 }
             }
-            
             result = integ_euler(k0, k1);
-            
             return result;
         }
-        
         result = integ_spiro_12n(k0, k1, k2, k3, 4);
-        
         return result;
     }
-
-    var alternating_stroke = true; //wray's
-
-    function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
-        
-        
-        
-        var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
-        
-        if (bend < 1e-8) {
-            
-            ctx.lineTo(x1, y1);
+        var alternating_stroke = true; //wray's
+        function seg_to_bez(ctx, ks, x0, y0, x1, y1) {
+            var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
+            if (bend < 1e-8) {
+                ctx.lineTo(x1, y1);
         } else {
             var seg_ch = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
             var seg_th = Math.atan2(y1 - y0, x1 - x0);
-
             var xy = integ_spiro(ks[0], ks[1], ks[2], ks[3]);
             var ch = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
             var th = Math.atan2(xy[1], xy[0]);
             var scale = seg_ch / ch;
             var rot = seg_th - th;
             if (bend < 1) {
-                
                 var th_even = (1/384) * ks[3] + (1/8) * ks[1] + rot;
                 var th_odd = (1/48) * ks[2] + 0.5 * ks[0];
                 var scale3 = scale * (1/3);
@@ -372,8 +315,6 @@
                 var vr = scale3 * Math.sin(th_even + th_odd);
                 ctx.beginPath();
                 ctx.moveTo(x0, y0);
-                //BOOKMARK
-                //ctx.beginPath(); // wray's : force line to draw as segments
                 if(alternating_stroke){
                     ctx.strokeStyle = "rgb(0,224,219)";
                 }else{
@@ -383,7 +324,6 @@
                 ctx.bezierCurveTo(x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
                 ctx.stroke();
             } else {
-                
                 /* subdivide */
                 var ksub =
                 [0.5 * ks[0] - 0.125 * ks[1] + (1/64) * ks[2] - (1/768) * ks[3],
@@ -404,38 +344,27 @@
                 seg_to_bez(ctx, ksub, xmid, ymid, x1, y1);
             }
         }
-        
     }
-
-    var d = [];
+    var bez_data = [];
     var q = 0;
-
     function seg_to_bez_svg(ks, x0, y0, x1, y1) {
-
         q++;
-
         if(starting === true){
             while (d.pop()) {}
             console.log('starting d',d);
             starting = false;
             q = 0;
-//            console.clear();
         }
-
         var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
-        
         console.log('bend',bend);
         if (bend < 1e-8) {
-            
             d.push('L',x1,y1);
         } else {
             var seg_ch = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
             var seg_th = Math.atan2(y1 - y0, x1 - x0);
-
             var xy = integ_spiro(ks[0], ks[1], ks[2], ks[3]);
             var ch = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
             var th = Math.atan2(xy[1], xy[0]);
-            
             var scale = seg_ch / ch;
             var rot = seg_th - th;
             if (bend < 1) {
@@ -447,7 +376,6 @@
                 var vl = scale3 * Math.sin(th_even - th_odd);
                 var ur = scale3 * Math.cos(th_even + th_odd);
                 var vr = scale3 * Math.sin(th_even + th_odd);
-                
                 d.push('C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
               // try catching cases where the spiral gets too spiraly
 //            } else if(bend > 6){
@@ -461,12 +389,10 @@
                  0.125 * ks[2] - (1/32) * ks[3],
                  (1/16) * ks[3]
                  ];
-                 
-                var thsub = rot - 0.25 * ks[0] + (1/32) * ks[1] - (1/384) * ks[2] + (1/6144) * ks[3];
+                 var thsub = rot - 0.25 * ks[0] + (1/32) * ks[1] - (1/384) * ks[2] + (1/6144) * ks[3];
                 var cth = 0.5 * scale * Math.cos(thsub);
                 var sth = 0.5 * scale * Math.sin(thsub);
                 var xysub = integ_spiro(ksub[0], ksub[1], ksub[2], ksub[3]);
-                 
                 var xmid = x0 + cth * xysub[0] - sth * xysub[1];
                 var ymid = y0 + cth * xysub[1] + sth * xysub[0];
                 seg_to_bez_svg(ksub, x0, y0, xmid, ymid);
@@ -479,9 +405,7 @@
         console.log('all done!');
         return d;
     }
-
     function fit_euler(th0, th1) {
-        
         var k1_old = 0;
         var error_old = th1 - th0;
         var k0 = th0 + th1;
@@ -503,60 +427,39 @@
         if (i == 10)
             throw "fit_euler diverges at " + th0 + ", " + th1;
         var chord = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
-        
         return {ks: [k0, k1], chord: chord};
     }
-
     function fit_euler_ks(th0, th1, chord) {
-        
         var p = fit_euler(th0, th1);
         var sc = p.chord / chord;
         p.k0 = (p.ks[0] - 0.5 * p.ks[1]) * sc;
         p.k1 = (p.ks[0] + 0.5 * p.ks[1]) * sc;
-        
         return p;
     }
-
     function get_ths_straight() {
-        
         return [0, 0];
     }
-
     function get_ths_left() {
-        
         return [this.init_th1 + this.right.dth, this.init_th1 + this.right.dth];
     }
-
     function get_ths_right() {
-        
         return [this.init_th0 - this.left.dth, this.init_th0 - this.left.dth];
     }
-
     function get_ths_g2() {
-        
         return [this.init_th0 - this.left.dth, this.init_th1 + this.right.dth];
     }
-
     function Spline(segs, nodes) {
-        
-        
-        
         this.segs = segs;
         this.nodes = nodes;
-        
     }
-
     Spline.prototype.show_in_shell = function () {
         showobj(this.segs);
         showobj(this.nodes);
     };
-
     function setup_solver(path) {
-        
         var segs = [];
         var nodes = [];
         var i,seg;
-
         for (i = 0; i < path.length - 1; i += 1) {
             seg = {};
             var dx = path[i + 1][0] - path[i][0];
@@ -587,55 +490,48 @@
         for (i = 0; i < segs.length; i += 1) {
             seg = segs[i];
             // MANUALLY CONTROL THETA
-//            if(i === 0) seg.init_th0 = Math.PI;
+            if(i === 0){
+                console.log('nodes',nodes);
+                var init_angle = Math.atan2(nodes[1].xy[1] - nodes[0].xy[1], nodes[1].xy[0] - nodes[0].xy[0]);
+                console.log(init_angle);
+                seg.init_th0 = init_angle - Math.PI/2;
+            }
             if (seg.init_th0 === undefined) {
                 if (seg.init_th1 === undefined) {
-                seg.init_th0 = 0;
-                seg.init_th1 = 0;
-                seg.get_ths = get_ths_straight;
+                    seg.init_th0 = 0;
+                    seg.init_th1 = 0;
+                    seg.get_ths = get_ths_straight;
                 } else {
-                seg.init_th0 = seg.init_th1;
-                seg.get_ths = get_ths_left;
+                    seg.init_th0 = seg.init_th1;
+                    seg.get_ths = get_ths_left;
                 }
             } else {
                 if (seg.init_th1 === undefined) {
-                seg.init_th1 = seg.init_th0;
-                seg.get_ths = get_ths_right;
+                    seg.init_th1 = seg.init_th0;
+                    seg.get_ths = get_ths_right;
                 } else {
-                seg.get_ths = get_ths_g2;
+                    seg.get_ths = get_ths_g2;
                 }
             }
         }
         var result = new Spline(segs, nodes);
-        
         return result;
     }
-
     function get_jacobian_g2(node) {
-        
         var save_dth = node.dth;
         var delta = 1e-6;
         node.dth += delta;
-
         var ths = node.left.get_ths();
         var lparms = fit_euler_ks(ths[0], ths[1], node.left.chord);
-
         ths = node.right.get_ths();
         var rparms = fit_euler_ks(ths[0], ths[1], node.right.chord);
-
         node.dth = save_dth;
-
         var result = [(lparms.k0 - node.left.params.k0) / delta,
             (rparms.k0 - node.right.params.k0 - lparms.k1 + node.left.params.k1) / delta,
             (-rparms.k1 + node.right.params.k1) / delta];
-        
-        
-        return result;
+            return result;
     }
-
     function refine_euler(spline, step) {
-        
-        
         var maxerr = 0;
         var segs = spline.segs;
         var nodes = spline.nodes;
@@ -670,7 +566,5 @@
                 j += 1;
             }
         }
-        
-        
         return maxerr;
     }
