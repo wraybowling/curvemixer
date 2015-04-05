@@ -490,6 +490,12 @@
                 console.log(init_angle);
                 seg.init_th0 = init_angle - Math.PI/2;
             }
+            if(i === segs.length - 1){
+                var x = segs.length - 1;
+                //console.log(seg);
+                var init_angle = Math.atan2(nodes[x].xy[1] - nodes[x-1].xy[1], nodes[x].xy[0] - nodes[x-1].xy[0]);
+                seg.init_th1 = init_angle - Math.PI/2;
+            }
             if (seg.init_th0 === undefined) {
                 if (seg.init_th1 === undefined) {
                     seg.init_th0 = 0;
