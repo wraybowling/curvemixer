@@ -345,20 +345,12 @@
             }
         }
     }
-    var bez_data = [];
-    var q = 0;
+
     function seg_to_bez_svg(ks, x0, y0, x1, y1) {
-        q++;
-        if(starting === true){
-            while (d.pop()) {}
-            console.log('starting d',d);
-            starting = false;
-            q = 0;
-        }
+        var d = [];
         var bend = Math.abs(ks[0]) + Math.abs(0.5 * ks[1]) + Math.abs(0.125 * ks[2]) + Math.abs((1/48) * ks[3]);
-        console.log('bend',bend);
         if (bend < 1e-8) {
-            d.push('L',x1,y1);
+            return ['L',x1,y1];
         } else {
             var seg_ch = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
             var seg_th = Math.atan2(y1 - y0, x1 - x0);
@@ -368,7 +360,7 @@
             var scale = seg_ch / ch;
             var rot = seg_th - th;
             if (bend < 1) {
-                console.log(q,'ok!');
+                
                 var th_even = (1/384) * ks[3] + (1/8) * ks[1] + rot;
                 var th_odd = (1/48) * ks[2] + 0.5 * ks[0];
                 var scale3 = scale * (1/3);
@@ -376,12 +368,13 @@
                 var vl = scale3 * Math.sin(th_even - th_odd);
                 var ur = scale3 * Math.cos(th_even + th_odd);
                 var vr = scale3 * Math.sin(th_even + th_odd);
-                d.push('C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1);
+                d = d.concat(['C',x0 + ul, y0 + vl, x1 - ur, y1 - vr, x1, y1]);
+                console.log('no',d);
               // try catching cases where the spiral gets too spiraly
 //            } else if(bend > 6){
 //                d.push('M',x1,y1);
             } else {
-                console.log(q,'subdividing');
+                //console.log('subdividing');
                 /* subdivide */
                 var ksub =
                 [0.5 * ks[0] - 0.125 * ks[1] + (1/64) * ks[2] - (1/768) * ks[3],
@@ -395,11 +388,12 @@
                 var xysub = integ_spiro(ksub[0], ksub[1], ksub[2], ksub[3]);
                 var xmid = x0 + cth * xysub[0] - sth * xysub[1];
                 var ymid = y0 + cth * xysub[1] + sth * xysub[0];
-                seg_to_bez_svg(ksub, x0, y0, xmid, ymid);
+                d = d.concat(seg_to_bez_svg(ksub, x0, y0, xmid, ymid));
                 ksub[0] += 0.25 * ks[1] + (1/384) * ks[3];
                 ksub[1] += 0.125 * ks[2];
                 ksub[2] += (1/16) * ks[3];
-                seg_to_bez_svg(ksub, xmid, ymid, x1, y1);
+                d = d.concat(seg_to_bez_svg(ksub, xmid, ymid, x1, y1));
+                console.log('sub',d);
             }
         }
         console.log('all done!');
