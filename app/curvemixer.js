@@ -468,7 +468,7 @@ CURVEMIXER.prototype.mousemove = function(event){
 
 CURVEMIXER.prototype.mousedown = function(event){
 	console.log('mouse down',event);
-	if(this.states.grabbing) this.states.grabbing = false;
+	this.states.grabbing = false;
 };
 
 CURVEMIXER.prototype.mouseup = function(event){
@@ -521,6 +521,7 @@ CURVEMIXER.prototype.keydown = function(event){
 //				break;
 
 			case 71: // G
+
 				this.states.grabbing = true;
 				break;
 		}
