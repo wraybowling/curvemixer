@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-
+var i;
 
 // GLOBALS
 function distance(Xa,Ya,Xb,Yb){
@@ -24,7 +24,6 @@ function distance(Xa,Ya,Xb,Yb){
 // v v v
 // Handle: a point that has a casteljau type: straight, catmul-rom, free
 //
-
 
 function POINT(x,y){
 	this.x = x;
