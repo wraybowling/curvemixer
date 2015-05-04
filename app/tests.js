@@ -1,6 +1,6 @@
 (function(){
+console.group('tests');
 //console.groupCollapsed('tests');
-console.groupCollapsed('tests');
 
 //var stage = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
 //var gui = document.createElementNS('http://www.w3.org/1999/xlink', 'svg');
@@ -9,7 +9,7 @@ var container = document.querySelector('.curvemixer');
 var stage = container.querySelector('.stage');
 var gui = container.querySelector('.gui');
 
-var curvemixer = new CURVEMIXER(container, stage,gui);
+var curvemixer = new CURVEMIXER(container, stage, gui);
 
 var p = new POINT(100,100);
 console.log('point', p);
