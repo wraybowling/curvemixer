@@ -47,81 +47,35 @@
 	<path id="arc" d=""/>
 </svg>
 <script>
+	
 // define base path
-demoPath = [[300,150],[300,300]];
 
-var referencePath = document.getElementById('referencePath')
+function point(x,y){
+	this.x = x;
+	this.y = y;
+}
+
+demoChain = {
+	points:[]
+	,angles:[,,Math.PI/4,,,,]
+};
+	
+demoChain.points.push( new point(300,150) );
+demoChain.points.push( new point(300,300) );
+
+var referencePath = document.getElementById('referencePath');
 var spiroPath = document.getElementById('spiro');
 var arcPath = document.getElementById('arc');
 var i;
 
-function update(){
-
-	// remove doubles
-	cleanedData = [];
-	referenceData = [];
-	var lastNonZeroDistancePoint = [];
-	for(i=0; i<demoPath.length; i++){
-		if((lastNonZeroDistancePoint.length !== 0)
-		&&((demoPath[i][0] === lastNonZeroDistancePoint[0])
-		&& (demoPath[i][1] === lastNonZeroDistancePoint[1]))){
-			// do nothing
-		}else{
-			cleanedData.push(demoPath[i]);
-			referenceData.push(demoPath[i][0]);
-			referenceData.push(demoPath[i][1]);
-			lastNonZeroDistancePoint = demoPath[i];
-		}
-	}
-
-	// update reference line
-	referencePath.setAttributeNS(null,'points',cleanedData.join(','));
-
-	// update spiro
-	if(cleanedData.length >= 2){
-		var spiro_d = ['M',cleanedData[0][0],cleanedData[0][1]];
-	}
-	if(cleanedData.length === 2){
-		spiro_d.push('L',cleanedData[1][0],cleanedData[1][1]);
-	}
-	if(cleanedData.length >= 3){
-		var demoSolver;
-		var step = 1;
-		for (var outer = 0; outer < 3; outer += 1) {
-			demoSolver = setup_solver(cleanedData);
-			if (outer == 2) break;
-			try {
-				for (var j = 0; j < 30; j += 1){
-					var refined = refine_euler(demoSolver, step);
-					if (refined < 1e-6) break;
-				}
-				if (j < 30) break;
-			} catch (error) {
-				console.error(error);
-			}
-			step *= 0.5;
-		}
-
-		// convert spiro to bezier
-		for(i=0; i<demoSolver.segs.length; i++){
-			var seg = demoSolver.segs[i];
-			var ths = seg.get_ths();
-			var ks = fit_euler(ths[0], ths[1]).ks;
-			ks.push(0,0);
-			bez_data = [];
-			spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
-		}
-	}
-	spiroPath.setAttributeNS(null,'d',spiro_d.join(' '));
-}
-update();
-
 var x,y;
 window.onmousemove = function(event){
-	x = event.x;
-	y = event.y;
-	demoPath[demoPath.length-1] = [event.x || event.clientX , event.y || event.clientY];
-	update();
+	x = event.x || event.clientX;
+	y = event.y || event.clientY;
+	
+	demoChain.points[demoChain.points.length-1].x = x;
+	demoChain.points[demoChain.points.length-1].y = y;
+	chainToSpiro(demoChain);
 };
 
 window.onkeydown = function(event){
@@ -130,22 +84,28 @@ window.onkeydown = function(event){
 		// spacebar
 		drift();
 	}else{
-		demoPath.push([x,y]);
+		demoChain.points.push( new point(x,y) );
 	}
-	update();
+	chainToSpiro(demoChain);
 };
-
-function drift(){
-    var big_angle = Math.random()*Math.PI*2.0;
-    for(var i=0; i< demoPath.length; i++){
-        var angle = Math.random()*Math.PI*2.0;
-        demoPath[i][0] += Math.cos(angle) + Math.cos(big_angle);
-        demoPath[i][1] += Math.sin(angle) + Math.sin(big_angle);
-    }
-    update();
+	
+var theta = 0;
+	var forwards = true;
+function spinny(){
+	if(theta >= Math.PI*0.75) forwards = false;
+	if(theta <= -Math.PI*0.75) forwards = true;
+	if(forwards){
+		theta += 0.1;
+	}else{
+		theta -= 0.1;
+	}
+	
+	demoChain.angles[4] = theta;
+	chainToSpiro(demoChain);
 }
-
-//var drifter = setInterval(drift,16);
+	
+setInterval(spinny,10);
+	
 </script>
 </body>
 </html>

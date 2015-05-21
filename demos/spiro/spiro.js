@@ -1,6 +1,8 @@
 //(function () {
 //    "use strict";
     // -- generic band-diagonal matrix solver, adapted from numerical recipes
+		var i=0;
+
     function bandec(matrix, n, m) {
         var i, j, l = m;
         for (i = 0; i < m; i += 1) {
@@ -398,23 +400,26 @@
         var k1_old = 0;
         var error_old = th1 - th0;
         var k0 = th0 + th1;
-        while (k0 > 2 * Math.PI)
-            k0 -= 4 * Math.PI;
-        while (k0 < -2 * Math.PI)
-            k0 += 4 * Math.PI;
+        while (k0 > 2 * Math.PI) {
+					k0 -= 4 * Math.PI;
+				}
+        while (k0 < -2 * Math.PI) {
+					k0 += 4 * Math.PI;
+				}
         var k1 = 6 * (1 - Math.pow((0.5 / Math.PI) * k0, 3)) * error_old;
         var xy;
         for (var i = 0; i < 10; i += 1) {
             xy = integ_spiro(k0, k1, 0, 0);
             var error = (th1 - th0) - (0.25 * k1 - 2 * Math.atan2(xy[1], xy[0]));
-            if (Math.abs(error) < 1e-9) break;
+            if (Math.abs(error) < 1e-9) { break; }
             var new_k1 = k1 + (k1_old - k1) * error / (error - error_old);
             k1_old = k1;
             error_old = error;
             k1 = new_k1;
         }
-        if (i == 10)
+        if (i == 10) {
             throw "fit_euler diverges at " + th0 + ", " + th1;
+				}
         var chord = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
         return {ks: [k0, k1], chord: chord};
     }
@@ -441,10 +446,7 @@
         this.segs = segs;
         this.nodes = nodes;
     }
-    Spline.prototype.show_in_shell = function () {
-        showobj(this.segs);
-        showobj(this.nodes);
-    };
+    
     function setup_solver(path) {
         var segs = [];
         var nodes = [];
@@ -476,8 +478,15 @@
             }
             nodes[i] = node;
         }
+				
         for (i = 0; i < segs.length; i += 1) {
             seg = segs[i];
+							
+						if(input_chain.angles[i] !== undefined){							
+							var init_angle = Math.atan2(nodes[i+1].xy[1] - nodes[i].xy[1], nodes[i+1].xy[0] - nodes[i].xy[0]);
+							seg.init_th1 = -init_angle + input_chain.angles[i];
+						}
+						
             // MANUALLY CONTROL THETA
             /*
             if(i === 0){
@@ -488,7 +497,7 @@
                 var x = nodes.length - 1;
                 var init_angle = Math.atan2(nodes[x].xy[1] - nodes[x-1].xy[1], nodes[x].xy[0] - nodes[x-1].xy[0]);
                 seg.init_th1 = -init_angle + Math.PI;
-            }*/
+            }/**/
             if (seg.init_th0 === undefined) {
                 if (seg.init_th1 === undefined) {
                     seg.init_th0 = 0;
@@ -543,21 +552,79 @@
             if (node.left && node.right) {
                 var kerr = node.right.params.k0 - node.left.params.k1;
                 dks[j] = kerr;
-                if (Math.abs(kerr) > maxerr) maxerr = Math.abs(kerr);
+                if (Math.abs(kerr) > maxerr){ maxerr = Math.abs(kerr); }
                 mat[j] = {a: get_jacobian_g2(node)};
                 j += 1;
             }
         }
-        if (mat.length === 0) return 0;
-            bandec(mat, mat.length, 1);
-            banbks(mat, dks, mat.length, 1);
-            j = 0;
-            for (i = 0; i < nodes.length; i += 1) {
-            node = nodes[i];
-            if (node.left && node.right) {
-                node.dth -= step * dks[j];
-                j += 1;
-            }
+        if (mat.length === 0) { return 0; }
+				bandec(mat, mat.length, 1);
+				banbks(mat, dks, mat.length, 1);
+				j = 0;
+				for (i = 0; i < nodes.length; i += 1) {
+					node = nodes[i];
+					if (node.left && node.right) {
+						node.dth -= step * dks[j];
+						j += 1;
+					}
         }
         return maxerr;
     }
+
+var input_chain;
+
+function chainToSpiro(chain){
+
+	input_chain = chain;
+	
+	// remove doubles
+	var cleanedData = [];
+	var lastNonZeroDistancePoint = [];
+	for(i=0; i<chain.points.length; i++){
+		if((lastNonZeroDistancePoint.length !== 0)
+		&&((chain.points[i].x === lastNonZeroDistancePoint.x)
+		&& (chain.points[i].y === lastNonZeroDistancePoint.y))){
+			// do nothing
+		}else{
+			cleanedData.push([chain.points[i].x,chain.points[i].y]);
+			lastNonZeroDistancePoint = chain.points[i];
+		}
+	}
+
+	// update spiro
+	var spiro_d = [];
+	if(cleanedData.length >= 2){
+		spiro_d.push('M',chain.points[0].x,chain.points[0].y);
+	}
+	if(cleanedData.length === 2){
+		spiro_d.push('L',chain.points[1].x,chain.points[1].y);
+	}
+	if(cleanedData.length >= 3){
+		var demoSolver;
+		var step = 1;
+		for (var outer = 0; outer < 3; outer += 1) {
+			demoSolver = setup_solver(cleanedData);
+			if (outer === 2) { break; }
+			try {
+				for (var j = 0; j < 30; j += 1){
+					var refined = refine_euler(demoSolver, step);
+					if (refined < 1e-6) { break; }
+				}
+				if (j < 30) { break; }
+			} catch (error) {
+				console.error(error);
+			}
+			step *= 0.5;
+		}
+
+		// convert spiro to bezier
+		for(i=0; i<demoSolver.segs.length; i++){
+			var seg = demoSolver.segs[i];
+			var ths = seg.get_ths();
+			var ks = fit_euler(ths[0], ths[1]).ks;
+			ks.push(0,0);
+			spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
+		}
+	}
+	spiroPath.setAttributeNS(null,'d',spiro_d.join(' '));
+}
