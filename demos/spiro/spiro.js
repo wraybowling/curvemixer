@@ -600,14 +600,14 @@ function chainToSpiro(chain){
 		spiro_d.push('L',chain.points[1].x,chain.points[1].y);
 	}
 	if(cleanedData.length >= 3){
-		var demoSolver;
+		var solver;
 		var step = 1;
 		for (var outer = 0; outer < 3; outer += 1) {
-			demoSolver = setup_solver(cleanedData);
+			solver = setup_solver(cleanedData);
 			if (outer === 2) { break; }
 			try {
 				for (var j = 0; j < 30; j += 1){
-					var refined = refine_euler(demoSolver, step);
+					var refined = refine_euler(solver, step);
 					if (refined < 1e-6) { break; }
 				}
 				if (j < 30) { break; }
@@ -618,8 +618,8 @@ function chainToSpiro(chain){
 		}
 
 		// convert spiro to bezier
-		for(i=0; i<demoSolver.segs.length; i++){
-			var seg = demoSolver.segs[i];
+		for(i=0; i<solver.segs.length; i++){
+			var seg = solver.segs[i];
 			var ths = seg.get_ths();
 			var ks = fit_euler(ths[0], ths[1]).ks;
 			ks.push(0,0);
