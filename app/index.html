@@ -10,7 +10,11 @@
 <body>
 	<div class="cheatsheet">
 		Commands:
-		<br>[M]ove 1 ~
+		<br>[Tab] Group selected Objects
+		<br>[Shift]+[Tab] Ungroup a group
+		<br>[O]bject
+		<br>[P]oint
+		<br>Path commands:
 		[L]ine 1 ~
 		[H]orizontal 1 ~
 		[V]ertical 1 ~
@@ -25,10 +29,10 @@
 	<div class="curvemixer" tabindex="1">
 		<svg class="stage"></svg>
 		<svg class="gui">
+			<defs>
+				<circle r="4" id="dot"></circle>
+			</defs>
 			<path class="selection-line" />
-			<g class="segments"></g>
-			<g class="handle-helpers"></g>
-			<g class="handles"></g>
 		</svg>
 	</div>
 </body>

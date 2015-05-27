@@ -35,6 +35,10 @@ POINT.prototype.setCoordinates = function(x,y){
 	this.x = x;
 	this.y = y;
 };
+	
+POINT.prototype.render = function(){
+	console.log('reindeering this point');
+};
 
 window.POINT = POINT;
 
@@ -55,30 +59,18 @@ window.HANDLE = HANDLE;
 
 
 function SEGMENT(type,anchor,handles){
-	this.anchor = anchor; // end point
+	this.anchor = anchor; // end POINT
 	this.type = type; // spiro, casteljau, linear, et cetera
 
 	this.theta = undefined;
 	this.locked = false;
 
-//	this.handleCount = this.types[type].handleCount;
 	this.handleList = [];
 
 	this.prev = undefined; // prev anchor
 	this.next = undefined; // next anchor
 }
-
-SEGMENT.prototype.types = {
-	'Castel Curve 1' : { handleCount:1 },
-	'Castel Curve 2' : { handleCount:2, handleTypes:['straight', 'free', 'catmul-rom']},
-	'Vertical' : { handleCount:0, noLocking:true },
-	'Horizontal' : { handleCount:0, noLocking:true },
-	'Arc' : { handleCount:1, handleTypes:['bulge', 'angle', 'radius'] },
-	'Spiro' : { handleCount:0 },
-	'PenUp' : { handleCount:0 }, // used for breaking chains
-	'Rubber Band' : { handleCount:0, handleTypes:['starboard','port'] }
-};
-
+	
 window.SEGMENT = SEGMENT;
 
 
@@ -96,49 +88,6 @@ CHAIN.prototype.addSegment = function(segment,index){
 	}else{
 		this.segments.splice(index, 0, segment);
 	}
-};
-
-CHAIN.prototype.catmullRom = function(closed) {
-	// converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
-	// coordinates (array)
-	// closed (Boolean) if the shape is closed or not
-	var d = [], i, iLen, p;
-	for (i = 0, iLen = coordinates.length; (iLen - 2 * !closed) > i; i += 2) {
-		p = [
-			{x: +coordinates[i - 2], y: +coordinates[i - 1]},
-			{x: +coordinates[i],     y: +coordinates[i + 1]},
-			{x: +coordinates[i + 2], y: +coordinates[i + 3]},
-			{x: +coordinates[i + 4], y: +coordinates[i + 5]}
-		];
-		if (closed) {
-			if (!i) {
-				p[0] = {x: +coordinates[iLen - 2], y: +coordinates[iLen - 1]};
-			} else if (iLen - 4 === i) {
-				p[3] = {x: +coordinates[0], y: +coordinates[1]};
-			} else if (iLen - 2 === i) {
-				p[2] = {x: +coordinates[0], y: +coordinates[1]};
-				p[3] = {x: +coordinates[2], y: +coordinates[3]};
-			}
-		} else {
-			if (iLen - 4 === i) {
-				p[3] = p[2];
-			} else if (!i) {
-				p[0] = {x: +coordinates[i], y: +coordinates[i + 1]};
-			}
-		}
-		d.push("C");
-
-		d.push((-p[0].x + 6 * p[1].x + p[2].x) / 6);
-		d.push((-p[0].y + 6 * p[1].y + p[2].y) / 6);
-
-		d.push((p[1].x + 6 * p[2].x - p[3].x) / 6);
-		d.push((p[1].y + 6 * p[2].y - p[3].y) / 6);
-
-		d.push(p[2].x);
-		d.push(p[2].y);
-	}
-
-	return d;
 };
 
 window.CHAIN = CHAIN;
@@ -501,8 +450,12 @@ CURVEMIXER.prototype.keydown = function(event){
 				this.groups.push( new GROUP(this,{x:this.prevX, y:this.prevY}) );
 				console.log(this.groups);
 				break;
-			case 80: // P
+			case 79: // O
 				this.objects.push( new OBJECT(this,{x:this.prevX, y:this.prevY}) );
+				break;
+			case 86: // V
+				
+				this.points.push( new SEGMENT(this, {x:this.prevX, y:this.prevY}) );
 				break;
 
 //			case 76:mixer.selected_anchor_type = 'L'; break;
