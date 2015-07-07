@@ -1,7 +1,8 @@
 body{
 	margin:0;
 	font-family:Helvetica Neue;
-	background-color:#cbfffb;
+	background-color:#383838;
+    color:#a7c4d3;
 }
 
 svg{
@@ -12,7 +13,7 @@ svg{
 }
 
 .gui .selection-line{
-	stroke-width:2px;
+	stroke-width:1px;
 	stroke:red;
 }
 
@@ -37,4 +38,5 @@ svg *{
 .cheatsheet{
 	position:fixed;
 	padding:10px;
+    font-size:8pt;
 }
