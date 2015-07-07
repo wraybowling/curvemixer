@@ -35,7 +35,7 @@ POINT.prototype.setCoordinates = function(x,y){
 	this.x = x;
 	this.y = y;
 };
-	
+
 POINT.prototype.render = function(){
 	console.log('reindeering this point');
 };
@@ -69,8 +69,27 @@ function SEGMENT(type,anchor,handles){
 
 	this.prev = undefined; // prev anchor
 	this.next = undefined; // next anchor
+
+	this.render();
 }
-	
+
+SEGMENT.prototype.render = function(){
+	// render GUI
+	if( this.element === undefined){
+		var line = new XML('path');
+		line.attr('class','segment');
+		var pathData = ['M', this.prev.x, this.prev.y, 'L', this.anchor.x, this.anchor.y];
+		line.attr('d',pathData.join(' '));
+		this.element = this.owner.gui.appendChild(line.element);
+		console.log('create new segment element',this.element);
+		console.log('line',line);
+	}else{
+		console.log('reposition segment element',this.element);
+		var pathData = ['M', this.prev.x, this.prev.y, 'L', this.anchor.x, this.anchor.y];
+		this.element.setAttributeNS(null,'d',pathData.join(' '));
+	}
+};
+
 window.SEGMENT = SEGMENT;
 
 
