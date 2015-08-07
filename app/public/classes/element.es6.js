@@ -1,4 +1,4 @@
-export class Element {
+class Element {
 	constructor(x,y,parent){
 		if(parent !== undefined)
 			this.parent = parent;

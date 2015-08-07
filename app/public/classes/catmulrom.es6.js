@@ -1,6 +1,6 @@
 // converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
 
-export class Catmulrom extends Chain {
+class CatmulRom extends Chain {
 	// coordinates (array) FIXME
 	// closed (Boolean) if the shape is closed or not FIXME: DETECT AUTOMATICALLY
 	var d = [], i, iLen, p;

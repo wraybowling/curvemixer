@@ -4,6 +4,7 @@
 	<!--<script src="uservoice.js"></script>-->
 	<link rel="stylesheet" type="text/css" href="ui.css">
 	<link rel="icon" type="image/png" href="logo.png">
+	<script type="text/javascript" src="/main.es6.js"></script>
 </head>
 <body>
 	<div class="cheatsheet">
@@ -34,12 +35,16 @@
 		</svg>
 	</div>
 
-<script>
-var container = document.querySelector('.curvemixer');
-var stage = container.querySelector('.stage');
-var gui = container.querySelector('.gui');
+	<script type="text/javascript">
 
-var mixer = new CURVEMIXER(container, stage, gui);
-</script>
+	console.log('hello...?');	
 
+	var container = document.querySelector('.curvemixer');
+	var stage = container.querySelector('.stage');
+	var gui = container.querySelector('.gui');
+
+	var mixer = new Curvemixer(container, stage, gui);
+
+	</script>
+	
 </body>

@@ -1,3 +1,5 @@
+import "element";
+
 class Path extends Element{
 	constructor(x,y,parent){
 		super(x,y,parent);
