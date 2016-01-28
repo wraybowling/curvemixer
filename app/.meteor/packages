@@ -6,7 +6,6 @@
 
 autopublish
 insecure
-standard-minifiers
 meteor-base
 mobile-experience
 mongo
@@ -16,7 +15,4 @@ tracker
 logging
 reload
 random
-ejson
-spacebars
-check
 ecmascript
