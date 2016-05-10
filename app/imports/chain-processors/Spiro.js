@@ -13,7 +13,7 @@ the result would just come out as an arc/circle or straight line
 */
 
 
-class Spiro{
+class Spiro extends Chain{
   var startAngle = undefined,
       startCurvature = undefined,
       endAngle = undefined,
@@ -21,6 +21,8 @@ class Spiro{
       looping = undefined;
 
   constructor(chain, looping){
+    super();
+
     this.looping = looping;
 
     var start = chain[0],

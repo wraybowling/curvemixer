@@ -13,7 +13,7 @@ class Element {
 		this.rotation = 0;
 
 		this.guiElement = new XML('use');
-		this.guiElement.attr('xlink:href','dot');
+		this.guiElement.attr('xlink:href','#dot');
 	}
 
 	translate(x,y){

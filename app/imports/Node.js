@@ -1,17 +1,29 @@
-class Node{
-  var x = undefined, // float coordinate
-      y = undefined, // float coordinate
-      previousNode = undefined, // another node
-      nextNode = undefined, // another node
-      previousChord = undefined, // attached "left"
-      nextChord = undefined, // attached "right"
-      normal = undefined, // angle between prev & next
-      angle = undefined, // in radians modded to Tau
-      curvature = undefined; // "k" in mathematics
+/*
+
+this.x = x; // float coordinate
+this.y = y; // float coordinate
+this.previousNode = undefined; // another node
+this.nextNode = undefined; // another node
+this.previousChord = undefined; // attached "left"
+this.nextChord = undefined; // attached "right"
+this.normal = undefined; // angle between prev & next
+this.angle = undefined; // in radians modded to Tau
+this.curvature = undefined; // "k" in mathematics
+
+*/
+
+export class Node{
 
   constructor(x,y){
-    this.x = x;
-    this.y = y;
+    this.x = x; // float coordinate
+    this.y = y; // float coordinate
+    this.previousNode = undefined; // another node
+    this.nextNode = undefined; // another node
+    this.previousChord = undefined; // attached "left"
+    this.nextChord = undefined; // attached "right"
+    this.normal = undefined; // angle between prev & next
+    this.angle = undefined; // in radians modded to Tau
+    this.curvature = undefined; // "k" in mathematics
   }
 
   setPrev(otherNode, otherChord){
@@ -28,10 +40,15 @@ class Node{
     this.setNormal();
   }
 
-  setXY(x,y){
+  setXY(x=this.x,y=this.y){
     this.x = x;
     this.y = y;
     this.setNormal();
+  }
+
+  translate(x=0,y=0){
+      this.x += x;
+      this.y += y;
   }
 
   setNormal(){

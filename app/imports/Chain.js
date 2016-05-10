@@ -1,13 +1,11 @@
 /*
-things that define a chain....
+  things that define a chain....
 
 */
 
-class Chain{
-
-  constructor(){
-    if (node.previous) node.previous.next = node;
-    if (node.next) node.next.previous = node;
+export class Chain{
+  constructor(segments = [], options = {}){
+    this.segments = segments;
+    this.closed = options.closed || false;
   }
-
 }
