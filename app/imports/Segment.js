@@ -1,12 +1,13 @@
-export class Segment{
+// next/prev segments will be managed by the path via an array
+// type: casteljau, spiro, hobby, arc, etc...
 
-	// type: casteljau, spiro, hobby, arc, etc...
-	var type = undefined;
-
-	// next/prev segments will be managed by the path via an array
-
-	constructor(node, type){
-		this.endPoint = node;
+export default class Segment{
+	constructor(startNode, endNode, type = undefined){
+		this.startNode = startNode;
+		this.endNode = endNode;
 		this.type = type;
+
+		startNode.nextNode = endNode;
+		endNode.previousNode = startNode;
 	}
 }

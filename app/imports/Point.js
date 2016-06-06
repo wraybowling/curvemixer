@@ -12,18 +12,19 @@ this.curvature = undefined; // "k" in mathematics
 
 */
 
-export class Node{
+export default class Point{
 
   constructor(x,y){
     this.x = x; // float coordinate
     this.y = y; // float coordinate
-    this.previousNode = undefined; // another node
-    this.nextNode = undefined; // another node
-    this.previousChord = undefined; // attached "left"
-    this.nextChord = undefined; // attached "right"
-    this.normal = undefined; // angle between prev & next
-    this.angle = undefined; // in radians modded to Tau
-    this.curvature = undefined; // "k" in mathematics
+    // this.previousNode = undefined; // another node
+    // this.nextNode = undefined; // another node
+    // this.previousChord = undefined; // attached "left"
+    // this.nextChord = undefined; // attached "right"
+    // this.normal = undefined; // angle between prev & next
+    // this.anglePrev = undefined; // in radians modded to Tau
+    // this.angleNext = undefined; // in radians modded to Tau
+    // this.curvature = undefined; // "k" in mathematics
   }
 
   setPrev(otherNode, otherChord){
@@ -56,4 +57,5 @@ export class Node{
       this.normal = this.previousChord.angle + this.nextChord.angle / 2;
     }
   }
+
 }

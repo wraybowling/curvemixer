@@ -1,6 +1,6 @@
 // converts catmul-rom points into cornered cubic castel curve points (3 coordinates)
 
-class CatmulRom extends Chain {
+export class CatmulRom extends Chain {
 	// coordinates (array) FIXME
 
 	constructor(){

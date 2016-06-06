@@ -13,7 +13,7 @@ the result would just come out as an arc/circle or straight line
 */
 
 
-class Spiro extends Chain{
+export class Spiro extends Chain{
   var startAngle = undefined,
       startCurvature = undefined,
       endAngle = undefined,

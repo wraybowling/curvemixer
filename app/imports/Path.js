@@ -1,12 +1,11 @@
-import "element";
+import {Element} from '/imports/Element.js';
+import XML from '/imports/XML.js';
 
-class Path extends Element{
-	var segments = [];
-	    element = undefined;
-
-	constructor(x,y,parent){
-		super(x,y,parent);
-		this.element = new XML('Path');
+export default class Path extends Element{
+	constructor(x,y,segments){
+		super(x,y);
+		this.documentObject = new XML('path');
+		this.segments = segments;
 	}
 
 	getPathData(){
@@ -17,5 +16,9 @@ class Path extends Element{
 		    pathData.push(this.chains[i].segments[j].anchor.y);
 		  }
 		}
+	}
+
+	render(){
+		console.log('ding ding ding! You rendered!', this.x, this.y);
 	}
 }

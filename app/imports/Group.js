@@ -1,6 +1,6 @@
-import "element";
+import {Element} from '/imports/Element.js';
 
-Group extends Element{
+export class Group extends Element{
 	constructor(x,y,parent){
 		super(x,y,parent);
 		this.children = [];
