@@ -22,3 +22,7 @@ export default class Path extends Element{
 		console.log('ding ding ding! You rendered!', this.x, this.y);
 	}
 }
+
+const q = function () {};
+
+q();

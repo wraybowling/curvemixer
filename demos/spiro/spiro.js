@@ -1,8 +1,8 @@
-//(function () {
+// (function () {
 //    "use strict";
     // -- generic band-diagonal matrix solver, adapted from numerical recipes
     function bandec(matrix, n, m) {
-        var i, j, l = m;
+      var i, j, l = m;
         for (i = 0; i < m; i += 1) {
             for (j = 0; j <= i + m; j += 1) {
                 matrix[i].a[j] = matrix[i].a[j + m - i];

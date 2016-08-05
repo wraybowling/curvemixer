@@ -12,9 +12,9 @@ this.curvature = undefined; // "k" in mathematics
 
 */
 
-export default class Point{
+export default class Point {
 
-  constructor(x,y){
+  constructor(x, y) {
     this.x = x; // float coordinate
     this.y = y; // float coordinate
     // this.previousNode = undefined; // another node
@@ -27,33 +27,33 @@ export default class Point{
     // this.curvature = undefined; // "k" in mathematics
   }
 
-  setPrev(otherNode, otherChord){
+  setPrev(otherNode, otherChord) {
     this.previousNode = otherNode;
     this.previousChord = otherChord;
     otherNode.nextNode = this;
     this.setNormal();
   }
 
-  setNext(otherNode, otherChord){
+  setNext(otherNode, otherChord) {
     this.nextNode = otherNode;
     this.nextChord = otherChord;
     otherNode.previousNode = this;
     this.setNormal();
   }
 
-  setXY(x=this.x,y=this.y){
+  setXY(x = this.x, y = this.y) {
     this.x = x;
     this.y = y;
     this.setNormal();
   }
 
-  translate(x=0,y=0){
-      this.x += x;
-      this.y += y;
+  translate(x = 0, y = 0) {
+    this.x += x;
+    this.y += y;
   }
 
-  setNormal(){
-    if(this.previousNode !== undefined && this.nextNode !== undefined){
+  setNormal() {
+    if (this.previousNode !== undefined && this.nextNode !== undefined) {
       this.normal = this.previousChord.angle + this.nextChord.angle / 2;
     }
   }
