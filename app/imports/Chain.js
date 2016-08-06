@@ -4,8 +4,8 @@
   and can be extended to allow for more curve algorithms
 */
 
-export default class Chain{
-  constructor(segments = [], options = {}){
+export default class Chain {
+  constructor(segments = [], options = {}) {
     this.segments = segments;
     this.closed = options.closed || false;
   }
