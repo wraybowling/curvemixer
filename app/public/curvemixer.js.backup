@@ -28,13 +28,15 @@ function distance(Xa,Ya,Xb,Yb){
 function POINT(x,y){
 	this.x = x;
 	this.y = y;
+	this.normal = undefined;
+	this.cusp = false;
+	this.thetaForward = undefined;
+	this.thetaBackward = undefined;
 	this.selected = false;
+	this.next = undefined; // POINT
+	this.prev = undefined; // POINT
+	this.render();
 }
-
-POINT.prototype.setCoordinates = function(x,y){
-	this.x = x;
-	this.y = y;
-};
 
 POINT.prototype.render = function(){
 	console.log('reindeering this point');
@@ -520,4 +522,4 @@ CURVEMIXER.prototype.keyup = function(event){
 
 window.CURVEMIXER = CURVEMIXER;
 
-}());
+})();
