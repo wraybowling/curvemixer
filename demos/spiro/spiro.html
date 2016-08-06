@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+<meta charset="utf-8">
 <script src="spiro.js"></script>
 <style>
 	html,body,svg{
@@ -47,7 +48,7 @@
 	<path id="arc" d=""/>
 </svg>
 <script>
-	
+
 // define base path
 
 function point(x,y){
@@ -57,9 +58,9 @@ function point(x,y){
 
 demoChain = {
 	points:[]
-	,angles:[,,Math.PI/4,,,,]
+	,angles:[Math.PI,Math.PI]
 };
-	
+
 demoChain.points.push( new point(300,150) );
 demoChain.points.push( new point(300,300) );
 
@@ -72,7 +73,7 @@ var x,y;
 window.onmousemove = function(event){
 	x = event.x || event.clientX;
 	y = event.y || event.clientY;
-	
+
 	demoChain.points[demoChain.points.length-1].x = x;
 	demoChain.points[demoChain.points.length-1].y = y;
 	chainToSpiro(demoChain);
@@ -88,24 +89,24 @@ window.onkeydown = function(event){
 	}
 	chainToSpiro(demoChain);
 };
-	
-var theta = 0;
-	var forwards = true;
-function spinny(){
-	if(theta >= Math.PI*0.75) forwards = false;
-	if(theta <= -Math.PI*0.75) forwards = true;
-	if(forwards){
-		theta += 0.1;
-	}else{
-		theta -= 0.1;
-	}
-	
-	demoChain.angles[4] = theta;
-	chainToSpiro(demoChain);
-}
-	
-setInterval(spinny,10);
-	
+
+//var theta = 0;
+//	var forwards = true;
+// function spinny(){
+// 	if(theta >= Math.PI*0.75) forwards = false;
+// 	if(theta <= -Math.PI*0.75) forwards = true;
+// 	if(forwards){
+// 		theta += 0.1;
+// 	}else{
+// 		theta -= 0.1;
+// 	}
+//
+// 	demoChain.angles[4] = theta;
+// 	chainToSpiro(demoChain);
+// }
+//
+// setInterval(spinny,10);
+
 </script>
 </body>
 </html>
