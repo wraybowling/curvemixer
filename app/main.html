@@ -1,16 +1,19 @@
-<!doctype html>
-<html>
 <head>
 	<meta charset="utf-8">
 	<title>CurveMixer</title>
 	<!--<script src="uservoice.js"></script>-->
-	<link rel="stylesheet" type="text/css" href="ui.css">
+
 	<link rel="icon" type="image/png" href="logo.png">
+
 </head>
 <body>
 	<div class="cheatsheet">
 		Commands:
-		<br>[M]ove 1 ~
+		<br>[Tab] Group selected Objects
+		<br>[Shift]+[Tab] Ungroup a group
+		<br>[O]bject
+		<br>[P]oint
+		<br>Path commands:
 		[L]ine 1 ~
 		[H]orizontal 1 ~
 		[V]ertical 1 ~
@@ -25,22 +28,10 @@
 	<div class="curvemixer" tabindex="1">
 		<svg class="stage"></svg>
 		<svg class="gui">
+			<defs>
+				<circle r="4" id="dot"></circle>
+			</defs>
 			<path class="selection-line" />
-			<g class="segments"></g>
-			<g class="handle-helpers"></g>
-			<g class="handles"></g>
 		</svg>
 	</div>
 </body>
-
-<script type="text/javascript" src="curvemixer.js"></script>
-<script type="text/javascript" src="tests.js"></script>
-<script>
-var container = document.querySelector('.curvemixer');
-var stage = container.querySelector('.stage');
-var gui = container.querySelector('.gui');
-
-var mixer = new CURVEMIXER(container, stage, gui);
-</script>
-
-</html>
