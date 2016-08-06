@@ -1,7 +1,7 @@
 //(function () {
 //    "use strict";
     // -- generic band-diagonal matrix solver, adapted from numerical recipes
-		var i=0;
+    var i=0;
 
     function bandec(matrix, n, m) {
         var i, j, l = m;
@@ -202,45 +202,50 @@
             t = 1.0 / (Math.PI * x2);
             var u = t * t;
             var f = 1.0 - u * (((((((((4.21543555043677546506E-1 * u +
-                       1.43407919780758885261E-1) * u +
-                      1.15220955073585758835E-2) * u +
-                     3.45017939782574027900E-4) * u +
-                    4.63613749287867322088E-6) * u +
-                       3.05568983790257605827E-8) * u +
-                      1.02304514164907233465E-10) * u +
-                     1.72010743268161828879E-13) * u +
-                    1.34283276233062758925E-16) * u +
-                   3.76329711269987889006E-20) /
-            ((((((((((u + 7.51586398353378947175E-1) * u +
-                 1.16888925859191382142E-1) * u +
-                6.44051526508858611005E-3) * u +
-               1.55934409164153020873E-4) * u +
-              1.84627567348930545870E-6) * u +
-             1.12699224763999035261E-8) * u +
-            3.60140029589371370404E-11) * u +
-               5.88754533621578410010E-14) * u +
-              4.52001434074129701496E-17) * u + 1.25443237090011264384E-20);
+                                      1.43407919780758885261E-1) * u +
+                                     1.15220955073585758835E-2) * u +
+                                    3.45017939782574027900E-4) * u +
+                                   4.63613749287867322088E-6) * u +
+                                  3.05568983790257605827E-8) * u +
+                                 1.02304514164907233465E-10) * u +
+                                1.72010743268161828879E-13) * u +
+                               1.34283276233062758925E-16) * u +
+                              3.76329711269987889006E-20) /
+                              ((((((((((u +
+                                       7.51586398353378947175E-1) * u +
+                                      1.16888925859191382142E-1) * u +
+                                     6.44051526508858611005E-3) * u +
+                                    1.55934409164153020873E-4) * u +
+                                   1.84627567348930545870E-6) * u +
+                                  1.12699224763999035261E-8) * u +
+                                 3.60140029589371370404E-11) * u +
+                                5.88754533621578410010E-14) * u +
+                               4.52001434074129701496E-17) * u +
+                              1.25443237090011264384E-20);
+
             var g = t * ((((((((((5.04442073643383265887E-1 * u +
-                      1.97102833525523411709E-1) * u +
-                     1.87648584092575249293E-2) * u +
-                    6.84079380915393090172E-4) * u +
-                   1.15138826111884280931E-5) * u +
-                  9.82852443688422223854E-8) * u +
-                 4.45344415861750144738E-10) * u +
-                1.08268041139020870318E-12) * u +
-                   1.37555460633261799868E-15) * u +
-                  8.36354435630677421531E-19) * u +
-                 1.86958710162783235106E-22) /
-            (((((((((((u + 1.47495759925128324529E0) * u +
-                  3.37748989120019970451E-1) * u +
-                 2.53603741420338795122E-2) * u +
-                8.14679107184306179049E-4) * u +
-               1.27545075667729118702E-5) * u +
-              1.04314589657571990585E-7) * u +
-             4.60680728146520428211E-10) * u +
-            1.10273215066240270757E-12) * u +
-               1.38796531259578871258E-15) * u +
-              8.39158816283118707363E-19) * u + 1.86958710162783236342E-22);
+                                 1.97102833525523411709E-1) * u +
+                                1.87648584092575249293E-2) * u +
+                               6.84079380915393090172E-4) * u +
+                              1.15138826111884280931E-5) * u +
+                             9.82852443688422223854E-8) * u +
+                            4.45344415861750144738E-10) * u +
+                           1.08268041139020870318E-12) * u +
+                          1.37555460633261799868E-15) * u +
+                         8.36354435630677421531E-19) * u +
+                        1.86958710162783235106E-22) /
+                        (((((((((((u +
+                                  1.47495759925128324529E0) * u +
+                                 3.37748989120019970451E-1) * u +
+                                2.53603741420338795122E-2) * u +
+                               8.14679107184306179049E-4) * u +
+                              1.27545075667729118702E-5) * u +
+                             1.04314589657571990585E-7) * u +
+                            4.60680728146520428211E-10) * u +
+                           1.10273215066240270757E-12) * u +
+                          1.38796531259578871258E-15) * u +
+                         8.39158816283118707363E-19) * u +
+                        1.86958710162783236342E-22);
             t = Math.PI * 0.5 * x2;
             var c = Math.cos(t);
         var s = Math.sin(t);
@@ -401,11 +406,11 @@
         var error_old = th1 - th0;
         var k0 = th0 + th1;
         while (k0 > 2 * Math.PI) {
-					k0 -= 4 * Math.PI;
-				}
+          k0 -= 4 * Math.PI;
+        }
         while (k0 < -2 * Math.PI) {
-					k0 += 4 * Math.PI;
-				}
+          k0 += 4 * Math.PI;
+        }
         var k1 = 6 * (1 - Math.pow((0.5 / Math.PI) * k0, 3)) * error_old;
         var xy;
         for (var i = 0; i < 10; i += 1) {
@@ -419,7 +424,7 @@
         }
         if (i == 10) {
             throw "fit_euler diverges at " + th0 + ", " + th1;
-				}
+        }
         var chord = Math.sqrt(xy[0] * xy[0] + xy[1] * xy[1]);
         return {ks: [k0, k1], chord: chord};
     }
@@ -446,7 +451,7 @@
         this.segs = segs;
         this.nodes = nodes;
     }
-    
+
     function setup_solver(path) {
         var segs = [];
         var nodes = [];
@@ -478,15 +483,15 @@
             }
             nodes[i] = node;
         }
-				
+
         for (i = 0; i < segs.length; i += 1) {
             seg = segs[i];
-							
-						if(input_chain.angles[i] !== undefined){							
-							var init_angle = Math.atan2(nodes[i+1].xy[1] - nodes[i].xy[1], nodes[i+1].xy[0] - nodes[i].xy[0]);
-							seg.init_th1 = -init_angle + input_chain.angles[i];
-						}
-						
+
+            if(input_chain.angles[i] !== undefined){
+              var init_angle = Math.atan2(nodes[i+1].xy[1] - nodes[i].xy[1], nodes[i+1].xy[0] - nodes[i].xy[0]);
+              seg.init_th1 = -init_angle + input_chain.angles[i];
+            }
+
             // MANUALLY CONTROL THETA
             /*
             if(i === 0){
@@ -558,15 +563,15 @@
             }
         }
         if (mat.length === 0) { return 0; }
-				bandec(mat, mat.length, 1);
-				banbks(mat, dks, mat.length, 1);
-				j = 0;
-				for (i = 0; i < nodes.length; i += 1) {
-					node = nodes[i];
-					if (node.left && node.right) {
-						node.dth -= step * dks[j];
-						j += 1;
-					}
+        bandec(mat, mat.length, 1);
+        banbks(mat, dks, mat.length, 1);
+        j = 0;
+        for (i = 0; i < nodes.length; i += 1) {
+          node = nodes[i];
+          if (node.left && node.right) {
+            node.dth -= step * dks[j];
+            j += 1;
+          }
         }
         return maxerr;
     }
@@ -575,56 +580,56 @@ var input_chain;
 
 function chainToSpiro(chain){
 
-	input_chain = chain;
-	
-	// remove doubles
-	var cleanedData = [];
-	var lastNonZeroDistancePoint = [];
-	for(i=0; i<chain.points.length; i++){
-		if((lastNonZeroDistancePoint.length !== 0)
-		&&((chain.points[i].x === lastNonZeroDistancePoint.x)
-		&& (chain.points[i].y === lastNonZeroDistancePoint.y))){
-			// do nothing
-		}else{
-			cleanedData.push([chain.points[i].x,chain.points[i].y]);
-			lastNonZeroDistancePoint = chain.points[i];
-		}
-	}
+  input_chain = chain;
 
-	// update spiro
-	var spiro_d = [];
-	if(cleanedData.length >= 2){
-		spiro_d.push('M',chain.points[0].x,chain.points[0].y);
-	}
-	if(cleanedData.length === 2){
-		spiro_d.push('L',chain.points[1].x,chain.points[1].y);
-	}
-	if(cleanedData.length >= 3){
-		var solver;
-		var step = 1;
-		for (var outer = 0; outer < 3; outer += 1) {
-			solver = setup_solver(cleanedData);
-			if (outer === 2) { break; }
-			try {
-				for (var j = 0; j < 30; j += 1){
-					var refined = refine_euler(solver, step);
-					if (refined < 1e-6) { break; }
-				}
-				if (j < 30) { break; }
-			} catch (error) {
-				console.error(error);
-			}
-			step *= 0.5;
-		}
+  // remove doubles
+  var cleanedData = [];
+  var lastNonZeroDistancePoint = [];
+  for(i=0; i<chain.points.length; i++){
+    if((lastNonZeroDistancePoint.length !== 0)
+    &&((chain.points[i].x === lastNonZeroDistancePoint.x)
+    && (chain.points[i].y === lastNonZeroDistancePoint.y))){
+      // do nothing
+    }else{
+      cleanedData.push([chain.points[i].x,chain.points[i].y]);
+      lastNonZeroDistancePoint = chain.points[i];
+    }
+  }
 
-		// convert spiro to bezier
-		for(i=0; i<solver.segs.length; i++){
-			var seg = solver.segs[i];
-			var ths = seg.get_ths();
-			var ks = fit_euler(ths[0], ths[1]).ks;
-			ks.push(0,0);
-			spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
-		}
-	}
-	spiroPath.setAttributeNS(null,'d',spiro_d.join(' '));
+  // update spiro
+  var spiro_d = [];
+  if(cleanedData.length >= 2){
+    spiro_d.push('M',chain.points[0].x,chain.points[0].y);
+  }
+  if(cleanedData.length === 2){
+    spiro_d.push('L',chain.points[1].x,chain.points[1].y);
+  }
+  if(cleanedData.length >= 3){
+    var solver;
+    var step = 1;
+    for (var outer = 0; outer < 3; outer += 1) {
+      solver = setup_solver(cleanedData);
+      if (outer === 2) { break; }
+      try {
+        for (var j = 0; j < 30; j += 1){
+          var refined = refine_euler(solver, step);
+          if (refined < 1e-6) { break; }
+        }
+        if (j < 30) { break; }
+      } catch (error) {
+        console.error(error);
+      }
+      step *= 0.5;
+    }
+
+    // convert spiro to bezier
+    for(i=0; i<solver.segs.length; i++){
+      var seg = solver.segs[i];
+      var ths = seg.get_ths();
+      var ks = fit_euler(ths[0], ths[1]).ks;
+      ks.push(0,0);
+      spiro_d = spiro_d.concat(seg_to_bez_svg(ks, seg.left.xy[0], seg.left.xy[1], seg.right.xy[0], seg.right.xy[1]));
+    }
+  }
+  spiroPath.setAttributeNS(null,'d',spiro_d.join(' '));
 }
