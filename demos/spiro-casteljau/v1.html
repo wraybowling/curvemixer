@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+	<script>
+		function vec2(x,y){
+			this.x = x;
+			this.y = y;
+		}
+		
+		vec2.prototype.cross = function(b) {
+			return this.x*b.y - this.y*b.x;
+		}
+		
+		vec2.prototype.normalize = function(){
+			
+		}
+		
+		function casteljau(p1, p2, p3, p4){
+			this.p1 = p1;
+			this.p2 = p2;
+			this.p3 = p3;
+			this.p4 = p4;
+		}
+		
+		casteljau.prototype.curvature = function(t) {
+			r1 = mapD1(t); // first derivative
+			r2 = mapD2(t); // second derivative
+			return pow(length(r1),3.0) / length(cross(r1,r2));
+		}
+		
+//		casteljau.prototype.A = function(){
+//			return p4.x - 3 * p3.x + 3 * p2.x - p1.x;
+//		}
+//B = 3 * x2 - 6 * x1 + 3 * x0
+//C = 3 * x1 - 3 * x0
+//D = x0
+//
+//E = y3 - 3 * y2 + 3 * y1 - y0
+//F = 3 * y2 - 6 * y1 + 3 * y0
+//G = 3 * y1 - 3 * y0
+//H = y0
+		
+		// curve derivative (velocity)
+		vec2 mapD1(float t)
+		{
+			return -7.0*a*c*cos(t+m)*sin(7.0*t+n) - a*sin(t+m)*(b+c*cos(7.0*t+n));
+		}
+
+	</script>
+</head>
+
+<body>
+</body>
+</html>
