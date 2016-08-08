@@ -1,4 +1,5 @@
 // http://blog.avangardo.com/2010/10/c-implementation-of-bezier-curvature-calculation/
+// https://github.com/toji/gl-matrix/blob/master/dist/gl-matrix.js
 
 class Point {
   constructor(x = 0, y = 0) {
@@ -16,7 +17,7 @@ class Vector {
   normal() {
     // FIXME: don't create new vector object. it's slower.
     return new Vector(-this.y, this.x);
-    // return new Vector(this.y,-this.x);
+    //return new Vector(this.y,-this.x);
   }
 
   length() {
@@ -52,8 +53,15 @@ class Vector {
     return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
   }
 
-  crossProduct(v2) {
-    return new Vector();
+  cross(v2) {
+    const out = {};
+    out.x = out.y = 0;
+    out.z = this.x * v2.y - this.y * v2.x;
+    return out;
+  }
+
+  dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1];
   }
 }
 
@@ -114,7 +122,8 @@ class CubicCasteljau {
 }
 
 // make some stuff
-const q = new CubicCasteljau(10, 20, 40, 10, 80, 80, 290, 90);
+// M 6 60 C 200 10 20 80 300 90
+const q = new CubicCasteljau(6, 60, 200, 10, 20, 80, 300, 90);
 let t = 0.2;
 const tEl = document.getElementById('t');
 const redraw = tEl.oninput = () => {
@@ -128,11 +137,22 @@ const redraw = tEl.oninput = () => {
   const k = q.getCurvatureRadius(t);
 
   // FIXME
+  const cross = q.getDerivative1(t).cross(q.getDerivative2(t));
+  const side = (cross.z >= 0) ? 1 : -1;
   const vEl = document.getElementById('v');
-  const v = q.getDerivative1(t);
-  const a = q.getDerivative2(t);
-  const at = v.pow(2).divide(k);
-  const ac = a.subtract(at);
+  const centripital_a = Math.pow(q.getDerivative1(t).abs(),2) / k;
+  const ac = q.getDerivative1(t)
+    .normal()
+    .normalize()
+    .scale(centripital_a / 20 * -side);
+
+  
+  // console.log('cross',cross);
+  // const v = q.getDerivative1(t);
+  // const aLen = q.getDerivative2(t).abs();
+  // const a = q.getDerivative1(t).normalize().scale(aLen);
+  // const at = v.pow(2).divide(k);
+  // const ac = a.subtract(at).scale(0.1);
   vEl.setAttributeNS(null, 'x1', p.x);
   vEl.setAttributeNS(null, 'y1', p.y);
   vEl.setAttributeNS(null, 'x2', p.x + ac.x);
@@ -141,7 +161,7 @@ const redraw = tEl.oninput = () => {
   const kp = q.getDerivative1(t)
     .normal()
     .normalize()
-    .scale(k);
+    .scale(k * side);
   const kEl = document.getElementById('k');
   kEl.setAttributeNS(null, 'r', k);
   kEl.setAttributeNS(null, 'cx', p.x + kp.x);
