@@ -8,6 +8,7 @@ import XML from '/imports/XML.js';
 
 export class Element {
 	constructor(x, y, scale=1.0, rotation=0){
+		this.stage = document.querySelector('.stage');
 		this.x = x;
 		this.y = y;
 		this.scale = scale;

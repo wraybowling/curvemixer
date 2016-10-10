@@ -20,8 +20,9 @@ console.log('segments',s1,s2,s3);
 
 var c = new Chain(segments);
 console.log('chain',c);
+var chains = [c];
 
-var p = new Path(20,20,segments);
+var p = new Path(20,20,chains);
 console.log('path',p);
 
 p.render();

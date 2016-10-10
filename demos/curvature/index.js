@@ -5,6 +5,8 @@ class Point {
   constructor(x = 0, y = 0) {
     this.x = x;
     this.y = y;
+    this.futureX = x;
+    this.futureY = y;
   }
 }
 
@@ -17,7 +19,7 @@ class Vector {
   normal() {
     // FIXME: don't create new vector object. it's slower.
     return new Vector(-this.y, this.x);
-    //return new Vector(this.y,-this.x);
+    // return new Vector(this.y,-this.x);
   }
 
   length() {
@@ -140,19 +142,12 @@ const redraw = tEl.oninput = () => {
   const cross = q.getDerivative1(t).cross(q.getDerivative2(t));
   const side = (cross.z >= 0) ? 1 : -1;
   const vEl = document.getElementById('v');
-  const centripital_a = Math.pow(q.getDerivative1(t).abs(),2) / k;
+  const centripital_a = Math.pow(q.getDerivative1(t).abs(), 2) / k;
   const ac = q.getDerivative1(t)
     .normal()
     .normalize()
     .scale(centripital_a / 20 * -side);
 
-  
-  // console.log('cross',cross);
-  // const v = q.getDerivative1(t);
-  // const aLen = q.getDerivative2(t).abs();
-  // const a = q.getDerivative1(t).normalize().scale(aLen);
-  // const at = v.pow(2).divide(k);
-  // const ac = a.subtract(at).scale(0.1);
   vEl.setAttributeNS(null, 'x1', p.x);
   vEl.setAttributeNS(null, 'y1', p.y);
   vEl.setAttributeNS(null, 'x2', p.x + ac.x);
