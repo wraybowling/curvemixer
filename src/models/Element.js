@@ -1,10 +1,4 @@
-/*
-
-
-
-*/
-
-import XML from '/imports/XML.js';
+import XML from './XML.js';
 
 export class Element {
 	constructor(x, y, scale=1.0, rotation=0){

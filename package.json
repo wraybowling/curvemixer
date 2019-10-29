@@ -1,0 +1,24 @@
+{
+  "name": "curvemixer",
+  "version": "0.3.0",
+  "description": "data-driven vector graphics tool",
+  "main": "src/index.js",
+  "repository": "git@github.com:wraybowling/curvemixer.git",
+  "author": "Wray Bowling <wray@wraybowling.com>",
+  "license": "GPL-3",
+  "scripts": {
+    "start": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "core-js": "^3.3.2",
+    "register-service-worker": "^1.6.2",
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-plugin-pwa": "^4.0.0",
+    "@vue/cli-service": "^4.0.0",
+    "vue-template-compiler": "^2.6.10"
+  }
+}

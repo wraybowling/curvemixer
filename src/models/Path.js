@@ -1,5 +1,5 @@
-import {Element} from '/imports/Element.js';
-import XML from '/imports/XML.js';
+import {Element} from './Element.js';
+import XML from './XML.js';
 
 export default class Path extends Element{
 	constructor(x,y,chains){
@@ -30,6 +30,3 @@ export default class Path extends Element{
 	}
 }
 
-const q = function () {};
-
-q();
