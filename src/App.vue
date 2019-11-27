@@ -1,21 +1,54 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <TextEditor/>
+    <Toolbar/>
+    <Viewport/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import TextEditor from './components/TextEditor'
+import Toolbar from './components/Toolbar.vue'
+import Viewport from './components/Viewport'
 
 import Path from './models/Path'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    TextEditor,
+    Toolbar,
+    Viewport,
+  },
+  methods: {
+    mousewheel: e => { console.log(e.deltaY, e) },
   }
 }
+
+// window.addEventListener('keydown', e => {
+//   console.log(e);
+// })
+
+// window.addEventListener('keyup', e => {
+//   console.log(e);
+// })
+
+// window.addEventListener('mousemove', e => {
+//   console.log(e);
+// })
+
+// window.addEventListener('mousedown', e => {
+//   console.log(e);
+// })
+
+// window.addEventListener('mouseup', e => {
+//   console.log(e);
+// })
+
+// window.addEventListener('mousewheel', e => {
+//   console.log(e);
+// })
 </script>
 
 <style>
